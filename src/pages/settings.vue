@@ -1,0 +1,37 @@
+<template lang="pug">
+v-row
+  v-col(cols="12")
+    PageTitle 設定
+v-row
+  v-col(cols="auto").select-menu
+    SideMenu(:menus="menus")
+  v-col(cols="auto").flex-fill
+    NuxtPage
+</template>
+
+<script setup lang="ts">
+import type { MenuItem } from "~/types";
+import PageTitle from "~/components/atoms/PageTitle.vue";
+
+const menus: MenuItem[] = [
+  { type: "subheader", title: "ツール連携" },
+  { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
+  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" },
+  { type: "divider" },
+  { type: "subheader", title: "チーム情報" },
+  { type: "item", title: "従業員設定", href: "/settings/organization/users" },
+  { type: "item", title: "タスク設定", href: "/settings/organization/properties" },
+  { type: "item", title: "報告先設定", href: "/settings/organization/reporting-lines" },
+  { type: "divider" },
+  { type: "subheader", title: "通知" },
+  { type: "item", title: "通知日時設定", href: "/settings/notification/common" },
+  { type: "item", title: "日報設定", href: "/settings/notification/daily-report" },
+  { type: "item", title: "タスク更新通知設定", href: "/settings/notification/update" },
+  { type: "item", title: "見立て共有設定", href: "/settings/notification/prospect" },
+];
+</script>
+
+<style scoped lang="sass">
+.select-menu
+  width: 200px
+</style>
