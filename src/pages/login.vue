@@ -28,7 +28,7 @@ v-container.fill-height.card-container
       ).mb-4
       .d-flex.flex-column.align-center
         v-btn(type="submit" color="primary") ログイン
-        NuxtLink(to="/reset-account").mt-2.text-caption.text-grey パスワードをお忘れの方はこちら
+        NuxtLink(:to="toResetAccount").mt-2.text-caption.text-grey パスワードをお忘れの方はこちら
     .d-flex.justify-center.mt-4
       v-btn(nuxt to="/create-account" variant="text" color="primary") 新規登録
 </template>
@@ -50,19 +50,29 @@ useHead({
 });
 
 const { login } = useAuth();
+const { startLoading, finishLoading } = useLoading();
 
 const form = ref<VForm>();
 const formData = ref<LoginInfo>({ email: "", password: "" });
 const showPassword = ref<boolean>(false);
 const passType = computed(() => showPassword.value ? "text" : "password");
 const passAppendIcon = computed(() => showPassword.value ? "mdi-eye" : "mdi-eye-off");
+const { query } = useRoute();
+
+const toResetAccount = computed(() => {
+  return { path: "/reset-account", query };
+});
 
 const submit = async () => {
   const validation = await form.value?.validate();
   if (validation?.valid) {
+    console.log("login: start");
+    startLoading();
     await login(formData.value.email, formData.value.password);
+    finishLoading();
+    console.log("login: finish");
   }
-}
+};
 </script>
 
 <style scoped lang="sass">

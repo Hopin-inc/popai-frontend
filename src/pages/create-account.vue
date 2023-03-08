@@ -67,6 +67,7 @@ v-container.fill-height.card-container
 import { computed, ref } from "vue";
 import Validations from "~/utils/validations";
 import { VForm } from "vuetify/components";
+import { signUp } from "~/apis/accounts";
 
 type SignUpInfo = {
   email: string;
@@ -85,6 +86,7 @@ useHead({
 });
 
 const { login } = useAuth();
+const { startLoading, finishLoading } = useLoading();
 
 const form = ref<VForm>();
 const formData = ref<SignUpInfo>({
@@ -105,15 +107,19 @@ const passAppendIconConfirm = computed(() => showPasswordConfirm.value ? "mdi-ey
 const submit = async () => {
   const validation = await form.value?.validate();
   if (validation?.valid && formData.value.password === formData.value.passwordConfirm && formData.value.agree) {
-    alert("createAccount!");
-    // await createAccount(formData.value.email, formData.value.password);
+    console.log("createAccount: start");
+    startLoading();
+    await signUp(formData.value);
+    finishLoading();
+    console.log("createAccount: finish");
+    alert("アカウントを作成しました。");
     await navigateTo("/login");
   } else if (validation?.valid && formData.value.password !== formData.value.passwordConfirm) {
     alert("パスワードが一致しません。");
   } else if (validation?.valid && !formData.value.agree) {
     alert("利用規約に同意してください。");
   }
-}
+};
 </script>
 
 <style scoped lang="sass">

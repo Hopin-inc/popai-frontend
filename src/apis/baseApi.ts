@@ -5,7 +5,7 @@ import { toQueryString } from "~/utils/common";
 
 const onRequest = ({ request, options }: FetchContext) => {
   console.info('[fetch request]', request, options);
-}
+};
 
 const onRequestError = ({ request, error }: FetchContext) => {
   console.error('[fetch request error]', request, error);
@@ -26,19 +26,20 @@ const onResponseError = async ({ request, response }: FetchContext) => {
   }
 };
 
-const defaultOptions: NitroFetchOptions<string> = {
-  baseURL: "http://localhost:3000/api",  // FIXME
-  parseResponse: JSON.parse,
-  retry: 3,
-  onRequest,
-  onRequestError,
-  onResponse,
-  onResponseError,
-};
-
 export const fetcher = <ResT>(
   path: string,
-  fetchOptions: NitroFetchOptions<string> = defaultOptions,
+  fetchOptions: NitroFetchOptions<string> = {},
 ) => {
+  const config = useRuntimeConfig();
+  const defaultOptions: NitroFetchOptions<string> = {
+    baseURL: config.public.apiBaseUrl,
+    parseResponse: JSON.parse,
+    retry: 3,
+    credentials: "include",
+    onRequest,
+    onRequestError,
+    onResponse,
+    onResponseError,
+  };
   return async () => await $fetch<ResT>(path, { ...defaultOptions, ...fetchOptions });
 };

@@ -11,7 +11,7 @@ v-app-bar
           v-list-item(prepend-icon="mdi-account" :title="organization")
         v-divider
         v-list
-          v-list-item(title="ログアウト" @click.once="logout")
+          v-list-item(title="ログアウト" @click.once="signOut")
 v-main.main.px-16.py-8.mt-16
   v-container.page-container
     slot
@@ -23,9 +23,18 @@ import { ref } from "vue";
 useHead({
   titleTemplate: (title) => title ? `${ title } - sakura3` : "sakura3",
 });
+
 const { organization, logout } = useAuth();
+const { startLoading, finishLoading } = useLoading();
 
 const menu = ref<boolean>(false);
+const signOut = async () => {
+  console.log("signOut: start");
+  startLoading();
+  await logout();
+  finishLoading();
+  console.log("signOut: finish");
+};
 </script>
 
 <style scoped lang="sass">

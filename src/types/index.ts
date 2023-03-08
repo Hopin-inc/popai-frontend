@@ -1,3 +1,11 @@
+import { StatusCodes } from "~/utils/status-codes";
+
+export type ApiResponse<T> = {
+  data: T;
+  message: string;
+  status: StatusCodes;
+}
+
 export type MenuItem = {
   type: "item";
   title: string;
@@ -27,5 +35,5 @@ export type Account = {
   organization: string;
   name: string;
   email: string;
-  idToken: string;
+  cookie?: string;
 };
