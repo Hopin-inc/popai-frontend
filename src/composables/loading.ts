@@ -12,8 +12,8 @@ export const useLoading = () => {
   };
 
   return {
-    loading,
+    loading: readonly(loading),
     startLoading: start(loading),
-    finishLoading: finish(loading),
+    finishLoading: finish(loading)
   };
-}
+};

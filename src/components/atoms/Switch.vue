@@ -1,11 +1,16 @@
 <template lang="pug">
-v-overlay(v-model="value" persistent).d-flex.justify-center.align-center
-  v-progress-circular(indeterminate color="white" size="64")
+v-switch(
+  v-model="value"
+  :label="props.label"
+  color="primary"
+  hide-details
+).no-stretch.ml-3
 </template>
 
 <script setup lang="ts">
 type Props = {
   modelValue: boolean;
+  label: string;
 };
 type Emits = {
   (e: "update:model-value", value: boolean): void
@@ -13,6 +18,7 @@ type Emits = {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
+  label: "",
 });
 const emits = defineEmits<Emits>();
 
@@ -22,3 +28,12 @@ const value = computed({
   set: (value) => emits("update:model-value", value),
 });
 </script>
+
+<style scoped lang="sass">
+.no-stretch
+  :deep(.v-selection-control)
+    flex: 0 0
+    label
+      padding-right: 10px
+      white-space: nowrap
+</style>

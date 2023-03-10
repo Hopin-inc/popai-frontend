@@ -34,6 +34,9 @@ export type SignUpInfo = LoginInfo & {
 export type Account = {
   organization: string;
   name: string;
-  email: string;
-  cookie?: string;
 };
+
+export type SelectItem<IdType = number> = {
+  id: IdType;
+  name: string;
+}

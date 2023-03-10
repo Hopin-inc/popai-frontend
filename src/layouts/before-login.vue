@@ -1,16 +1,17 @@
 <template lang="pug">
 v-main
-  NuxtPage
+  v-container.fill-height.card-container.pa-8
+    slot
 </template>
 
 <script setup lang="ts">
 useHead({
-  titleTemplate: (title) => title ? `${ title } - sakura3` : "sakura3",
+  titleTemplate: title => title ? `${title} - sakura3` : "sakura3"
 });
 </script>
 
 <style scoped lang="sass">
-.page-container
-  max-width: 1440px
+.card-container
+  max-width: 480px
   margin: auto
 </style>

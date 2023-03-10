@@ -19,4 +19,4 @@ export const getMessageByLoginError = (code: string): string => {
       return "ログインできませんでした。\n" +
         "ネットワークの接続状態を確認し、もう一度ログインしてください。";
   }
-}
+};

@@ -1,11 +1,10 @@
 <template lang="pug">
 v-app
   NuxtLayout
-    Loading(v-model="loading")
     NuxtPage
+  Loading(v-model="loading")
 </template>
 
 <script setup lang="ts">
-const nuxtApp = useNuxtApp();
 const { loading } = useLoading();
 </script>

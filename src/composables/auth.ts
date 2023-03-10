@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 import { Account } from "~/types";
-import { signIn, signOut } from "~/apis/accounts";
+import { getLoggedInAccount, signIn, signOut } from "~/apis/accounts";
 import { getMessageByLoginError } from "~/utils/messages";
 
 export const useAuth = () => {
@@ -9,18 +9,33 @@ export const useAuth = () => {
 
   const isLoggedIn = !!currentUser.value;
   const organization = currentUser.value?.organization;
+  const name = currentUser.value?.name;
+
+  const fetchAuthState = (state: Ref<Account | null>) => {
+    return async () => {
+      if (!state.value) {
+        const account = await getLoggedInAccount();
+        if (account) {
+          const { organization, name } = account;
+          state.value = { organization, name };
+        } else {
+
+        }
+      }
+    };
+  };
 
   const login = (state: Ref<Account | null>) => {
     return async (email: string, password: string) => {
       const auth = getAuth();
       signInWithEmailAndPassword(auth, email, password)
-        .then(async credential => {
+        .then(async (credential) => {
           const { user } = credential;
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
           if (account) {
             const { organization, name } = account;
-            state.value = { email, organization, name };
+            state.value = { organization, name };
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
               await navigateTo(redirect);
@@ -29,7 +44,7 @@ export const useAuth = () => {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           alert(getMessageByLoginError(error.code));
         });
     };
@@ -51,8 +66,10 @@ export const useAuth = () => {
     currentUser: readonly(currentUser),
     isLoggedIn,
     organization,
+    name,
+    fetchAuthState: fetchAuthState(currentUser),
     setUser: setUser(currentUser),
     login: login(currentUser),
-    logout: logout(currentUser),
+    logout: logout(currentUser)
   };
-}
+};

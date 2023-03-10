@@ -9,11 +9,10 @@
     "plugin:vue/vue3-essential",
     "plugin:@typescript-eslint/recommended",
     "@nuxtjs/eslint-config-typescript",
-    "plugin:nuxt/recommended",
-    "prettier"
+    "plugin:nuxt/recommended"
   ],
   "overrides": [],
-  "parser": "@typescript-eslint/parser",
+  "parser": "vue-eslint-parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"

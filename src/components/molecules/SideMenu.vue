@@ -1,5 +1,5 @@
 <template lang="pug">
-v-list(nav).pa-0
+v-list(density="compact").pa-0.bg-transparent
   template(v-for="item in props.menus")
     template(v-if="item.type === 'item'")
       v-list-item(
@@ -9,7 +9,6 @@ v-list(nav).pa-0
         :to="item.href"
         active-color="primary"
         :rounded="props.rounded"
-        density="compact"
       )
       v-list-item(
         v-else
@@ -18,10 +17,9 @@ v-list(nav).pa-0
         @click.stop="item.action"
         active-color="primary"
         :rounded="props.rounded"
-        density="compact"
       )
-    v-list-subheader(v-else-if="item.type === 'subheader'" :title="item.title")
-    v-divider(v-else-if="item.type === 'divider'")
+    v-list-subheader(v-else-if="item.type === 'subheader'" :title="item.title" sticky)
+    v-divider.my-2(v-else-if="item.type === 'divider'")
 </template>
 
 <script setup lang="ts">
@@ -43,6 +41,6 @@ type MenuItem = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  menus: () => [],
+  menus: () => []
 });
 </script>

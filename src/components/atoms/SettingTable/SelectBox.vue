@@ -1,18 +1,26 @@
 <template lang="pug">
-v-overlay(v-model="value" persistent).d-flex.justify-center.align-center
-  v-progress-circular(indeterminate color="white" size="64")
+v-select(
+  v-model="value"
+  variant="outlined"
+  :readonly="props.readonly"
+  density="compact"
+  color="primary"
+  hide-details
+)
 </template>
 
 <script setup lang="ts">
 type Props = {
-  modelValue: boolean;
+  modelValue: string;
+  readonly?: boolean;
 };
 type Emits = {
-  (e: "update:model-value", value: boolean): void
+  (e: "update:model-value", value: string): void
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: false,
+  modelValue: "",
+  readonly: false
 });
 const emits = defineEmits<Emits>();
 
