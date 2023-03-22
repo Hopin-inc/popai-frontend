@@ -18,7 +18,7 @@ export const NotionPropertyType = {
   CREATED_BY: 17,
   CREATED_TIME: 18,
   LAST_EDITED_BY: 19,
-  LAST_EDITED_TIME: 20,
+  LAST_EDITED_TIME: 20
 };
 
 export const PropertyUsageType = {
@@ -27,5 +27,16 @@ export const PropertyUsageType = {
   ASSIGNEE: 3,
   DEADLINE: 4,
   IS_DONE: 5,
-  IS_CLOSED: 6,
+  IS_CLOSED: 6
+};
+
+export const ChatToolId = {
+  LINE: 1,
+  SLACK: 2
+};
+
+export const TodoAppId = {
+  TRELLO: 1,
+  MICROSOFT: 2,
+  NOTION: 3
 };

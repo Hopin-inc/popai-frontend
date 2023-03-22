@@ -6,6 +6,7 @@ v-select(
   :item-value="props.itemValue"
   :item-title="props.itemTitle"
   :density="props.density"
+  :readonly="props.readonly"
   multiple
   variant="outlined"
   color="primary"
@@ -24,7 +25,6 @@ v-select(
 type SelectItem<IdType = number> = {
   id: IdType;
   name: string;
-  [key: string]: any;
 }
 
 type Props = {
@@ -33,7 +33,8 @@ type Props = {
   itemValue?: string;
   itemTitle?: string;
   label?: string;
-  density: "compact" | "comfortable" | "default";
+  density?: "compact" | "comfortable" | "default";
+  readonly?: boolean;
 };
 type Emits = {
   (e: "update:model-value", value: number[]): void
@@ -45,13 +46,14 @@ const props = withDefaults(defineProps<Props>(), {
   itemValue: "id",
   itemTitle: "name",
   density: "comfortable",
+  readonly: false
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
-let value = computed({
+const value = computed({
   get: () => modelValue.value,
-  set: (value) => emits("update:model-value", value),
+  set: value => emits("update:model-value", value)
 });
 
 const removeItem = (_e: Event, index: number) => {

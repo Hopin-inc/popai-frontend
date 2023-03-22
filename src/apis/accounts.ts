@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import { fetcher } from "~/apis/baseApi";
+import { fetcher } from "~/apis/base-api";
 import { AccountInfo } from "~/types/auth";
-import { ApiResponse, SignUpInfo } from "~/types";
+import { ApiResponse, SignUpInfo } from "~/types/common";
 import { StatusCodes } from "~/utils/status-codes";
 
 export const getLoggedInAccount = async (): Promise<AccountInfo | void> => {
@@ -12,8 +12,6 @@ export const getLoggedInAccount = async (): Promise<AccountInfo | void> => {
   if (data.value && !error.value) {
     if (data.value.status === StatusCodes.OK) {
       return data.value.data;
-    } else {
-      console.log(data.value);
     }
   } else if (error.value) {
     console.error(error.value);
@@ -31,8 +29,6 @@ export const signIn = async (idToken: string): Promise<AccountInfo | void> => {
   if (data.value && !error.value) {
     if (data.value.status === StatusCodes.OK) {
       return data.value.data;
-    } else {
-      console.log(data.value);
     }
   } else if (error.value) {
     console.error(error.value);

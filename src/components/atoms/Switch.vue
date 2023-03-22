@@ -5,27 +5,28 @@ v-switch(
   color="primary"
   hide-details
 ).no-stretch.ml-3
+  template(#label v-if="!props.label")
+    slot
 </template>
 
 <script setup lang="ts">
 type Props = {
   modelValue: boolean;
-  label: string;
+  label?: string;
 };
 type Emits = {
   (e: "update:model-value", value: boolean): void
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: false,
-  label: "",
+  modelValue: false
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
 const value = computed({
   get: () => modelValue.value,
-  set: (value) => emits("update:model-value", value),
+  set: value => emits("update:model-value", value)
 });
 </script>
 

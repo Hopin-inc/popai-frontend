@@ -11,17 +11,64 @@ SettingCard(
 </template>
 
 <script setup lang="ts">
-type SelectItem<IdType = number> = {
-  id: IdType;
+import { getChatToolChannels } from "~/apis/chat-tool";
+import { ChatToolId } from "~/consts/enum";
+import { getNotifyConfig, updateNotifyConfig } from "~/apis/config";
+
+type SelectItem = {
+  id: string;
   name: string;
-  [key: string]: any;
-}
+};
+type ConfigNotify = {
+  enabled: boolean;
+  chatToolId: number;
+  channel: string;
+};
 
+const { implementedChatToolId } = useInfo();
+
+const isInit = ref<boolean>(true);
+const { startLoading, finishLoading } = useLoading();
 const enabled = ref<boolean>(false);
-const channel = ref<string>("hogehoge");
+const channel = ref<string | null>(null);
+const channels = ref<SelectItem[]>([]);
 
-const channels: SelectItem<string>[] = [
-  { id: "hogehoge", name: "hogehoge" },
-  { id: "fugafuga", name: "fugafuga" },
-];
+watch(enabled, async (next) => {
+  await update({ enabled: next });
+});
+watch(channel, async (next) => {
+  if (next) {
+    await update({ chatToolId: implementedChatToolId.value ?? undefined, channel: next });
+  }
+});
+const update = async (config: Partial<ConfigNotify>) => {
+  if (!isInit.value) {
+    startLoading();
+    await updateNotifyConfig(config);
+    finishLoading();
+  }
+};
+
+onMounted(async () => {
+  await init();
+});
+const init = async () => {
+  startLoading();
+  await Promise.all([
+    fetchConfig(),
+    getChannels()
+  ]);
+  isInit.value = false;
+  finishLoading();
+};
+const fetchConfig = async () => {
+  const config = await getNotifyConfig();
+  if (config) {
+    enabled.value = config.enabled;
+    channel.value = config.channel;
+  }
+};
+const getChannels = async () => {
+  channels.value = await getChatToolChannels(ChatToolId.SLACK);
+};
 </script>

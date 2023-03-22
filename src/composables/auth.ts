@@ -1,6 +1,6 @@
 import type { Ref } from "vue";
 import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
-import { Account } from "~/types";
+import { Account } from "~/types/common";
 import { getLoggedInAccount, signIn, signOut } from "~/apis/accounts";
 import { getMessageByLoginError } from "~/utils/messages";
 
@@ -26,7 +26,7 @@ export const useAuth = () => {
   };
 
   const login = (state: Ref<Account | null>) => {
-    return async (email: string, password: string) => {
+    return (email: string, password: string) => {
       const auth = getAuth();
       signInWithEmailAndPassword(auth, email, password)
         .then(async (credential) => {
@@ -42,6 +42,7 @@ export const useAuth = () => {
             } else {
               await navigateTo("/");
             }
+            await useInfo().fetchAll();
           }
         })
         .catch((error) => {

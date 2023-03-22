@@ -4,68 +4,80 @@ SettingCard(
   subtitle="タスクを管理するボードを設定し、タスク情報を同期するためのカラムの紐付けを行います。"
 )
   template(#content)
+    CardSection(title="ボード設定")
+      SelectBox(
+        v-model="boardId"
+        :items="boards"
+        label="ボードを選択"
+      )
     CardSection(title="カラム設定")
       v-row
         v-col(cols="4")
           FormPart(title="タスク名")
             SelectBox(
-              v-model="columns.name.property"
+              v-model="name.property"
               :items="propertiesForName"
               label="カラムを選択"
-              item-value="id"
-              item-title="name"
             )
         v-col(cols="4")
           FormPart(title="担当者")
             SelectBox(
-              v-model="columns.assignee.property"
+              v-model="assignee.property"
               :items="propertiesForPeople"
               label="カラムを選択"
-              item-value="id"
-              item-title="name"
             )
         v-col(cols="4")
           FormPart(title="期日")
             SelectBox(
-              v-model="columns.deadline.property"
+              v-model="deadline.property"
               :items="propertiesForDate"
               label="カラムを選択"
-              item-value="id"
-              item-title="name"
             )
         v-col(cols="12")
           FormPart(title="完了しているかどうか")
             v-row
               v-col(cols="4")
                 SelectBox(
-                  v-model="columns.isDone.property"
+                  v-model="isDone.property"
                   :items="propertiesForStatus"
                   label="カラムを選択"
-                  item-value="id"
-                  item-title="name"
                 )
-              v-col(cols="8" v-if="columns.isDone.requireOptions")
+              v-col(cols="8" v-if="isDone.requireOptions")
                 MultipleSelectBox(
-                  v-model="columns.isDone.options"
-                  :items="columns.isDone.availableOptions"
+                  v-model="isDone.options"
+                  :items="isDone.availableOptions"
                   label="「完了」に対応するラベル"
+                )
+              v-col(cols="8" v-if="isDone.requireCheckbox").d-flex.align-center
+                p.text-body-2 「完了」に対応する値:
+                v-checkbox(
+                  v-model="isDone.isChecked"
+                  color="primary"
+                  density="comfortable"
+                  hide-details
                 )
         v-col(cols="12")
           FormPart(title="保留かどうか")
             v-row
               v-col(cols="4")
                 SelectBox(
-                  v-model="columns.isClosed.property"
+                  v-model="isClosed.property"
                   :items="propertiesForStatus"
                   label="カラムを選択"
-                  item-value="id"
-                  item-title="name"
                 )
-              v-col(cols="8" v-if="columns.isClosed.requireOptions")
+              v-col(cols="8" v-if="isClosed.requireOptions")
                 MultipleSelectBox(
-                  v-model="columns.isClosed.options"
-                  :items="columns.isClosed.availableOptions"
+                  v-model="isClosed.options"
+                  :items="isClosed.availableOptions"
                   label="「保留」に対応するラベル"
+                )
+              v-col(cols="8" v-if="isClosed.requireCheckbox").d-flex.align-center
+                p.text-body-2 「保留」に対応する値:
+                v-checkbox(
+                  v-model="isClosed.isChecked"
+                  color="primary"
+                  density="comfortable"
+                  hide-details
                 )
 </template>
 
@@ -77,160 +89,237 @@ import {
   NOTION_PROPERTY_TYPES_FOR_DATE,
   NOTION_PROPERTY_TYPES_FOR_PEOPLE,
   NOTION_PROPERTY_TYPES_FOR_STATUS,
+  NOTION_PROPERTY_TYPES_WITH_CHECKBOX
 } from "~/consts";
+import {
+  getTodoAppBoards,
+  getTodoAppProperties,
+  getTodoAppPropertyUsages,
+  updateTodoAppPropertyUsage
+} from "~/apis/todo-app";
 
 type ValueOf<T> = T[keyof T];
-type ColumnConfigs = {
-  name: PropertyConfig;
-  assignee: PropertyConfig;
-  deadline: PropertyConfig;
-  isDone: PropertyConfig;
-  isClosed: PropertyConfig;
-};
 type PropertyConfig = {
-  property: number;
-  requireOptions: boolean;
-} & ({
-  requireOptions: true;
-  options: number[];
-  availableOptions: Option[];
-} | {
-  requireOptions: false;
-  options?: [];
-  availableOptions?: [];
-});
+  property: string | null;
+} & PropertyConfigOptions & PropertyConfigCheckbox;
+type PropertyConfigOptions<RequireOptions extends boolean = boolean> = RequireOptions extends true ? {
+  requireOptions: RequireOptions;
+  options: string[];
+  get availableOptions(): SelectItem[];
+} : {
+  requireOptions: RequireOptions;
+};
+type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = RequireCheckbox extends true ? {
+  requireCheckbox: RequireCheckbox;
+  isChecked: boolean;
+} : {
+  requireCheckbox: RequireCheckbox;
+};
 type Property = {
-  id: number;
-  propertyId: number;
+  id: string;
   name: string;
   type: ValueOf<typeof NotionPropertyType>;
-  usages: ValueOf<typeof PropertyUsageType>[];
-  options: Option[];
+  availableOptions?: SelectItem[];
 };
-type Option = {
-  id: number;
-  optionId: string;
+type SelectItem = {
+  id: string;
   name: string;
+};
+type PropertyUsage = {
+  id: string;
+  usage: ValueOf<typeof PropertyUsageType>;
+  type: ValueOf<typeof NotionPropertyType>;
+  options?: string[];
+  isChecked?: boolean;
 };
 
 useHead({
   title: "タスク情報の紐付け"
 });
 
-const properties = ref<Property[]>([
-  {
-    id: 1,
-    propertyId: 1,
-    name: "ゴール",
-    type: NotionPropertyType.TITLE,
-    usages: [PropertyUsageType.TITLE],
-    options: [],
-  },
-  {
-    id: 12,
-    propertyId: 12,
-    name: "備考",
-    type: NotionPropertyType.RICH_TEXT,
-    usages: [],
-    options: [],
-  },
-  {
-    id: 2,
-    propertyId: 2,
-    name: "担当者",
-    type: NotionPropertyType.PEOPLE,
-    usages: [PropertyUsageType.ASSIGNEE],
-    options: [],
-  },
-  {
-    id: 11,
-    propertyId: 11,
-    name: "作成者",
-    type: NotionPropertyType.PEOPLE,
-    usages: [PropertyUsageType.ASSIGNEE],
-    options: [],
-  },
-  {
-    id: 3,
-    propertyId: 3,
-    name: "期日",
-    type: NotionPropertyType.DATE,
-    usages: [PropertyUsageType.DEADLINE],
-    options: [],
-  },
-  {
-    id: 13,
-    propertyId: 13,
-    name: "確認済",
-    type: NotionPropertyType.CHECKBOX,
-    usages: [],
-    options: [],
-  },
-  {
-    id: 4,
-    propertyId: 4,
-    name: "ステータス",
-    type: NotionPropertyType.STATUS,
-    usages: [PropertyUsageType.IS_DONE, PropertyUsageType.IS_CLOSED],
-    options: [
-      { id: 1, optionId: "hoge", name: "未着手" },
-      { id: 2, optionId: "fuga", name: "完了" },
-      { id: 3, optionId: "piyo", name: "保留" },
-    ],
-  },
-]);
-const propertiesForName = computed(() => properties.value.filter(p => {
-  return NOTION_PROPERTY_TYPES_FOR_NAME.includes(p.type);
-}));
-const propertiesForPeople = computed(() => properties.value.filter(p => {
-  return NOTION_PROPERTY_TYPES_FOR_PEOPLE.includes(p.type);
-}));
-const propertiesForDate = computed(() => properties.value.filter(p => {
-  return NOTION_PROPERTY_TYPES_FOR_DATE.includes(p.type);
-}));
-const propertiesForStatus = computed(() => properties.value.filter(p => {
-  return NOTION_PROPERTY_TYPES_FOR_STATUS.includes(p.type);
-}));
-const boardId = ref<number | null>(null);
-const columns = reactive<ColumnConfigs>({
-  name: { property: 1, requireOptions: false },
-  assignee: { property: 2, requireOptions: false },
-  deadline: { property: 3, requireOptions: false },
-  isDone: {
-    property: 4,
-    requireOptions: true,
-    options: [1, 2],
-    availableOptions: properties.value.find(p => p.id === 4)?.options ?? [],
-  },
-  isClosed: {
-    property: 4,
-    requireOptions: true,
-    options: [3],
-    availableOptions: properties.value.find(p => p.id === 4)?.options ?? [],
-  },
+const { startLoading, finishLoading } = useLoading();
+const { implementedTodoAppId } = useInfo();
+
+const isInit = ref<boolean>(true);
+const boards = ref<SelectItem[]>([]);
+const properties = ref<Property[]>([]);
+const boardId = ref<string | null>(null);
+const name = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
+const assignee = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
+const deadline = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
+const isDone = reactive<PropertyConfig>({
+  property: null,
+  requireOptions: true,
+  requireCheckbox: false,
+  options: [],
+  get availableOptions () {
+    return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+  }
+});
+const isClosed = reactive<PropertyConfig>({
+  property: null,
+  requireOptions: true,
+  requireCheckbox: false,
+  options: [],
+  get availableOptions () {
+    return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+  }
 });
 
-const onPropertyChanged = (propConfig: PropertyConfig, nextProp: number) => {
+const propertiesForName = computed(() => properties.value.filter((p) => {
+  return NOTION_PROPERTY_TYPES_FOR_NAME.includes(p.type);
+}));
+const propertiesForPeople = computed(() => properties.value.filter((p) => {
+  return NOTION_PROPERTY_TYPES_FOR_PEOPLE.includes(p.type);
+}));
+const propertiesForDate = computed(() => properties.value.filter((p) => {
+  return NOTION_PROPERTY_TYPES_FOR_DATE.includes(p.type);
+}));
+const propertiesForStatus = computed(() => properties.value.filter((p) => {
+  return NOTION_PROPERTY_TYPES_FOR_STATUS.includes(p.type);
+}));
+
+// In case implementedTodoApp is null on mounted.
+watch(implementedTodoAppId, async () => {
+  await init();
+});
+
+// Get property data on boardId changed.
+watch(boardId, async (next) => {
+  startLoading();
+  if (implementedTodoAppId.value && next) {
+    properties.value = await getTodoAppProperties(implementedTodoAppId.value, next);
+  }
+  finishLoading();
+});
+
+// Update configs on property selected.
+watch(() => name.property, async (next) => {
+  if (next && implementedTodoAppId.value) {
+    onStatusPropertyChanged(name, next);
+    await updatePropertyUsage(name, next);
+  }
+}, { deep: true });
+watch(() => assignee.property, async (next) => {
+  if (next && implementedTodoAppId.value) {
+    onStatusPropertyChanged(assignee, next);
+    await updatePropertyUsage(assignee, next);
+  }
+}, { deep: true });
+watch(() => deadline.property, async (next) => {
+  if (next && implementedTodoAppId.value) {
+    onStatusPropertyChanged(deadline, next);
+    await updatePropertyUsage(deadline, next);
+  }
+}, { deep: true });
+watch(() => isDone.property, async (next) => {
+  if (next && implementedTodoAppId.value) {
+    onStatusPropertyChanged(isDone, next);
+    await updatePropertyUsage(isDone, next);
+  }
+}, { deep: true });
+watch(() => isClosed.property, async (next) => {
+  if (next && implementedTodoAppId.value) {
+    onStatusPropertyChanged(isClosed, next);
+    await updatePropertyUsage(isClosed, next);
+  }
+}, { deep: true });
+
+// Update configs on label selected or deselected.
+watch(() => isDone.requireOptions ? [...isDone.options] : [], async () => {
+  if (isDone.property) {
+    await updatePropertyUsage(isDone, isDone.property);
+  }
+}, { deep: true });
+watch(() => isClosed.requireOptions ? [...isClosed.options] : [], async () => {
+  if (isClosed.property) {
+    await updatePropertyUsage(isClosed, isClosed.property);
+  }
+}, { deep: true });
+
+const onStatusPropertyChanged = (propConfig: PropertyConfig, nextProp: string) => {
   const prop = properties.value.find(p => p.id === nextProp);
   if (prop) {
     if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(prop.type)) {
       propConfig.requireOptions = true;
+      propConfig.requireCheckbox = false;
       if (propConfig.requireOptions) {
-        propConfig.availableOptions = prop.options;
+        propConfig.options = [];
+      }
+    } else if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(prop.type)) {
+      propConfig.requireOptions = false;
+      propConfig.requireCheckbox = true;
+      if (propConfig.requireCheckbox) {
+        propConfig.isChecked = true;
       }
     } else {
       propConfig.requireOptions = false;
-      if (!propConfig.requireOptions) {
-        propConfig.options = [];
-        propConfig.availableOptions = [];
-      }
+      propConfig.requireCheckbox = false;
     }
   }
-}
-watch(() => columns.isDone.property, (next) => {
-  onPropertyChanged(columns.isDone, next);
-}, { deep: true });
-watch(() => columns.isClosed.property, (next) => {
-  onPropertyChanged(columns.isClosed, next);
-}, { deep: true });
+};
+const updatePropertyUsage = async (propConfig: PropertyConfig, nextProp: string) => {
+  if (nextProp && implementedTodoAppId.value) {
+    const prop = properties.value.find(p => p.id === nextProp)!;
+    const selections: Partial<{ options: string[], isChecked: boolean }> = {};
+    if (propConfig.requireOptions) {
+      selections.options = propConfig.options;
+    }
+    if (propConfig.requireCheckbox) {
+      selections.isChecked = propConfig.isChecked;
+    }
+    await updateTodoAppPropertyUsage(implementedTodoAppId.value, {
+      id: nextProp,
+      type: prop.type,
+      usage: PropertyUsageType.TITLE,
+      ...selections
+    });
+  }
+};
+
+onMounted(async () => {
+  await init();
+});
+const init = async () => {
+  startLoading();
+  await Promise.all([
+    fetchPropInfo(),
+    fetchConfigs(),
+  ]);
+  isInit.value = false;
+  finishLoading();
+};
+const fetchPropInfo = async () => {
+  if (implementedTodoAppId.value) {
+    boards.value = await getTodoAppBoards(implementedTodoAppId.value);
+    boardId.value = boards.value[0].id;
+    properties.value = await getTodoAppProperties(implementedTodoAppId.value, boardId.value);
+  }
+};
+const fetchConfigs = async () => {
+  if (implementedTodoAppId.value && boardId.value) {
+    const usages = await getTodoAppPropertyUsages(implementedTodoAppId.value, boardId.value);
+    setConfig(usages, name, PropertyUsageType.TITLE);
+    setConfig(usages, assignee, PropertyUsageType.ASSIGNEE);
+    setConfig(usages, deadline, PropertyUsageType.DEADLINE);
+    setConfig(usages, isDone, PropertyUsageType.IS_DONE);
+    setConfig(usages, isClosed, PropertyUsageType.IS_CLOSED);
+  }
+};
+const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: ValueOf<typeof PropertyUsageType>) => {
+  const usage = usages.find(u => u.usage === usageType);
+  propConfig.property = usage?.id ?? null;
+  if (usage?.options !== undefined) {
+    propConfig.requireOptions = true;
+    if (propConfig.requireOptions) {
+      propConfig.options = usage.options;
+    }
+  }
+  if (usage?.isChecked !== undefined) {
+    propConfig.requireCheckbox = true;
+    if (propConfig.requireCheckbox) {
+      propConfig.isChecked = usage.isChecked;
+    }
+  }
+};
 </script>

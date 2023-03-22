@@ -9,7 +9,7 @@ type Props = {
   title: string;
 };
 const props = withDefaults(defineProps<Props>(), {
-  title: "",
+  title: ""
 });
 </script>
 

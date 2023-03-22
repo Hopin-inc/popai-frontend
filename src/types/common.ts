@@ -4,7 +4,7 @@ export type ApiResponse<T> = {
   data: T;
   message: string;
   status: StatusCodes;
-}
+};
 
 export type MenuItem = {
   type: "item";
@@ -29,7 +29,7 @@ export type SignUpInfo = LoginInfo & {
   organization: string;
   name: string;
   agree: boolean;
-}
+};
 
 export type Account = {
   organization: string;
@@ -39,4 +39,4 @@ export type Account = {
 export type SelectItem<IdType = number> = {
   id: IdType;
   name: string;
-}
+};

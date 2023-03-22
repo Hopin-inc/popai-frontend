@@ -1,19 +1,24 @@
 import { type Ref } from "vue";
 
 export const useLoading = () => {
-  const loading = useState<boolean>("loading", () => false);
+  const loadingCount = useState<number>("loading", () => 0);
+  const loading = computed(() => !!loadingCount.value);
 
-  const start = (state: Ref<boolean>) => {
-    return () => state.value = true;
+  const start = (state: Ref<number>) => {
+    return () => {
+      state.value++;
+    };
   };
 
-  const finish = (state: Ref<boolean>) => {
-    return () => state.value = false;
+  const finish = (state: Ref<number>) => {
+    return () => {
+      state.value--;
+    };
   };
 
   return {
-    loading: readonly(loading),
-    startLoading: start(loading),
-    finishLoading: finish(loading)
+    loading: loading,
+    startLoading: start(loadingCount),
+    finishLoading: finish(loadingCount),
   };
 };

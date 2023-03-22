@@ -3,7 +3,7 @@ SettingCard(
   title="通知日時設定"
   subtitle="通知する日時を設定します。"
 )
-  template(#content)
+  template(#content v-if="!isInit")
     CardSection(title="通知する曜日")
       .d-flex.flex-wrap
         v-checkbox(
@@ -19,6 +19,8 @@ SettingCard(
       Switch(v-model="avoidHolidays" label="日本の祝日には通知しない")
       date-picker(
         v-model="excludedDates"
+        ref="datepicker"
+        @open="onDatePickerOpened"
         model-type="yyyy-MM-dd"
         :min-date="new Date()"
         :enable-time-picker="false"
@@ -49,22 +51,74 @@ SettingCard(
 </template>
 
 <script setup lang="ts">
-import type { SelectItem } from "~/types";
+import Datepicker from "@vuepic/vue-datepicker";
+import type { SelectItem } from "~/types/common";
 import { DAYS_OF_WEEK } from "~/consts";
+import { getCommonConfig, updateCommonConfig } from "~/apis/config";
+
+type ConfigCommon = {
+  daysOfWeek: number[];
+  disabledOnHolidaysJp: boolean;
+  excludedDates: string[];
+};
 
 const { $dayjs } = useNuxtApp();
+const { startLoading, finishLoading } = useLoading();
 
+const isInit = ref<boolean>(true);
+const datepicker = ref<InstanceType<typeof Datepicker> | null>(null);
 const selectedDays = ref<number[]>([]);
 const avoidHolidays = ref<boolean>(false);
 const excludedDates = ref<string[]>([]);
 const days: SelectItem[] = DAYS_OF_WEEK;
 
 const displayExcludedDates = computed(() => {
-  return excludedDates.value.map(date => $dayjs(date).format("YYYY/MM/DD(ddd)"));
+  return excludedDates?.value.map(date => $dayjs(date).format("YYYY/MM/DD(ddd)"));
 });
-watch(excludedDates, () => {
-  excludedDates.value.sort();
+
+watch(() => [...selectedDays.value], async (next) => {
+  await update({ daysOfWeek: next });
 }, { deep: true });
+watch(avoidHolidays, async (next) => {
+  await update({ disabledOnHolidaysJp: next });
+});
+watch(() => [...excludedDates.value], async (next, prev) => {
+  if (next.length !== prev.length) {
+    excludedDates.value.sort();
+    await update({ excludedDates: next });
+  }
+}, { deep: true });
+const update = async (config: Partial<ConfigCommon>) => {
+  if (!isInit.value) {
+    startLoading();
+    await updateCommonConfig(config);
+    finishLoading();
+  }
+};
+
+onMounted(async () => {
+  await init();
+});
+const init = async () => {
+  startLoading();
+  await fetchConfig();
+  isInit.value = false;
+  finishLoading();
+};
+const fetchConfig = async () => {
+  const config = await getCommonConfig();
+  if (config) {
+    selectedDays.value = config.daysOfWeek;
+    avoidHolidays.value = config.disabledOnHolidaysJp;
+    excludedDates.value = config.excludedDates;
+  }
+};
+
+const onDatePickerOpened = () => {
+  if (datepicker && excludedDates.value && excludedDates.value.length) {
+    datepicker.value?.updateInternalModelValue(excludedDates.value.map(date => new Date(date)));
+  }
+};
 
 const removeItem = (_: Event, index: number) => {
   excludedDates.value.splice(index, 1);

@@ -105,11 +105,9 @@ const passAppendIconConfirm = computed(() => showPasswordConfirm.value ? "mdi-ey
 const submit = async () => {
   const validation = await form.value?.validate();
   if (validation?.valid && formData.password === formData.passwordConfirm && formData.agree) {
-    console.log("createAccount: start");
     startLoading();
     await signUp(formData);
     finishLoading();
-    console.log("createAccount: finish");
     alert("アカウントを作成しました。");
     await navigateTo("/login");
   } else if (validation?.valid && formData.password !== formData.passwordConfirm) {

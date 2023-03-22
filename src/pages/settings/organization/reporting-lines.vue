@@ -16,9 +16,11 @@ SettingCard(
 </template>
 
 <script setup lang="ts">
+import { getUserReportingLines, updateUserReportingLines } from "~/apis/users";
+
 type Config = {
   user: User;
-  superiorUsers: User[];
+  superiorUsers: number[];
 };
 type User = {
   id: number;
@@ -29,14 +31,31 @@ useHead({
   title: "タスク管理ツール連携"
 });
 
-const configs = ref<Config[]>([
-  { user: { id: 1, name: "阪田 直樹" }, superiorUsers: [{ id: 2, name: "中島 慎治" }] },
-  { user: { id: 2, name: "中島 慎治" }, superiorUsers: [{ id: 1, name: "阪田 直樹" }, { id: 3, name: "渡邉 裕介" }] },
-  { user: { id: 3, name: "渡邉 裕介" }, superiorUsers: [{ id: 1, name: "阪田 直樹" }] }
-]);
-const users = ref<User[]>([
-  { id: 1, name: "阪田 直樹" },
-  { id: 2, name: "中島 慎治" },
-  { id: 3, name: "渡邉 裕介" },
-]);
+const { startLoading, finishLoading } = useLoading();
+
+const isInit = ref<boolean>(true);
+const configs = ref<Config[]>([]);
+const users = computed(() => configs.value.map(config => config.user));
+
+onMounted(async () => {
+  await init();
+});
+const init = async () => {
+  startLoading();
+  configs.value = await getUserReportingLines();
+  configs.value.forEach((config, index) => {
+    watch(() => config.superiorUsers, async () => {
+      const { user, superiorUsers } = configs.value[index];
+      await onSuperiorUsersChanged(user.id, superiorUsers);
+    }, { deep: true });
+  });
+  isInit.value = false;
+  finishLoading();
+};
+
+const onSuperiorUsersChanged = async (subordinateUserId: number, superiorUserIds: number[]) => {
+  startLoading();
+  await updateUserReportingLines(subordinateUserId, superiorUserIds);
+  finishLoading();
+};
 </script>

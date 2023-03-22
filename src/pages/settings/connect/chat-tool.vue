@@ -5,30 +5,29 @@ SettingCard(
 )
   template(#content)
     CardSection(title="Slack")
-      v-btn(
-        nuxt
-        :href="slackUrl"
-        target="_blank"
-        append-icon="mdi-launch"
-        color="primary"
-        :disabled="!slackUrl"
-      ) 連携する
+      .d-flex.align-center
+        v-btn(
+          nuxt
+          :href="`${ config.public.apiBaseUrl }/slack/install`"
+          target="_blank"
+          prepend-icon="mdi-connection"
+          variant="flat"
+          color="primary"
+          :disabled="isSlackConnected"
+        ) 連携する
+        .d-flex.align-center(v-if="isSlackConnected").ml-4
+          v-icon(size="sm" color="success").mr-1 mdi-check
+          p.text-body-2.text-success.font-weight-bold 連携済み
 </template>
 
 <script setup lang="ts">
-import { getAddSlackUrl } from "~/apis/connect";
-import CardSection from "~/components/molecules/CardSection.vue";
+import { ChatToolId } from "~/consts/enum";
 
 useHead({
   title: "チャットツール連携"
 });
 
-const { startLoading, finishLoading } = useLoading();
-
-const slackUrl = ref<string | null>(null);
-onMounted(async () => {
-  startLoading();
-  slackUrl.value = await getAddSlackUrl() ?? null;
-  finishLoading();
-});
+const { implementedChatTools } = useInfo();
+const config = useRuntimeConfig();
+const isSlackConnected = computed(() => implementedChatTools.value.some(c => c.chatToolId === ChatToolId.SLACK));
 </script>

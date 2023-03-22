@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import "dayjs/locale/ja";
 
+dayjs.locale("ja");
+
 export default defineNuxtPlugin((nuxtApp) => {
-  dayjs.locale("ja");
   nuxtApp.provide("dayjs", dayjs);
 });
 
@@ -16,3 +17,5 @@ declare module "vue" {
     $dayjs(date?: dayjs.ConfigType): dayjs.Dayjs;
   }
 }
+
+export const $dayjs = dayjs;

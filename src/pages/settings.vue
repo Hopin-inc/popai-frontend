@@ -10,10 +10,18 @@ v-row.flex-nowrap
 </template>
 
 <script setup lang="ts">
-import type { MenuItem } from "~/types";
+import type { MenuItem } from "~/types/common";
 import PageTitle from "~/components/atoms/PageTitle.vue";
 
-const menus: MenuItem[] = [
+const { connected, todoAppConnected } = useInfo();
+
+const menus = computed(() => connected.value ? menusAfterConnect : menusBeforeConnect);
+const menusBeforeConnect: MenuItem[] = [
+  { type: "subheader", title: "ツール連携" },
+  { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
+  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" }
+];
+const menusAfterConnect: MenuItem[] = [
   { type: "subheader", title: "ツール連携" },
   { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
   { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" },
@@ -29,6 +37,14 @@ const menus: MenuItem[] = [
   { type: "item", title: "タスク更新通知設定", href: "/settings/notification/update" },
   { type: "item", title: "見立て共有設定", href: "/settings/notification/prospect" }
 ];
+
+watch(connected.value, async (next) => {
+  const { path } = useRoute();
+  if (!next && !["/settings/connect/todo-app", "/settings/connect/chat-tool"].includes(path)) {
+    const to = !todoAppConnected ? "/settings/connect/todo-app" : "/settings/connect/chat-tool";
+    await navigateTo(to);
+  }
+});
 </script>
 
 <style scoped lang="sass">

@@ -4,7 +4,7 @@ SettingCard(
   subtitle="従業員を登録し、チャットツール・タスク管理ツールとの紐付けを設定します。"
 )
   template(#content)
-    v-table(v-if="configs.length").overflow-x-auto
+    v-table(v-if="configs.length && chatToolAccounts.length && todoAppAccounts.length").overflow-x-auto
       thead
         tr
           th.w-240px 従業員名
@@ -14,19 +14,28 @@ SettingCard(
       tbody
         tr(v-for="(config, index) in configs" :key="config")
           td: SettingTableTextField(v-model="config.user.name" :always-editable="config.new")
-          td: SettingTableSelectBox(v-model="config.chatToolUserId")
-          td: SettingTableSelectBox(v-model="config.todoAppUserId")
+          td: SettingTableSelectBox(v-model="config.chatToolUserId" :items="chatToolAccounts")
+          td: SettingTableSelectBox(v-model="config.todoAppUserId" :items="todoAppAccounts")
           td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
-    p(v-else) 従業員が登録されていません。
-    v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" color="primary") 従業員を追加
+    p(v-else-if="!isInit || !loading") 従業員が登録されていません。
+    v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 従業員を追加
 </template>
 
 <script setup lang="ts">
+import { getChatToolAccounts } from "~/apis/chat-tool";
+import { getTodoAppAccounts } from "~/apis/todo-app";
+import { deleteUser, getUserConfigs, updateUser } from "~/apis/users";
+
+type SelectItem = {
+  id: number | string;
+  name: string;
+};
 type Config = {
   user: User;
   chatToolUserId: string | null;
   todoAppUserId: string | null;
   new: boolean;
+  index: number;
 };
 type User = {
   id?: number;
@@ -37,22 +46,158 @@ useHead({
   title: "従業員の紐付け"
 });
 
-const configs = ref<Config[]>([
-  { user: { id: 1, name: "阪田 直樹" }, chatToolUserId: "hoge", todoAppUserId: "fuga", new: false },
-  { user: { id: 2, name: "中島 慎治" }, chatToolUserId: "hoge", todoAppUserId: "fuga", new: false },
-  { user: { id: 3, name: "渡邉 裕介" }, chatToolUserId: "hoge", todoAppUserId: "fuga", new: false }
-]);
+const { startLoading, finishLoading, loading } = useLoading();
+const { implementedChatToolId, implementedTodoAppId } = useInfo();
+const isInit = ref<boolean>(true);
+const configs = ref<Config[]>([]);
+const chatToolAccounts = ref<SelectItem[]>([]);
+const todoAppAccounts = ref<SelectItem[]>([]);
 
-const addRow = () => {
-  configs.value.push({
+watch(() => [implementedChatToolId.value, implementedTodoAppId.value], async () => {
+  await init();
+});
+
+onMounted(async () => {
+  await init();
+});
+const init = async () => {
+  if (isInit.value && implementedChatToolId.value && implementedTodoAppId.value) {
+    isInit.value = false;
+    startLoading();
+    await Promise.all([
+      fetchChatToolAccounts(),
+      fetchTodoAppAccounts(),
+      fetchUserConfigs(),
+    ]);
+    finishLoading();
+  }
+};
+const fetchChatToolAccounts = async () => {
+  if (implementedChatToolId.value) {
+    chatToolAccounts.value = await getChatToolAccounts(implementedChatToolId.value);
+  }
+};
+const fetchTodoAppAccounts = async () => {
+  if (implementedTodoAppId.value) {
+    todoAppAccounts.value = await getTodoAppAccounts(implementedTodoAppId.value);
+  }
+};
+const fetchUserConfigs = async () => {
+  if (implementedChatToolId.value && implementedTodoAppId.value) {
+    const userConfigs = await getUserConfigs(implementedChatToolId.value, implementedTodoAppId.value);
+    userConfigs.forEach((config, index) => {
+      configs.value.push(createConfig({
+        ...config,
+        chatToolUserId: config.chatToolUserId ?? null,
+        todoAppUserId: config.todoAppUserId ?? null,
+        index,
+        new: false
+      }));
+    });
+  }
+};
+
+const createConfig = (config: Config) => {
+  const reactiveUser = reactive({
+    id: config.user.id,
+    name: customRef((track, trigger) => ({
+      get() {
+        track();
+        return config.user.name;
+      },
+      async set(next) {
+        if (config.user.name !== next) {
+          config.user.name = next;
+          await onUserNameChanged(config.index);
+          trigger();
+        }
+      },
+    })),
+  });
+  return reactive({
+    user: reactiveUser,
+    chatToolUserId: customRef((track, trigger) => ({
+      get() {
+        track();
+        return config.chatToolUserId;
+      },
+      async set(next) {
+        if (config.chatToolUserId !== next) {
+          config.chatToolUserId = next;
+          await onChatToolUserIdChanged(config.index, next);
+          trigger();
+        }
+      },
+    })),
+    todoAppUserId: customRef((track, trigger) => ({
+      get() {
+        track();
+        return config.todoAppUserId;
+      },
+      async set(next) {
+        if (config.todoAppUserId !== next) {
+          config.todoAppUserId = next;
+          await onTodoAppUserIdChanged(config.index, next);
+          trigger();
+        }
+      },
+    })),
+    new: config.new,
+    index: config.index
+  });
+};
+const onUserNameChanged = async (index: number) => {
+  startLoading();
+  await updateUserName(index);
+  finishLoading();
+};
+const onChatToolUserIdChanged = async (index: number, next: string | null) => {
+  startLoading();
+  if (!configs.value[index].user.id) {
+    await updateUserName(index);
+  }
+  alert(`chatToolUserId changed: ${ next }`);
+  finishLoading();
+};
+const onTodoAppUserIdChanged = async (index: number, next: string | null) => {
+  startLoading();
+  if (!configs.value[index].user.id) {
+    await updateUserName(index);
+  }
+  alert(`todoAppUserId changed: ${ next }`);
+  finishLoading();
+};
+
+const updateUserName = async (index: number) => {
+  const user = await updateUser(configs.value[index].user);
+  if (user) {
+    configs.value[index].user = user;
+  }
+};
+const addRow = async () => {
+  const index = configs.value.length;
+  configs.value.push(createConfig({
     user: { name: "" },
     chatToolUserId: null,
     todoAppUserId: null,
-    new: true
-  });
+    new: true,
+    index,
+  }));
+  await onUserNameChanged(index);
 };
-const deleteRow = (index: number) => {
-  configs.value.splice(index, 1);
+const deleteRow = async (index: number) => {
+  const agreed = confirm(`「${ configs.value[index].user.name }」さんを削除しますか？`);
+  if (agreed) {
+    const [{ user: deletedUser }] = configs.value.splice(index, 1);
+    configs.value.forEach((config, index) => {
+      config.index = index;
+    });
+    if (deletedUser?.id) {
+      startLoading();
+      await deleteUser(deletedUser.id);
+      finishLoading();
+    }
+  }
 };
 </script>
 

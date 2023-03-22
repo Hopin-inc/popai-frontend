@@ -33,7 +33,7 @@ type Emits = {
 const props = withDefaults(defineProps<Props>(), {
   title: "",
   switch: false,
-  withActions: false,
+  withActions: false
 });
 const emits = defineEmits<Emits>();
 
