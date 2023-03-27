@@ -26,9 +26,9 @@ export const useAuth = () => {
   };
 
   const login = (state: Ref<Account | null>) => {
-    return (email: string, password: string) => {
+    return async (email: string, password: string) => {
       const auth = getAuth();
-      signInWithEmailAndPassword(auth, email, password)
+      await signInWithEmailAndPassword(auth, email, password)
         .then(async (credential) => {
           const { user } = credential;
           const idToken = await user.getIdToken();

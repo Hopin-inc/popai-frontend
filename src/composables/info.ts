@@ -12,7 +12,7 @@ export const useInfo = () => {
   const todoAppBoards = useState<SelectItem<string>[]>("todoAppBoards", () => []);
   const chatToolChannels = useState<SelectItem<string>[]>("chatToolChannels", () => []);
 
-  const connected = computed(() => todoAppConnected && chatToolConnected);
+  const connected = computed(() => todoAppConnected.value && chatToolConnected.value);
   const todoAppConnected = computed(() => !!todoApps.value.length);
   const chatToolConnected = computed(() => !!chatTools.value.length);
   const todoAppId = computed(() => todoApps.value.length ? todoApps.value[0].todoAppId : null);

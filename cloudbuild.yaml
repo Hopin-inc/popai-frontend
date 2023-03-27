@@ -1,0 +1,53 @@
+steps:
+  - id: Install packages
+    name: node:16
+    entrypoint: yarn
+    args:
+      - install
+  - id: Build
+    name: node:16
+    entrypoint: yarn
+    args:
+      - run
+      - build
+  - id: Generate app.yaml with decrypted secrets
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -eEuo
+      - pipefail
+      - -c
+      - |-
+        cat <<EOF > ./app.yaml
+        runtime: nodejs16
+        instance_class: $_GAE_INSTANCE_CLASS
+        env_variables:
+          IDENTITY_API_KEY: $$IDENTITY_API_KEY
+          CLIENT_BASE_URL: $_CLIENT_BASE_URL
+          API_BASE_URL: $_API_BASE_URL
+        automatic_scaling:
+          min_idle_instances: 1
+        handlers:
+          - url: /_nuxt
+            static_dir: .nuxt/dist/client
+            secure: always
+          - url: /(.*\.(gif|png|jpg|ico|txt))$
+            static_files: static/\1
+            upload: static/.*\.(gif|png|jpg|ico|txt)$
+            secure: always
+          - url: /.*
+            script: auto
+            secure: always
+        EOF
+    secretEnv:
+      - IDENTITY_API_KEY
+  - id: Deploy app
+    name: gcr.io/cloud-builders/gcloud
+    args:
+      - app
+      - deploy
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_NUMBER/secrets/IDENTITY_API_KEY/versions/latest
+      env: IDENTITY_API_KEY
+timeout: 1600s

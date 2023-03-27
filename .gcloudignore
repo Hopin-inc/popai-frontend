@@ -1,0 +1,4 @@
+*
+!.nuxt/**
+!package.json
+!yarn.lock
