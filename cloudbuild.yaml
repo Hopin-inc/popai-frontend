@@ -4,6 +4,21 @@ steps:
     entrypoint: yarn
     args:
       - install
+  - id: Generate .env with decrypted secrets
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -eEuo
+      - pipefail
+      - -c
+      - |-
+        cat <<EOF > ./.env
+        IDENTITY_API_KEY=$$IDENTITY_API_KEY
+        CLIENT_BASE_URL=$_CLIENT_BASE_URL
+        API_BASE_URL=$_API_BASE_URL
+        EOF
+    secretEnv:
+      - IDENTITY_API_KEY
   - id: Build
     name: node:16
     entrypoint: yarn
@@ -21,11 +36,6 @@ steps:
         service: frontend
         runtime: nodejs16
         instance_class: $_GAE_INSTANCE_CLASS
-        env_variables:
-          IDENTITY_API_KEY: $$IDENTITY_API_KEY
-          IDENTITY_AUTH_DOMAIN: $_IDENTITY_AUTH_DOMAIN
-          CLIENT_BASE_URL: $_CLIENT_BASE_URL
-          API_BASE_URL: $_API_BASE_URL
         automatic_scaling:
           min_idle_instances: 1
         handlers:
@@ -41,8 +51,6 @@ steps:
             upload: static/.*\.(gif|png|jpg|ico|txt)$
             secure: always
         EOF
-    secretEnv:
-      - IDENTITY_API_KEY
   - id: Deploy app
     name: gcr.io/cloud-builders/gcloud
     args:
