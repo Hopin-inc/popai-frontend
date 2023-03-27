@@ -23,6 +23,7 @@ steps:
         instance_class: $_GAE_INSTANCE_CLASS
         env_variables:
           IDENTITY_API_KEY: $$IDENTITY_API_KEY
+          IDENTITY_AUTH_DOMAIN: $_IDENTITY_AUTH_DOMAIN
           CLIENT_BASE_URL: $_CLIENT_BASE_URL
           API_BASE_URL: $_API_BASE_URL
         automatic_scaling:
@@ -30,11 +31,6 @@ steps:
         handlers:
           - url: /_nuxt
             static_dir: dist/_nuxt
-            upload: dist/_nuxt
-            secure: always
-          - url: /(.*\.(js|css|svg|ico|woff2?|ttf|eot)(\?.*)?)$
-            static_files: dist/\1
-            upload: dist/.*\.(js|css|svg|ico|woff2?|ttf|eot)(\?.*)?$
             secure: always
           - url: /.*
             static_files: dist/index.html
