@@ -8,10 +8,14 @@ v-app
 <script setup lang="ts">
 const { loading, startLoading, finishLoading } = useLoading();
 const { fetchAll } = useInfo();
+const { fetchAuthState } = useAuth();
 
 onMounted(async () => {
   startLoading();
-  await fetchAll();
+  await Promise.all([
+    fetchAll(),
+    fetchAuthState(),
+  ]);
   finishLoading();
 });
 </script>
