@@ -30,6 +30,24 @@ export const getChatToolAccounts = async (chatToolId: ValueOf<typeof ChatToolId>
   return [];
 };
 
+export const updateChatToolUsers = async (
+  chatToolId: ValueOf<typeof ChatToolId>,
+  userId: number,
+  appUserId: string,
+): Promise<SelectItem<string>[]> => {
+  const body = { id: appUserId };
+  const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
+    `updateChatToolUsers-${chatToolId}-${appUserId}`,
+    fetcher(`/chat-tool/${chatToolId}/users/${userId}`, { body, method: "PATCH" })
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  } else if (error.value) {
+    console.error(error.value);
+  }
+  return [];
+};
+
 export const getChatToolChannels = async (chatToolId: ValueOf<typeof ChatToolId>): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getChatToolChannels-${chatToolId}`,

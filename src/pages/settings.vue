@@ -13,7 +13,7 @@ v-row.flex-nowrap
 import type { MenuItem } from "~/types/common";
 import PageTitle from "~/components/atoms/PageTitle.vue";
 
-const { connected, todoAppConnected } = useInfo();
+const { connected, implementedTodoAppId } = useInfo();
 
 const menus = computed(() => connected.value ? menusAfterConnect : menusBeforeConnect);
 const menusBeforeConnect: MenuItem[] = [
@@ -41,7 +41,7 @@ const menusAfterConnect: MenuItem[] = [
 watch(connected.value, async (next) => {
   const { path } = useRoute();
   if (!next && !["/settings/connect/todo-app", "/settings/connect/chat-tool"].includes(path)) {
-    const to = !todoAppConnected ? "/settings/connect/todo-app" : "/settings/connect/chat-tool";
+    const to = !implementedTodoAppId.value ? "/settings/connect/todo-app" : "/settings/connect/chat-tool";
     await navigateTo(to);
   }
 });

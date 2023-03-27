@@ -7,7 +7,7 @@ SettingCard(
 )
   template(#content)
     CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="channels" label="チャンネル").mt-4
+      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネル").mt-4
     CardSection(title="見立てを尋ねるタイミング")
       .d-flex.flex-column
         FormPart(title="開始日")
@@ -74,8 +74,6 @@ SettingCard(
 
 <script setup lang="ts">
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
-import { getChatToolChannels } from "~/apis/chat-tool";
-import { ChatToolId } from "~/consts/enum";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 
 type SelectItem = {
@@ -106,7 +104,7 @@ type ConfigProspectTiming = {
 };
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedChatToolId } = useInfo();
+const { implementedChatToolId, chatToolChannels } = useInfo();
 
 const isInit = ref<boolean>(true);
 const enabled = ref<boolean>(false);
@@ -118,7 +116,6 @@ const beginOfWeek = ref<number | null>(1);
 const frequency = ref<number | null>(null);
 const frequencyDaysBefore = ref<number[]>([]);
 const timings = ref<Timing[]>([]);
-const channels = ref<SelectItem[]>([]);
 
 const days: SelectItem[] = DAYS_OF_WEEK;
 const daysBefore: SelectItem[] = DAYS_BEFORE;
@@ -162,14 +159,16 @@ const update = async (config: Partial<ConfigProspect>) => {
 onMounted(async () => {
   await init();
 });
+watch(chatToolChannels, async () => {
+  await init();
+}, { deep: true });
 const init = async () => {
-  startLoading();
-  await Promise.all([
-    fetchConfig(),
-    getChannels()
-  ]);
-  isInit.value = false;
-  finishLoading();
+  if (chatToolChannels.value.length) {
+    startLoading();
+    await fetchConfig();
+    isInit.value = false;
+    finishLoading();
+  }
 };
 const fetchConfig = async () => {
   const config = await getProspectConfig();
@@ -184,9 +183,6 @@ const fetchConfig = async () => {
     frequencyDaysBefore.value = config.frequencyDaysBefore ?? [];
     timings.value = config.timings?.map(timing => reactive(timing)) ?? [];
   }
-};
-const getChannels = async () => {
-  channels.value = await getChatToolChannels(ChatToolId.SLACK);
 };
 
 const addRow = () => {

@@ -7,12 +7,10 @@ SettingCard(
 )
   template(#content)
     CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="channels" label="チャンネル").mt-4
+      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネル").mt-4
 </template>
 
 <script setup lang="ts">
-import { getChatToolChannels } from "~/apis/chat-tool";
-import { ChatToolId } from "~/consts/enum";
 import { getNotifyConfig, updateNotifyConfig } from "~/apis/config";
 
 type SelectItem = {
@@ -25,13 +23,12 @@ type ConfigNotify = {
   channel: string;
 };
 
-const { implementedChatToolId } = useInfo();
+const { implementedChatToolId, chatToolChannels } = useInfo();
+const { startLoading, finishLoading } = useLoading();
 
 const isInit = ref<boolean>(true);
-const { startLoading, finishLoading } = useLoading();
 const enabled = ref<boolean>(false);
 const channel = ref<string | null>(null);
-const channels = ref<SelectItem[]>([]);
 
 watch(enabled, async (next) => {
   await update({ enabled: next });
@@ -52,14 +49,16 @@ const update = async (config: Partial<ConfigNotify>) => {
 onMounted(async () => {
   await init();
 });
+watch(chatToolChannels, async () => {
+  await init();
+}, { deep: true });
 const init = async () => {
-  startLoading();
-  await Promise.all([
-    fetchConfig(),
-    getChannels()
-  ]);
-  isInit.value = false;
-  finishLoading();
+  if (chatToolChannels.value.length) {
+    startLoading();
+    await fetchConfig();
+    isInit.value = false;
+    finishLoading();
+  }
 };
 const fetchConfig = async () => {
   const config = await getNotifyConfig();
@@ -67,8 +66,5 @@ const fetchConfig = async () => {
     enabled.value = config.enabled;
     channel.value = config.channel;
   }
-};
-const getChannels = async () => {
-  channels.value = await getChatToolChannels(ChatToolId.SLACK);
 };
 </script>

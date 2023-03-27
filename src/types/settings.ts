@@ -37,7 +37,8 @@ export type Property = {
 };
 
 export type PropertyUsage = {
-  id: string;
+  id: number;
+  property: string;
   usage: ValueOf<typeof PropertyUsageType>;
   type: ValueOf<typeof NotionPropertyType>;
   options?: string[];

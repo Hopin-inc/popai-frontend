@@ -30,6 +30,24 @@ export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): 
   return [];
 };
 
+export const updateTodoAppUser = async (
+  todoAppId: ValueOf<typeof TodoAppId>,
+  userId: number,
+  appUserId: string,
+): Promise<SelectItem<string>[]> => {
+  const body = { id: appUserId };
+  const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
+    `updateTodoAppUser-${todoAppId}-${userId}`,
+    fetcher(`/todo-app/${todoAppId}/users/${userId}`, { body, method: "PATCH" })
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  } else if (error.value) {
+    console.error(error.value);
+  }
+  return [];
+};
+
 export const getTodoAppBoards = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getTodoAppBoards-${todoAppId}`,
@@ -41,6 +59,35 @@ export const getTodoAppBoards = async (todoAppId: ValueOf<typeof TodoAppId>): Pr
     console.error(error.value);
   }
   return [];
+};
+
+export const getBoardConfig = async (
+  todoAppId: ValueOf<typeof TodoAppId>,
+): Promise<string | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<{ boardId: string | null }>>(
+    `getBoardConfig-${todoAppId}`,
+    fetcher(`/todo-app/${todoAppId}/board`, { method: "GET" })
+  );
+  if (data.value && !error.value) {
+    return data.value.data.boardId;
+  } else if (error.value) {
+    console.error(error.value);
+  }
+  return null;
+};
+
+export const updateBoardConfig = async (
+  todoAppId: ValueOf<typeof TodoAppId>,
+  boardId: string,
+): Promise<void> => {
+  const body = { boardId };
+  const { error } = await useAsyncData<ApiResponse<void>>(
+    `updateBoardConfig-${todoAppId}`,
+    fetcher(`/todo-app/${todoAppId}/board`, { body, method: "PATCH" })
+  );
+  if (error.value) {
+    console.error(error.value);
+  }
 };
 
 export const getTodoAppProperties = async (
@@ -77,11 +124,12 @@ export const getTodoAppPropertyUsages = async (
 
 export const updateTodoAppPropertyUsage = async (
   todoAppId: ValueOf<typeof TodoAppId>,
-  usage: PropertyUsage
+  boardId: string,
+  usage: PropertyUsage,
 ): Promise<PropertyUsage | null> => {
   const { data, error } = await useAsyncData<ApiResponse<PropertyUsage>>(
     `updateTodoAppPropertyUsage-${todoAppId}-${usage.id}_${usage.usage}`,
-    fetcher(`/todo-app/${todoAppId}/usages`, { method: "GET" })
+    fetcher(`/todo-app/${todoAppId}/boards/${boardId}/usages`, { body: usage, method: "PATCH" })
   );
   if (data.value && !error.value) {
     return data.value.data;

@@ -22,8 +22,8 @@ SettingCard(
 </template>
 
 <script setup lang="ts">
-import { getChatToolAccounts } from "~/apis/chat-tool";
-import { getTodoAppAccounts } from "~/apis/todo-app";
+import { updateChatToolUsers } from "~/apis/chat-tool";
+import { updateTodoAppUser } from "~/apis/todo-app";
 import { deleteUser, getUserConfigs, updateUser } from "~/apis/users";
 
 type SelectItem = {
@@ -47,39 +47,22 @@ useHead({
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
-const { implementedChatToolId, implementedTodoAppId } = useInfo();
+const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts } = useInfo();
 const isInit = ref<boolean>(true);
 const configs = ref<Config[]>([]);
-const chatToolAccounts = ref<SelectItem[]>([]);
-const todoAppAccounts = ref<SelectItem[]>([]);
-
-watch(() => [implementedChatToolId.value, implementedTodoAppId.value], async () => {
-  await init();
-});
 
 onMounted(async () => {
+  await init();
+});
+watch(() => [implementedChatToolId.value, implementedTodoAppId.value], async () => {
   await init();
 });
 const init = async () => {
   if (isInit.value && implementedChatToolId.value && implementedTodoAppId.value) {
     isInit.value = false;
     startLoading();
-    await Promise.all([
-      fetchChatToolAccounts(),
-      fetchTodoAppAccounts(),
-      fetchUserConfigs(),
-    ]);
+    await fetchUserConfigs();
     finishLoading();
-  }
-};
-const fetchChatToolAccounts = async () => {
-  if (implementedChatToolId.value) {
-    chatToolAccounts.value = await getChatToolAccounts(implementedChatToolId.value);
-  }
-};
-const fetchTodoAppAccounts = async () => {
-  if (implementedTodoAppId.value) {
-    todoAppAccounts.value = await getTodoAppAccounts(implementedTodoAppId.value);
   }
 };
 const fetchUserConfigs = async () => {
@@ -109,8 +92,8 @@ const createConfig = (config: Config) => {
         if (config.user.name !== next) {
           config.user.name = next;
           await onUserNameChanged(config.index);
-          trigger();
         }
+        trigger();
       },
     })),
   });
@@ -156,7 +139,10 @@ const onChatToolUserIdChanged = async (index: number, next: string | null) => {
   if (!configs.value[index].user.id) {
     await updateUserName(index);
   }
-  alert(`chatToolUserId changed: ${ next }`);
+  const { id } = configs.value[index].user;
+  if (implementedChatToolId.value && id && next) {
+    await updateChatToolUsers(implementedChatToolId.value, id, next);
+  }
   finishLoading();
 };
 const onTodoAppUserIdChanged = async (index: number, next: string | null) => {
@@ -164,14 +150,17 @@ const onTodoAppUserIdChanged = async (index: number, next: string | null) => {
   if (!configs.value[index].user.id) {
     await updateUserName(index);
   }
-  alert(`todoAppUserId changed: ${ next }`);
+  const { id } = configs.value[index].user;
+  if (implementedTodoAppId.value && id && next) {
+    await updateTodoAppUser(implementedTodoAppId.value, id, next);
+  }
   finishLoading();
 };
 
 const updateUserName = async (index: number) => {
   const user = await updateUser(configs.value[index].user);
   if (user) {
-    configs.value[index].user = user;
+    configs.value[index].user.id = user.id;
   }
 };
 const addRow = async () => {

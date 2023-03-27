@@ -3,11 +3,11 @@ SettingCard(
   title="タスク情報の紐付け"
   subtitle="タスクを管理するボードを設定し、タスク情報を同期するためのカラムの紐付けを行います。"
 )
-  template(#content)
+  template(#content v-if="!isInit")
     CardSection(title="ボード設定")
       SelectBox(
         v-model="boardId"
-        :items="boards"
+        :items="todoAppBoards"
         label="ボードを選択"
       )
     CardSection(title="カラム設定")
@@ -92,14 +92,16 @@ import {
   NOTION_PROPERTY_TYPES_WITH_CHECKBOX
 } from "~/consts";
 import {
-  getTodoAppBoards,
+  getBoardConfig,
   getTodoAppProperties,
   getTodoAppPropertyUsages,
+  updateBoardConfig,
   updateTodoAppPropertyUsage
 } from "~/apis/todo-app";
 
 type ValueOf<T> = T[keyof T];
 type PropertyConfig = {
+  id: number | null;
   property: string | null;
 } & PropertyConfigOptions & PropertyConfigCheckbox;
 type PropertyConfigOptions<RequireOptions extends boolean = boolean> = RequireOptions extends true ? {
@@ -126,7 +128,8 @@ type SelectItem = {
   name: string;
 };
 type PropertyUsage = {
-  id: string;
+  id: number;
+  property: string;
   usage: ValueOf<typeof PropertyUsageType>;
   type: ValueOf<typeof NotionPropertyType>;
   options?: string[];
@@ -138,32 +141,31 @@ useHead({
 });
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedTodoAppId } = useInfo();
+const { implementedTodoAppId, todoAppBoards } = useInfo();
 
 const isInit = ref<boolean>(true);
-const boards = ref<SelectItem[]>([]);
+let isUpdating: boolean = false;
 const properties = ref<Property[]>([]);
 const boardId = ref<string | null>(null);
-const name = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
-const assignee = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
-const deadline = reactive<PropertyConfig>({ property: null, requireOptions: false, requireCheckbox: false });
-const isDone = reactive<PropertyConfig>({
-  property: null,
+const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
+const name = ref<PropertyConfig>({ ...propInitVal });
+const assignee = ref<PropertyConfig>({ ...propInitVal });
+const deadline = ref<PropertyConfig>({ ...propInitVal });
+const isDone = ref<PropertyConfig>({
+  ...propInitVal,
   requireOptions: true,
-  requireCheckbox: false,
   options: [],
   get availableOptions () {
     return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
-  }
+  },
 });
-const isClosed = reactive<PropertyConfig>({
-  property: null,
+const isClosed = ref<PropertyConfig>({
+  ...propInitVal,
   requireOptions: true,
-  requireCheckbox: false,
   options: [],
   get availableOptions () {
     return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
-  }
+  },
 });
 
 const propertiesForName = computed(() => properties.value.filter((p) => {
@@ -179,61 +181,83 @@ const propertiesForStatus = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_STATUS.includes(p.type);
 }));
 
-// In case implementedTodoApp is null on mounted.
-watch(implementedTodoAppId, async () => {
-  await init();
-});
-
 // Get property data on boardId changed.
 watch(boardId, async (next) => {
-  startLoading();
-  if (implementedTodoAppId.value && next) {
-    properties.value = await getTodoAppProperties(implementedTodoAppId.value, next);
+  if (!isInit.value && !isUpdating && implementedTodoAppId.value && next) {
+    startLoading();
+    isUpdating = true;
+    resetPropertyUsages();
+    const [props, _] = await Promise.all([
+      getTodoAppProperties(implementedTodoAppId.value, next),
+      updateBoardConfig(implementedTodoAppId.value, next),
+    ]);
+    properties.value = props;
+    isUpdating = false;
+    finishLoading();
   }
-  finishLoading();
 });
 
 // Update configs on property selected.
-watch(() => name.property, async (next) => {
-  if (next && implementedTodoAppId.value) {
-    onStatusPropertyChanged(name, next);
-    await updatePropertyUsage(name, next);
+watch(() => name.value.property, async (next) => {
+  if (!isUpdating && next && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(name.value, next);
+    await updatePropertyUsage(name.value, PropertyUsageType.TITLE, next);
+    isUpdating = false;
   }
 }, { deep: true });
-watch(() => assignee.property, async (next) => {
-  if (next && implementedTodoAppId.value) {
-    onStatusPropertyChanged(assignee, next);
-    await updatePropertyUsage(assignee, next);
+watch(() => assignee.value.property, async (next) => {
+  if (!isUpdating && next && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(assignee.value, next);
+    await updatePropertyUsage(assignee.value, PropertyUsageType.ASSIGNEE, next);
+    isUpdating = false;
   }
 }, { deep: true });
-watch(() => deadline.property, async (next) => {
-  if (next && implementedTodoAppId.value) {
-    onStatusPropertyChanged(deadline, next);
-    await updatePropertyUsage(deadline, next);
+watch(() => deadline.value.property, async (next) => {
+  if (!isUpdating && next && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(deadline.value, next);
+    await updatePropertyUsage(deadline.value, PropertyUsageType.DEADLINE, next);
+    isUpdating = false;
   }
 }, { deep: true });
-watch(() => isDone.property, async (next) => {
-  if (next && implementedTodoAppId.value) {
-    onStatusPropertyChanged(isDone, next);
-    await updatePropertyUsage(isDone, next);
+watch(() => isDone.value.property, async () => {
+  if (!isUpdating && isDone.value.property && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(isDone.value, isDone.value.property);
+    await updatePropertyUsage(isDone.value, PropertyUsageType.IS_DONE, isDone.value.property);
+    isUpdating = false;
   }
 }, { deep: true });
-watch(() => isClosed.property, async (next) => {
-  if (next && implementedTodoAppId.value) {
-    onStatusPropertyChanged(isClosed, next);
-    await updatePropertyUsage(isClosed, next);
+watch(() => isClosed.value.property, async () => {
+  if (!isUpdating && isClosed.value.property && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(isClosed.value, isClosed.value.property);
+    await updatePropertyUsage(isClosed.value, PropertyUsageType.IS_CLOSED, isClosed.value.property);
+    isUpdating = false;
   }
 }, { deep: true });
 
 // Update configs on label selected or deselected.
-watch(() => isDone.requireOptions ? [...isDone.options] : [], async () => {
-  if (isDone.property) {
-    await updatePropertyUsage(isDone, isDone.property);
+watch(() => [
+  ...(isDone.value.requireOptions ? [...isDone.value.options] : []),
+  isDone.value.requireCheckbox ? isDone.value.isChecked : null,
+], async () => {
+  if (!isUpdating && isDone.value.property && implementedTodoAppId.value) {
+    isUpdating = true;
+    await updatePropertyUsage(isDone.value, PropertyUsageType.IS_DONE, isDone.value.property);
+    isUpdating = false;
   }
 }, { deep: true });
-watch(() => isClosed.requireOptions ? [...isClosed.options] : [], async () => {
-  if (isClosed.property) {
-    await updatePropertyUsage(isClosed, isClosed.property);
+watch(() => [
+  ...(isClosed.value.requireOptions ? [...isClosed.value.options] : []),
+  isClosed.value.requireCheckbox ? isClosed.value.isChecked : null,
+], async () => {
+  if (!isUpdating && isClosed.value.property && implementedTodoAppId.value) {
+    isUpdating = true;
+    await updatePropertyUsage(isClosed.value, PropertyUsageType.IS_CLOSED, isClosed.value.property);
+    isUpdating = false;
   }
 }, { deep: true });
 
@@ -258,8 +282,20 @@ const onStatusPropertyChanged = (propConfig: PropertyConfig, nextProp: string) =
     }
   }
 };
-const updatePropertyUsage = async (propConfig: PropertyConfig, nextProp: string) => {
-  if (nextProp && implementedTodoAppId.value) {
+const resetPropertyUsages = () => {
+  Object.assign(name.value, { ...propInitVal });
+  Object.assign(assignee.value, { ...propInitVal });
+  Object.assign(deadline.value, { ...propInitVal });
+  Object.assign(isDone.value, { ...propInitVal });
+  Object.assign(isClosed.value, { ...propInitVal });
+};
+const updatePropertyUsage = async (
+  propConfig: PropertyConfig,
+  usage: ValueOf<typeof PropertyUsageType>,
+  nextProp: string,
+) => {
+  if (!isInit.value && nextProp && implementedTodoAppId.value && boardId.value) {
+    startLoading();
     const prop = properties.value.find(p => p.id === nextProp)!;
     const selections: Partial<{ options: string[], isChecked: boolean }> = {};
     if (propConfig.requireOptions) {
@@ -268,57 +304,78 @@ const updatePropertyUsage = async (propConfig: PropertyConfig, nextProp: string)
     if (propConfig.requireCheckbox) {
       selections.isChecked = propConfig.isChecked;
     }
-    await updateTodoAppPropertyUsage(implementedTodoAppId.value, {
-      id: nextProp,
+    const newPropUsage = await updateTodoAppPropertyUsage(implementedTodoAppId.value, boardId.value, {
+      id: propConfig.id!,
+      property: nextProp,
       type: prop.type,
-      usage: PropertyUsageType.TITLE,
-      ...selections
+      usage,
+      ...selections,
     });
+    if (newPropUsage) {
+      propConfig.id = newPropUsage.id;
+    }
+    finishLoading();
   }
 };
 
 onMounted(async () => {
   await init();
 });
+watch(implementedTodoAppId, async () => {
+  await init();
+});
+watch(todoAppBoards, async () => {
+  await init();
+}, { deep: true });
 const init = async () => {
-  startLoading();
-  await Promise.all([
-    fetchPropInfo(),
-    fetchConfigs(),
-  ]);
-  isInit.value = false;
-  finishLoading();
+  if (implementedTodoAppId.value && todoAppBoards.value.length) {
+    startLoading();
+    resetPropertyUsages();
+    await fetchBoardId();
+    await Promise.all([
+      fetchProperties(),
+      fetchConfigs(),
+    ]);
+    isInit.value = false;
+    finishLoading();
+  }
 };
-const fetchPropInfo = async () => {
+const fetchBoardId = async () => {
   if (implementedTodoAppId.value) {
-    boards.value = await getTodoAppBoards(implementedTodoAppId.value);
-    boardId.value = boards.value[0].id;
+    boardId.value = await getBoardConfig(implementedTodoAppId.value);
+  }
+};
+const fetchProperties = async () => {
+  if (implementedTodoAppId.value && boardId.value) {
     properties.value = await getTodoAppProperties(implementedTodoAppId.value, boardId.value);
   }
 };
 const fetchConfigs = async () => {
   if (implementedTodoAppId.value && boardId.value) {
     const usages = await getTodoAppPropertyUsages(implementedTodoAppId.value, boardId.value);
-    setConfig(usages, name, PropertyUsageType.TITLE);
-    setConfig(usages, assignee, PropertyUsageType.ASSIGNEE);
-    setConfig(usages, deadline, PropertyUsageType.DEADLINE);
-    setConfig(usages, isDone, PropertyUsageType.IS_DONE);
-    setConfig(usages, isClosed, PropertyUsageType.IS_CLOSED);
+    setConfig(usages, name.value, PropertyUsageType.TITLE);
+    setConfig(usages, assignee.value, PropertyUsageType.ASSIGNEE);
+    setConfig(usages, deadline.value, PropertyUsageType.DEADLINE);
+    setConfig(usages, isDone.value, PropertyUsageType.IS_DONE);
+    setConfig(usages, isClosed.value, PropertyUsageType.IS_CLOSED);
   }
 };
 const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: ValueOf<typeof PropertyUsageType>) => {
   const usage = usages.find(u => u.usage === usageType);
-  propConfig.property = usage?.id ?? null;
-  if (usage?.options !== undefined) {
-    propConfig.requireOptions = true;
-    if (propConfig.requireOptions) {
-      propConfig.options = usage.options;
+  if (usage) {
+    propConfig.id = usage.id ?? null;
+    propConfig.property = usage.property ?? null;
+    if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(usage.type)) {
+      propConfig.requireOptions = true;
+      if (propConfig.requireOptions) {
+        propConfig.options = usage.options ?? [];
+      }
     }
-  }
-  if (usage?.isChecked !== undefined) {
-    propConfig.requireCheckbox = true;
-    if (propConfig.requireCheckbox) {
-      propConfig.isChecked = usage.isChecked;
+    if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(usage.type)) {
+      propConfig.requireCheckbox = true;
+      if (propConfig.requireCheckbox) {
+        propConfig.isChecked = usage.isChecked ?? false;
+      }
     }
   }
 };

@@ -9,15 +9,13 @@ SettingCard(
     CardSection(title="オプション")
       Switch(v-model="enablePending" label="5日以上更新されていないタスクをランダムに抽出して、対応を促す")
     CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="channels" label="チャンネル").mt-4
+      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネル").mt-4
     CardSection(title="通知する時刻")
       SelectBox(v-model="time" :items="times" label="通知する時刻").mt-4
 </template>
 
 <script setup lang="ts">
 import { TIME_LIST } from "~/consts";
-import { getChatToolChannels } from "~/apis/chat-tool";
-import { ChatToolId } from "~/consts/enum";
 import { getDailyReportConfig, updateDailyReportConfig } from "~/apis/config";
 
 type SelectItem = {
@@ -36,7 +34,7 @@ type ConfigDailyReportTiming = {
 };
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedChatToolId } = useInfo();
+const { implementedChatToolId, chatToolChannels } = useInfo();
 
 const isInit = ref<boolean>(true);
 const enabled = ref<boolean>(false);
@@ -44,7 +42,6 @@ const enablePending = ref<boolean>(false);
 const channel = ref<string | null>(null);
 const time = ref<string>("09:00");
 
-const channels = ref<SelectItem[]>([]);
 const times: SelectItem[] = TIME_LIST;
 
 watch(enabled, async (next) => {
@@ -71,14 +68,16 @@ const update = async (config: Partial<ConfigDailyReport>) => {
 onMounted(async () => {
   await init();
 });
+watch(chatToolChannels, async () => {
+  await init();
+}, { deep: true });
 const init = async () => {
-  startLoading();
-  await Promise.all([
-    fetchConfig(),
-    getChannels()
-  ]);
-  isInit.value = false;
-  finishLoading();
+  if (chatToolChannels.value.length) {
+    startLoading();
+    await fetchConfig();
+    isInit.value = false;
+    finishLoading();
+  }
 };
 const fetchConfig = async () => {
   const config = await getDailyReportConfig();
@@ -91,8 +90,5 @@ const fetchConfig = async () => {
       time.value = timings[0].time;
     }
   }
-};
-const getChannels = async () => {
-  channels.value = await getChatToolChannels(ChatToolId.SLACK);
 };
 </script>
