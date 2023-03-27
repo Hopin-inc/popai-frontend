@@ -8,8 +8,7 @@ steps:
     name: node:16
     entrypoint: yarn
     args:
-      - run
-      - build
+      - generate
   - id: Generate app.yaml with decrypted secrets
     name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
@@ -29,8 +28,8 @@ steps:
         automatic_scaling:
           min_idle_instances: 1
         handlers:
-          - url: /_nuxt
-            static_dir: .nuxt/dist/server
+          - url: /dist
+            static_dir: dist
             secure: always
           - url: /(.*\.(gif|png|jpg|ico|txt))$
             static_files: static/\1
