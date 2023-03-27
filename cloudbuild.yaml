@@ -28,19 +28,15 @@ steps:
         automatic_scaling:
           min_idle_instances: 1
         handlers:
-          - url: /
+          - url: /(.*)
             static_files: dist/index.html
             upload: dist/index.html
             secure: always
-          - url: /(.*)
-            static_files: dist/\1
-            upload: dist/(.*)
+          - url: /
+            static_files: dist
           - url: /(.*\.(gif|png|jpg|ico|txt))$
             static_files: static/\1
             upload: static/.*\.(gif|png|jpg|ico|txt)$
-            secure: always
-          - url: /.*
-            script: auto
             secure: always
         EOF
     secretEnv:
