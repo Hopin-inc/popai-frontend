@@ -28,13 +28,18 @@ steps:
         automatic_scaling:
           min_idle_instances: 1
         handlers:
-          - url: /(.*)
+          - url: /_nuxt
+            static_files: dist/_nuxt
+            upload: dist/_nuxt
+            secure: always
+          - url: /
             static_files: dist/index.html
             upload: dist/index.html
             secure: always
-          - url: /
-            static_files: dist
-            upload: dist/
+          - url: /(.*\.(js|css|svg|ico|woff2?|ttf|eot)(\?.*)?)$
+            static_files: dist/_nuxt/\1
+            upload: dist/_nuxt/.*\.(js|css|svg|ico|woff2?|ttf|eot)(\?.*)?$
+            secure: always
           - url: /(.*\.(gif|png|jpg|ico|txt))$
             static_files: static/\1
             upload: static/.*\.(gif|png|jpg|ico|txt)$

@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   build: {
     transpile: [
       "vuetify"
-    ]
+    ],
   },
   modules: [
     "@nuxtjs/google-fonts"
