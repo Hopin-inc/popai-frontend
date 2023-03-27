@@ -19,6 +19,7 @@ steps:
       - -c
       - |-
         cat <<EOF > ./app.yaml
+        service: frontend
         runtime: nodejs16
         instance_class: $_GAE_INSTANCE_CLASS
         env_variables:
