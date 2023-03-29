@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "dev:https": "nuxt dev --https --ssl-cert ./.misc/localhost.pem --ssl-key ./.misc/localhost-key.pem",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --ext .ts,.vue",
+    "lintfix": "eslint . --fix --ext .ts,.vue"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "^0.1.1",
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@nuxtjs/google-fonts": "3.0.0-1",
+    "@nuxtjs/style-resources": "^1.2.1",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.34.0",
+    "eslint-plugin-nuxt": "^4.0.0",
+    "eslint-plugin-vue": "^9.9.0",
+    "nuxt": "^3.2.0",
+    "prettier": "^2.8.4",
+    "pug": "^3.0.2",
+    "pug-loader": "^2.4.0",
+    "pug-plain-loader": "^1.1.0",
+    "sass": "^1.58.0",
+    "sass-loader": "10"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.1.96",
+    "@vuepic/vue-datepicker": "^4.2.0",
+    "camelcase-keys": "^8.0.2",
+    "dayjs": "^1.11.7",
+    "firebase": "^9.17.1",
+    "lodash": "^4.17.21",
+    "snakecase-keys": "^5.4.5",
+    "typescript": "^4.9.5",
+    "vuetify": "^3.1.4"
+  }
+}
