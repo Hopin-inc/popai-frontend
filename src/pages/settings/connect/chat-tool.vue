@@ -13,8 +13,7 @@ SettingCard(
           prepend-icon="mdi-connection"
           variant="flat"
           color="primary"
-          :disabled="isSlackConnected"
-        ) 連携する
+        ) {{ isSlackConnected ? "再度連携する" : "連携する" }}
         .d-flex.align-center(v-if="isSlackConnected").ml-4
           v-icon(size="sm" color="success").mr-1 mdi-check
           p.text-body-2.text-success.font-weight-bold 連携済み
