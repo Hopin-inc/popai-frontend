@@ -46,9 +46,9 @@ steps:
             static_files: dist/index.html
             upload: dist/index.html
             secure: always
-          - url: /(.*\.(gif|png|jpg|ico|txt))$
-            static_files: static/\1
-            upload: static/.*\.(gif|png|jpg|ico|txt)$
+          - url: /(.*\.(gif|png|jpg|svg|ico|txt))$
+            static_files: dist/\1
+            upload: dist/.*\.(gif|png|jpg|svg|ico|txt)$
             secure: always
         EOF
   - id: Deploy app
