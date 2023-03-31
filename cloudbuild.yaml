@@ -39,16 +39,16 @@ steps:
         automatic_scaling:
           min_idle_instances: 1
         handlers:
+          - url: /(.*\.(gif|png|jpg|svg|ico|txt))$
+            static_files: dist/\1
+            upload: dist/.*\.(gif|png|jpg|svg|ico|txt)$
+            secure: always
           - url: /_nuxt
             static_dir: dist/_nuxt
             secure: always
           - url: /.*
             static_files: dist/index.html
             upload: dist/index.html
-            secure: always
-          - url: /(.*\.(gif|png|jpg|svg|ico|txt))$
-            static_files: dist/\1
-            upload: dist/.*\.(gif|png|jpg|svg|ico|txt)$
             secure: always
         EOF
   - id: Deploy app
