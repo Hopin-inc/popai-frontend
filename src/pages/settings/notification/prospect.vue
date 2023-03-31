@@ -32,7 +32,7 @@ SettingCard(
                 span タスクの作成日から
         FormPart(title="終了日")
           v-radio-group(v-model="to" color="primary")
-            v-radio(:value="1" disabled)
+            v-radio(:value="1")
               template(#label)
                 span タスクの期日まで
         FormPart(title="頻度")
@@ -126,6 +126,11 @@ watch(enabled, async (next) => {
 watch(channel, async (next) => {
   if (next) {
     await update({ chatToolId: implementedChatToolId.value ?? undefined, channel: next });
+  }
+});
+watch(to, async (next) => {
+  if (next) {
+    await update({ to: next });
   }
 });
 watch(() => [from, fromDaysBefore, beginOfWeek], async () => {
