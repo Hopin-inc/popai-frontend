@@ -8,8 +8,10 @@ SettingCard(
   template(#content)
     CardSection(title="オプション")
       Switch(v-model="enablePending" label="5日以上更新されていないタスクをランダムに抽出して、対応を促す")
+    CardSection(title="日報データベース (Notion)")
+      SelectBox(v-model="database" :items="todoAppBoards" label="データベースを選択").mt-4
     CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネル").mt-4
+      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネルを選択").mt-4
     CardSection(title="通知する時刻")
       SelectBox(v-model="time" :items="times" label="通知する時刻").mt-4
 </template>
@@ -26,6 +28,8 @@ type ConfigDailyReport = {
   enabled: boolean;
   chatToolId: number;
   channel: string;
+  documentToolId: number;
+  database: string;
   timings: ConfigDailyReportTiming[];
 };
 type ConfigDailyReportTiming = {
@@ -34,11 +38,12 @@ type ConfigDailyReportTiming = {
 };
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedChatToolId, chatToolChannels } = useInfo();
+const { implementedChatToolId, chatToolChannels, todoAppBoards } = useInfo();
 
 const isInit = ref<boolean>(true);
 const enabled = ref<boolean>(false);
 const enablePending = ref<boolean>(false);
+const database = ref<string | null>(null);
 const channel = ref<string | null>(null);
 const time = ref<string>("09:00");
 
@@ -46,6 +51,11 @@ const times: SelectItem[] = TIME_LIST;
 
 watch(enabled, async (next) => {
   await update({ enabled: next });
+});
+watch(database, async (next) => {
+  if (next) {
+    await update({ documentToolId: 1, database: next });
+  }
 });
 watch(channel, async (next) => {
   if (next) {
@@ -85,6 +95,7 @@ const fetchConfig = async () => {
     const { timings } = config;
     enabled.value = config.enabled;
     channel.value = config.channel;
+    database.value = config.database;
     if (timings?.length) {
       enablePending.value = timings[0].enablePending;
       time.value = timings[0].time;

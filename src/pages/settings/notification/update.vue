@@ -7,7 +7,7 @@ SettingCard(
 )
   template(#content)
     CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネル").mt-4
+      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネルを選択").mt-4
 </template>
 
 <script setup lang="ts">

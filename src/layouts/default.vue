@@ -1,8 +1,9 @@
 <template lang="pug">
 .fill-height
-  v-app-bar.px-4.px-md-8
+  v-app-bar(flat).px-4.px-md-8.menu-bar.border-b
     v-app-bar-title
-      NuxtLink(to="/") sakura3
+      NuxtLink(to="/")
+        img(src="/images/logo_name.svg" height="28").mt-2
     template(#append)
       v-menu(v-model="menu" :close-on-content-click="false")
         template(#activator="{ props }")
@@ -40,4 +41,5 @@ const signOut = async () => {
 .page-container
   max-width: 1280px
   margin: auto
+
 </style>

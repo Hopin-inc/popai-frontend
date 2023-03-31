@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card
+v-card(flat).rounded-lg
   v-card-title.d-flex.align-center.pa-6.w-100
     .flex-fill
       CardTitle {{ title }}

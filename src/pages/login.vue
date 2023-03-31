@@ -1,35 +1,37 @@
 <template lang="pug">
-v-card.pa-6.w-100
-  PageTitle.mt-4.mb-8.text-center ログイン
-  v-form(ref="form" @submit.prevent="submit")
-    v-text-field(
-      v-model="formData.email"
-      autocomplete="email"
-      type="email"
-      :rules="[Validations.required, Validations.email]"
-      label="メールアドレス"
-      prepend-icon="mdi-email"
-      variant="outlined"
-      color="primary"
-      autofocus
-    ).mb-4
-    v-text-field(
-      v-model="formData.password"
-      autocomplete="current-password"
-      :type="passType"
-      :rules="[Validations.required]"
-      label="パスワード"
-      prepend-icon="mdi-lock"
-      :append-inner-icon="passAppendIcon"
-      @click:append-inner="showPassword = !showPassword"
-      variant="outlined"
-      color="primary"
-    ).mb-4
-    .d-flex.flex-column.align-center
-      v-btn(type="submit" color="primary") ログイン
-      NuxtLink(:to="toResetAccount").mt-2.text-caption.text-grey パスワードをお忘れの方はこちら
+.d-flex.flex-column.align-center.w-100
+  img(src="/images/logo_name.svg" height="48").mb-6
+  v-card(flat).pa-6.w-100.rounded-lg
+    SimplePageTitle ログイン
+    v-form(ref="form" @submit.prevent="submit")
+      v-text-field(
+        v-model="formData.email"
+        autocomplete="email"
+        type="email"
+        :rules="[Validations.required, Validations.email]"
+        label="メールアドレス"
+        prepend-icon="mdi-email"
+        variant="outlined"
+        color="primary"
+        autofocus
+      ).mb-4
+      v-text-field(
+        v-model="formData.password"
+        autocomplete="current-password"
+        :type="passType"
+        :rules="[Validations.required]"
+        label="パスワード"
+        prepend-icon="mdi-lock"
+        :append-inner-icon="passAppendIcon"
+        @click:append-inner="showPassword = !showPassword"
+        variant="outlined"
+        color="primary"
+      ).mb-4
+      .d-flex.flex-column.align-center
+        v-btn(type="submit" color="primary") ログイン
+        NuxtLink(:to="toResetAccount").mt-4.text-caption.text-grey パスワードをお忘れの方はこちら
   .d-flex.justify-center.mt-4
-    v-btn(nuxt to="/create-account" variant="text" color="primary") 新規登録
+    v-btn(nuxt to="/create-account" variant="text" color="primary" append-icon="mdi-arrow-right").px-2 アカウントを作成する (無料)
 </template>
 
 <script setup lang="ts">

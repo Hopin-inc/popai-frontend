@@ -55,6 +55,8 @@ export type ConfigDailyReport = {
   enabled: boolean;
   chatToolId: number;
   channel: string;
+  documentToolId: number;
+  database: string;
   timings: ConfigDailyReportTiming[];
 };
 

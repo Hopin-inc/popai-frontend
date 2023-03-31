@@ -1,0 +1,1 @@
+export const URL_TERMS_OF_USE = "https://www.pop-eye.site/terms";
