@@ -68,8 +68,10 @@
 import { computed, ref } from "vue";
 import { VForm } from "vuetify/components";
 import Validations from "~/utils/validations";
-import { signUp } from "~/apis/accounts";
+import { signUp } from "~/apis/auth";
 import { URL_TERMS_OF_USE } from "~/consts/links";
+import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
+import { DialogMessages, getMessageByAuthError } from "~/utils/messages";
 
 type SignUpInfo = {
   email: string;
@@ -88,6 +90,7 @@ useHead({
 });
 
 const { startLoading, finishLoading } = useLoading();
+const config = useRuntimeConfig();
 
 const form = ref<VForm>();
 const formData = reactive<SignUpInfo>({
@@ -109,9 +112,27 @@ const submit = async () => {
   const validation = await form.value?.validate();
   if (validation?.valid && formData.password === formData.passwordConfirm && formData.agree) {
     startLoading();
-    await signUp(formData);
+    await signUp(formData)
+      .then(async () => {
+        const auth = getAuth();
+        await signInWithEmailAndPassword(auth, formData.email, formData.password)
+          .then(async (credential) => {
+            const { user } = credential;
+            if (!user.emailVerified) {
+              await sendEmailVerification(user, {
+                url: `${ config.public.apiBaseUrl }/auth/verify?email=${ encodeURIComponent(formData.email) }`,
+              });
+              alert(DialogMessages.VERIFICATION_EMAIL_SENT);
+            } else {
+              alert("アカウントを作成しました。");
+            }
+          });
+      }, (err) => {
+        console.log(err);
+        alert(getMessageByAuthError(err.message));
+      });
+
     finishLoading();
-    alert("アカウントを作成しました。");
     await navigateTo("/login");
   } else if (validation?.valid && formData.password !== formData.passwordConfirm) {
     alert("パスワードが一致しません。");

@@ -1,8 +1,8 @@
 import type { Ref } from "vue";
-import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
 import { Account } from "~/types/common";
-import { getLoggedInAccount, signIn, signOut } from "~/apis/accounts";
-import { getMessageByLoginError } from "~/utils/messages";
+import { getLoggedInAccount, signIn, signOut } from "~/apis/auth";
+import { ErrorMessages, getMessageByAuthError } from "~/utils/messages";
 
 export const useAuth = () => {
   const currentUser = useState<Account | null>("currentUser", () => null);
@@ -31,6 +31,16 @@ export const useAuth = () => {
       await signInWithEmailAndPassword(auth, email, password)
         .then(async (credential) => {
           const { user } = credential;
+          if (!user.emailVerified) {
+            const resend = confirm(ErrorMessages.EMAIL_NOT_VERIFIED);
+            if (resend) {
+              const config = useRuntimeConfig();
+              await sendEmailVerification(user, {
+                url: `${ config.public.apiBaseUrl }/auth/verify?email=${ encodeURIComponent(email) }`,
+              });
+            }
+            return;
+          }
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
           if (account) {
@@ -46,7 +56,7 @@ export const useAuth = () => {
           }
         })
         .catch((error) => {
-          alert(getMessageByLoginError(error.code));
+          alert(getMessageByAuthError(error.code));
         });
     };
   };

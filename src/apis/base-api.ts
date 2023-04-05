@@ -1,5 +1,5 @@
 import { NitroFetchOptions } from "nitropack";
-import { FetchContext } from "ofetch";
+import { FetchContext, FetchError } from "ofetch";
 import { StatusCodes } from "~/utils/status-codes";
 import { toQueryString } from "~/utils/common";
 
@@ -33,5 +33,12 @@ export const fetcher = <ResT>(
     onResponse,
     onResponseError
   };
-  return async () => await $fetch<ResT>(path, { ...defaultOptions, ...fetchOptions });
+  return async () => {
+    try {
+      return await $fetch<ResT>(path, { ...defaultOptions, ...fetchOptions })
+    } catch (error) {
+      const message = (error as FetchError).response?._data?.message;
+      throw new Error(message);
+    }
+  };
 };

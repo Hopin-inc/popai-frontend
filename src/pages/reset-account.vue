@@ -27,7 +27,7 @@
 import { ref } from "vue";
 import { VForm } from "vuetify/components";
 import Validations from "~/utils/validations";
-import { reset } from "~/apis/accounts";
+import { reset } from "~/apis/auth";
 
 definePageMeta({
   layout: "before-login"
