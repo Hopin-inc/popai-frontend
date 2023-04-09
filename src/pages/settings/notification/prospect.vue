@@ -17,16 +17,18 @@ SettingCard(
                 span タスクの着手日から
             v-radio(:value="2")
               template(#label)
-                .d-flex.align-center
+                .d-flex.align-center.flex-wrap
                   span 期日の
                   InlineSelectBox(v-model="fromDaysBefore" :items="daysBefore" :readonly="from !== 2").w-80px
                   span から
             v-radio(:value="3")
               template(#label)
-                .d-flex.align-center
-                  span 期日が属する週の初め（
-                  InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
-                  span 曜日）
+                .d-flex.align-center.flex-wrap
+                  span 期日が属する週の初め
+                  .d-flex.align-center
+                    span （
+                    InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
+                    span 曜日）
             v-radio(:value="4")
               template(#label)
                 span タスクの作成日から
@@ -45,20 +47,21 @@ SettingCard(
                 span 中間日のみ
             v-radio(:value="3").fill-label.allow-overflow.flex-fill
               template(#label)
-                span.mr-2 指定日:
-                MultipleSelectBox(
-                  v-model="frequencyDaysBefore"
-                  label="期日の…"
-                  :items="daysBefore"
-                  :readonly="frequency !== 3"
-                  density="compact"
-                ).flex-fill
+                .d-flex.align-center.flex-wrap.w-100
+                  span.mr-2 指定日:
+                  MultipleSelectBox(
+                    v-model="frequencyDaysBefore"
+                    label="期日の…"
+                    :items="daysBefore"
+                    :readonly="frequency !== 3"
+                    density="compact"
+                  ).flex-fill.my-2
     CardSection(title="通知時刻")
       v-table(v-if="timings.length").overflow-x-auto
         thead
           tr
             th.w-160px 時刻
-            th.w-fit-content 指定時刻までに着手するタスクを選択
+            th.w-fit-content.text-no-wrap 指定時刻までに着手するタスクを選択
             th.w-80px 操作
         tbody
           tr(v-for="(timing, index) in timings" :key="timing")
@@ -66,7 +69,7 @@ SettingCard(
             td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
               .d-flex.align-center(v-if="timing.askPlan")
                 InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
-                span までに着手するタスクを選択
+                span まで
             td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
       p(v-else) 通知時刻が設定されていません。
       v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加

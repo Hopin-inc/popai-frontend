@@ -127,6 +127,7 @@ const removeItem = (_: Event, index: number) => {
 
 <style scoped lang="sass">
 .date-picker
+  z-index: 1000
   :deep(.v-field__input)
     gap: 8px
 </style>

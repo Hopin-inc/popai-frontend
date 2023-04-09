@@ -2,7 +2,7 @@
 v-row
   v-col(cols="12")
     PageTitle 設定
-v-row
+v-row.flex-wrap.flex-md-nowrap
   v-col(cols="12" md="auto").pa-3.select-menu
     div(v-if="isPc")
       SideMenu(:menus="menus" rounded="lg")
