@@ -3,7 +3,7 @@
   v-app-bar(flat).px-4.px-md-8.menu-bar.border-b
     v-app-bar-title
       NuxtLink(to="/")
-        img(src="/images/logo_name.svg" height="28").mt-2
+        img(src="/images/logo_name.svg" height="36").mt-2
     template(#append)
       v-menu(v-model="menu" :close-on-content-click="false")
         template(#activator="{ props }")

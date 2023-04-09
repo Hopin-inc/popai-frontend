@@ -18,8 +18,6 @@ export const useAuth = () => {
         if (account) {
           const { organization, name } = account;
           state.value = { organization, name };
-        } else {
-
         }
       }
     };
