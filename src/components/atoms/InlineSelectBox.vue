@@ -35,14 +35,14 @@ const props = withDefaults(defineProps<Props>(), {
   items: () => [],
   readonly: false,
   itemValue: "id",
-  itemTitle: "name"
+  itemTitle: "name",
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
 const value = computed({
   get: () => modelValue.value,
-  set: value => emits("update:model-value", value)
+  set: value => emits("update:model-value", value),
 });
 </script>
 

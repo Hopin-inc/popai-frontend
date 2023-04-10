@@ -22,6 +22,6 @@ export const range: {
 
   return Array.from(
     { length: Math.floor((stop - start) / interval) },
-    (_, i) => start + i * interval
+    (_, i) => start + i * interval,
   );
 };

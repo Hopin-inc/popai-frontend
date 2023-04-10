@@ -29,7 +29,7 @@ type Emits = {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
   alwaysEditable: false,
-  alwaysReadonly: false
+  alwaysReadonly: false,
 });
 const emits = defineEmits<Emits>();
 

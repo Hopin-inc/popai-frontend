@@ -17,9 +17,9 @@ v-row.flex-wrap.flex-md-nowrap
 </template>
 
 <script setup lang="ts">
+import { useDisplay } from "vuetify";
 import type { MenuItem } from "~/types/common";
 import PageTitle from "~/components/atoms/PageTitle.vue";
-import { useDisplay } from "vuetify";
 
 const { connected, implementedTodoAppId } = useInfo();
 const { mdAndUp } = useDisplay();
@@ -32,7 +32,7 @@ const menuRounded = computed(() => mdAndUp.value ? "lg" : undefined);
 const menusBeforeConnect: MenuItem[] = [
   { type: "subheader", title: "ツール連携" },
   { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
-  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" }
+  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" },
 ];
 const menusAfterConnect: MenuItem[] = [
   { type: "subheader", title: "ツール連携" },
@@ -48,7 +48,7 @@ const menusAfterConnect: MenuItem[] = [
   { type: "item", title: "通知日時設定", href: "/settings/notification/common" },
   { type: "item", title: "日報設定", href: "/settings/notification/daily-report" },
   { type: "item", title: "タスク更新通知設定", href: "/settings/notification/update" },
-  { type: "item", title: "見立て共有設定", href: "/settings/notification/prospect" }
+  { type: "item", title: "見立て共有設定", href: "/settings/notification/prospect" },
 ];
 
 watch(currentRoute, () => {

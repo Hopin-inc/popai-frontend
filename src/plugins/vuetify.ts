@@ -18,12 +18,12 @@ export default defineNuxtPlugin((nuxtApp) => {
             warning: "#ddab31",
             info: "#2AA7AC",
             success: "#B0C62E",
-            background: "#FCFBF6"
+            background: "#FCFBF6",
           },
-          dark: false
-        }
-      }
-    }
+          dark: false,
+        },
+      },
+    },
   });
 
   nuxtApp.vueApp.use(vuetify);

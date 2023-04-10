@@ -89,14 +89,14 @@ import {
   NOTION_PROPERTY_TYPES_FOR_DATE,
   NOTION_PROPERTY_TYPES_FOR_PEOPLE,
   NOTION_PROPERTY_TYPES_FOR_STATUS,
-  NOTION_PROPERTY_TYPES_WITH_CHECKBOX
+  NOTION_PROPERTY_TYPES_WITH_CHECKBOX,
 } from "~/consts";
 import {
   getBoardConfig,
   getTodoAppProperties,
   getTodoAppPropertyUsages,
   updateBoardConfig,
-  updateTodoAppPropertyUsage
+  updateTodoAppPropertyUsage,
 } from "~/apis/todo-app";
 
 type ValueOf<T> = T[keyof T];
@@ -137,7 +137,7 @@ type PropertyUsage = {
 };
 
 useHead({
-  title: "タスク情報の紐付け"
+  title: "タスク情報の紐付け",
 });
 
 const { startLoading, finishLoading } = useLoading();

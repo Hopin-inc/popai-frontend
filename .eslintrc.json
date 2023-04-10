@@ -45,6 +45,14 @@
       "error",
       "last"
     ],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "template-curly-spacing": [
+      "error",
+      "always"
+    ],
     "no-cond-assign": "off",
     "no-case-declarations": "off",
     "no-unexpected-multiline": "error",
@@ -89,6 +97,7 @@
           "{}": false
         }
       }
-    ]
+    ],
+    "vue/multi-word-component-names": "off"
   }
 }

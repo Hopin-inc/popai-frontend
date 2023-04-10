@@ -12,7 +12,7 @@ const onResponseError = async ({ response }: FetchContext) => {
     const { fullPath, meta } = useRoute();
     setUser(null);
     const redirectTo = meta.layout === "default" || meta.layout === undefined
-      ? `/login?${toQueryString({ redirect: fullPath })}`
+      ? `/login?${ toQueryString({ redirect: fullPath }) }`
       : "/login";
     await useRouter().push(redirectTo);
   }
@@ -20,7 +20,7 @@ const onResponseError = async ({ response }: FetchContext) => {
 
 export const fetcher = <ResT>(
   path: string,
-  fetchOptions: NitroFetchOptions<string> = {}
+  fetchOptions: NitroFetchOptions<string> = {},
 ) => {
   const config = useRuntimeConfig();
   const defaultOptions: NitroFetchOptions<string> = {
@@ -31,11 +31,11 @@ export const fetcher = <ResT>(
     onRequest,
     onRequestError,
     onResponse,
-    onResponseError
+    onResponseError,
   };
   return async () => {
     try {
-      return await $fetch<ResT>(path, { ...defaultOptions, ...fetchOptions })
+      return await $fetch<ResT>(path, { ...defaultOptions, ...fetchOptions });
     } catch (error) {
       const message = (error as FetchError).response?._data?.message;
       throw new Error(message);

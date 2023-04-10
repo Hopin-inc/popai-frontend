@@ -13,8 +13,6 @@ export const getLoggedInAccount = async (): Promise<AccountInfo | void> => {
     if (data.value.status === StatusCodes.OK) {
       return data.value.data;
     }
-  } else if (error.value) {
-    console.error(error.value);
   }
 };
 
@@ -29,8 +27,6 @@ export const signIn = async (idToken: string): Promise<AccountInfo | void> => {
     if (data.value.status === StatusCodes.OK) {
       return data.value.data;
     }
-  } else if (error.value) {
-    console.error(error.value);
   }
 };
 
@@ -41,8 +37,6 @@ export const signOut = async () => {
   );
   if (data.value && !error.value) {
     return data.value;
-  } else if (error.value) {
-    console.error(error.value);
   }
 };
 
@@ -57,8 +51,6 @@ export const signUp = async (info: SignUpInfo) => {
   );
   if (data.value && !error.value) {
     return data.value;
-  } else if (error.value) {
-    throw error.value;
   }
 };
 

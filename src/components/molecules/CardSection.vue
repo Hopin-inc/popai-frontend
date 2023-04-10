@@ -10,7 +10,7 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  title: ""
+  title: "",
 });
 </script>
 

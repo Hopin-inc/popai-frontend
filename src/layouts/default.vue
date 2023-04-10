@@ -23,7 +23,7 @@
 import { ref } from "vue";
 
 useHead({
-  titleTemplate: title => title ? `${title} - POPAI` : "POPAI"
+  titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
 });
 
 const { organization, name, logout } = useAuth();

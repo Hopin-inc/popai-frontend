@@ -11,7 +11,7 @@ export type MenuItem = {
   title: string;
   icon?: string;
   href?: string;
-  action?: Function;
+  action?: (...args: any[]) => any;
 } | {
   type: "divider";
 } | {

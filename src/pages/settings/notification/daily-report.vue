@@ -64,7 +64,7 @@ watch(channel, async (next) => {
 });
 watch([enablePending, time], async () => {
   await update({
-    timings: [{ enablePending: enablePending.value, time: time.value }]
+    timings: [{ enablePending: enablePending.value, time: time.value }],
   });
 });
 const update = async (config: Partial<ConfigDailyReport>) => {

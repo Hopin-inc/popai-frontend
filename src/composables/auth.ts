@@ -68,7 +68,9 @@ export const useAuth = () => {
   };
 
   const setUser = (state: Ref<Account | null>) => {
-    return (user: Account | null) => state.value = user;
+    return (user: Account | null) => {
+      state.value = user;
+    };
   };
 
   return {
@@ -79,6 +81,6 @@ export const useAuth = () => {
     fetchAuthState: fetchAuthState(currentUser),
     setUser: setUser(currentUser),
     login: login(currentUser),
-    logout: logout(currentUser)
+    logout: logout(currentUser),
   };
 };

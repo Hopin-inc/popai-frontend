@@ -148,7 +148,7 @@ const submit = async () => {
             const { user } = credential;
             if (!user.emailVerified) {
               await sendEmailVerification(user, {
-                url: `${config.public.apiBaseUrl}/auth/verify?email=${encodeURIComponent(formData.email)}`,
+                url: `${ config.public.apiBaseUrl }/auth/verify?email=${ encodeURIComponent(formData.email) }`,
               });
               alert(DialogMessages.VERIFICATION_EMAIL_SENT);
             } else {
