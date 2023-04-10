@@ -21,7 +21,7 @@ onMounted(async () => {
 </script>
 
 <style lang="sass">
-$font-family: "Inter", "Noto Sans JP", sans-serif
+$font-family: "Lato", "Noto Sans JP", sans-serif
 
 .v-application
   [class*='text-']
