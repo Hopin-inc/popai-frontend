@@ -23,8 +23,8 @@ onMounted(async () => {
 <style lang="sass">
 $font-family: "Lato", "Noto Sans JP", sans-serif
 
-.v-application
+body
+  font-family: $font-family !important
   [class*='text-']
     font-family: $font-family !important
-  font-family: $font-family !important
 </style>
