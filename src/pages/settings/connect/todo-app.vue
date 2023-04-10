@@ -11,7 +11,7 @@ SettingCard(
           :href="`${ config.public.apiBaseUrl }/notion/install`"
           target="_blank"
           prepend-icon="mdi-connection"
-          variant="flat"
+          flat
           color="primary"
         ) {{ isNotionConnected ? "再度連携する" : "連携する" }}
         .d-flex.align-center(v-if="isNotionConnected").ml-4
@@ -23,7 +23,7 @@ SettingCard(
 import { TodoAppId } from "~/consts/enum";
 
 useHead({
-  title: "タスク管理ツール連携"
+  title: "タスク管理ツール連携",
 });
 
 const { implementedTodoApps } = useInfo();

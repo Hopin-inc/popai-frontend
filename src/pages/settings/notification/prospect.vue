@@ -80,10 +80,10 @@ SettingCard(
 </template>
 
 <script setup lang="ts">
-import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
-import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import { ref } from "vue";
 import { VForm } from "vuetify/components";
+import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
+import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 
 type SelectItem = {
   id: number | string;
@@ -153,11 +153,22 @@ watch(() => [from, fromDaysBefore, beginOfWeek], async () => {
     });
   }
 }, { deep: true });
-watch(() => [frequency, ...frequencyDaysBefore.value], async () => {
+watch(frequency, async () => {
+  if (frequency.value !== 3) {
+    frequencyDaysBefore.value = [];
+  }
   if (frequency.value) {
     await update({
       frequency: frequency.value,
-      frequencyDaysBefore: frequencyDaysBefore.value
+      frequencyDaysBefore: frequencyDaysBefore.value,
+    });
+  }
+});
+watch(() => [...frequencyDaysBefore.value], async () => {
+  if (frequency.value) {
+    await update({
+      frequency: frequency.value,
+      frequencyDaysBefore: frequencyDaysBefore.value,
     });
   }
 }, { deep: true });
@@ -213,7 +224,7 @@ const addRow = () => {
   timings.value.push({
     time: "09:00:00",
     askPlan: false,
-    askPlanMilestone: "13:00:00"
+    askPlanMilestone: "13:00:00",
   });
 };
 const deleteRow = (index: number) => {

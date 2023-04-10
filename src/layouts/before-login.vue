@@ -6,12 +6,12 @@ v-main
 
 <script setup lang="ts">
 useHead({
-  titleTemplate: title => title ? `${title} - POPAI` : "POPAI"
+  titleTemplate: title => title ? `${title} - POPAI` : "POPAI",
 });
 </script>
 
 <style scoped lang="sass">
 .card-container
-  max-width: 480px
+  max-width: 540px
   margin: auto
 </style>

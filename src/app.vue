@@ -27,4 +27,7 @@ body
   font-family: $font-family !important
   [class*='text-']
     font-family: $font-family !important
+  .v-checkbox-btn, .v-radio, .v-selection-control
+    > .v-label
+      opacity: initial
 </style>

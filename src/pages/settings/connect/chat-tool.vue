@@ -11,7 +11,7 @@ SettingCard(
           :href="`${ config.public.apiBaseUrl }/slack/install`"
           target="_blank"
           prepend-icon="mdi-connection"
-          variant="flat"
+          flat
           color="primary"
         ) {{ isSlackConnected ? "再度連携する" : "連携する" }}
         .d-flex.align-center(v-if="isSlackConnected").ml-4
@@ -23,7 +23,7 @@ SettingCard(
 import { ChatToolId } from "~/consts/enum";
 
 useHead({
-  title: "チャットツール連携"
+  title: "チャットツール連携",
 });
 
 const { implementedChatTools } = useInfo();

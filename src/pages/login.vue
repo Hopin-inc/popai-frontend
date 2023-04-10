@@ -4,32 +4,38 @@
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle ログイン
     v-form(ref="form" @submit.prevent="submit")
-      v-text-field(
-        v-model="formData.email"
-        autocomplete="email"
-        type="email"
-        :rules="[Validations.required, Validations.email]"
-        label="メールアドレス"
-        prepend-icon="mdi-email"
-        variant="outlined"
-        color="primary"
-        autofocus
-      ).mb-4
-      v-text-field(
-        v-model="formData.password"
-        autocomplete="current-password"
-        :type="passType"
-        :rules="[Validations.required]"
-        label="パスワード"
-        prepend-icon="mdi-lock"
-        :append-inner-icon="passAppendIcon"
-        @click:append-inner="showPassword = !showPassword"
-        variant="outlined"
-        color="primary"
-      ).mb-4
-      .d-flex.flex-column.align-center
-        v-btn(type="submit" color="primary") ログイン
-        NuxtLink(:to="toResetAccount").mt-4.text-caption.text-grey パスワードをお忘れの方はこちら
+      v-row.justify-center
+        v-col(cols="12" md="11")
+          v-text-field(
+            v-model="formData.email"
+            autocomplete="email"
+            type="email"
+            :rules="[Validations.required, Validations.email]"
+            label="メールアドレス"
+            prepend-icon="mdi-email"
+            variant="outlined"
+            color="primary"
+            autofocus
+            hide-details="auto"
+          ).mb-4
+        v-col(cols="12" md="11")
+          v-text-field(
+            v-model="formData.password"
+            autocomplete="current-password"
+            :type="passType"
+            :rules="[Validations.required]"
+            label="パスワード"
+            prepend-icon="mdi-lock"
+            :append-inner-icon="passAppendIcon"
+            @click:append-inner="showPassword = !showPassword"
+            variant="outlined"
+            color="primary"
+            hide-details="auto"
+          ).mb-4
+        v-col(cols="12" md="10")
+          .d-flex.flex-column.align-center
+            v-btn(type="submit" color="primary" flat) ログイン
+            NuxtLink(:to="toResetAccount").mt-4.text-caption.text-grey パスワードをお忘れの方はこちら
   .d-flex.justify-center.mt-4
     v-btn(nuxt to="/create-account" variant="text" color="primary" append-icon="mdi-arrow-right").px-2 アカウントを作成する (無料)
 </template>
@@ -44,10 +50,10 @@ type LoginInfo = {
 };
 
 definePageMeta({
-  layout: "before-login"
+  layout: "before-login",
 });
 useHead({
-  title: "ログイン"
+  title: "ログイン",
 });
 
 const { login } = useAuth();

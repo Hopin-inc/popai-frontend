@@ -4,73 +4,89 @@
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle 新規登録
     v-form(ref="form" @submit.prevent="submit")
-      v-text-field(
-        v-model="formData.organization"
-        autocomplete="organization"
-        type="text"
-        :rules="[Validations.required]"
-        label="チーム名 *"
-        variant="outlined"
-        color="primary"
-        autofocus
-      ).mb-4
-      v-text-field(
-        v-model="formData.name"
-        autocomplete="name"
-        type="text"
-        :rules="[Validations.required]"
-        label="ご担当者名 *"
-        variant="outlined"
-        color="primary"
-      ).mb-4
-      v-text-field(
-        v-model="formData.email"
-        autocomplete="email"
-        type="email"
-        :rules="[Validations.required, Validations.email]"
-        label="メールアドレス *"
-        variant="outlined"
-        color="primary"
-      ).mb-4
-      v-text-field(
-        v-model="formData.password"
-        autocomplete="new-password"
-        :type="passType"
-        :rules="[Validations.required, Validations.password]"
-        label="パスワード *"
-        :append-inner-icon="passAppendIcon"
-        @click:append-inner="showPassword = !showPassword"
-        variant="outlined"
-        color="primary"
-      ).mb-4
-      v-text-field(
-        v-model="formData.passwordConfirm"
-        autocomplete="new-password"
-        :type="passTypeConfirm"
-        :rules="[Validations.required, Validations.password]"
-        label="パスワード (確認) *"
-        :append-inner-icon="passAppendIconConfirm"
-        @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
-        variant="outlined"
-        color="primary"
-      )
-      v-checkbox(v-model="formData.agree" color="primary")
-        template(#label)
-          NuxtLink(:href="URL_TERMS_OF_USE" target="_blank").text--secondary.no-ul.mr-1 利用規約
-            v-icon(size="xs") mdi-launch
-          span に同意します。
-      .d-flex.flex-column.align-center
-        v-btn(type="submit" color="primary") 新規登録
+      v-row
+        v-col(cols="12")
+          v-text-field(
+            v-model="formData.organization"
+            autocomplete="organization"
+            type="text"
+            :rules="[Validations.required]"
+            label="チーム名 *"
+            variant="outlined"
+            color="primary"
+            autofocus
+            hide-details="auto"
+          )
+        v-col(cols="12")
+          v-text-field(
+            v-model="formData.name"
+            autocomplete="name"
+            type="text"
+            :rules="[Validations.required]"
+            label="ご担当者名 *"
+            variant="outlined"
+            color="primary"
+            hide-details="auto"
+          )
+        v-col(cols="12")
+          v-text-field(
+            v-model="formData.email"
+            autocomplete="email"
+            type="email"
+            :rules="[Validations.required, Validations.email]"
+            label="メールアドレス *"
+            variant="outlined"
+            color="primary"
+            hide-details="auto"
+          )
+        v-col(cols="12" md="6")
+          v-text-field(
+            v-model="formData.password"
+            autocomplete="new-password"
+            :type="passType"
+            :rules="[Validations.required, Validations.password]"
+            label="パスワード *"
+            :append-inner-icon="passAppendIcon"
+            @click:append-inner="showPassword = !showPassword"
+            variant="outlined"
+            color="primary"
+            hide-details="auto"
+          )
+        v-col(cols="12" md="6")
+          v-text-field(
+            v-model="formData.passwordConfirm"
+            autocomplete="new-password"
+            :type="passTypeConfirm"
+            :rules="[Validations.required, Validations.password]"
+            label="パスワード (確認) *"
+            :append-inner-icon="passAppendIconConfirm"
+            @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
+            variant="outlined"
+            color="primary"
+            hide-details="auto"
+          )
+        v-col(cols="12")
+          v-checkbox(v-model="formData.agree" color="primary" hide-details="auto")
+            template(#label)
+              p
+                NuxtLink(:href="URL_TERMS_OF_USE" target="_blank").text-primary.no-ul.mr-1 利用規約
+                  v-icon(size="xs" tag="span") mdi-launch
+                span.mr-1 および
+                NuxtLink(:href="URL_PRIVACY_POLICY" target="_blank").text-primary.no-ul.mr-1 プライバシーポリシー
+                  v-icon(size="xs" tag="span") mdi-launch
+                span に同意します。
+        v-col(cols="12").text-center
+          v-btn(type="submit" color="primary" flat) 新規登録
   v-btn(nuxt to="/login" variant="text" color="primary" prepend-icon="mdi-chevron-left").px-2.mt-2 ログイン画面に戻る
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { VForm } from "vuetify/components";
+import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
 import Validations from "~/utils/validations";
 import { signUp } from "~/apis/auth";
-import { URL_TERMS_OF_USE } from "~/consts/links";
-import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
+import { URL_TERMS_OF_USE, URL_PRIVACY_POLICY } from "~/consts/links";
 import { DialogMessages, getMessageByAuthError } from "~/utils/messages";
 
 type SignUpInfo = {
@@ -83,10 +99,10 @@ type SignUpInfo = {
 }
 
 definePageMeta({
-  layout: "before-login"
+  layout: "before-login",
 });
 useHead({
-  title: "パスワードの再設定"
+  title: "パスワードの再設定",
 });
 
 const { startLoading, finishLoading } = useLoading();
@@ -99,7 +115,7 @@ const formData = reactive<SignUpInfo>({
   email: "",
   password: "",
   passwordConfirm: "",
-  agree: false
+  agree: false,
 });
 const showPassword = ref<boolean>(false);
 const showPasswordConfirm = ref<boolean>(false);
@@ -107,6 +123,18 @@ const passType = computed(() => showPassword.value ? "text" : "password");
 const passTypeConfirm = computed(() => showPasswordConfirm.value ? "text" : "password");
 const passAppendIcon = computed(() => showPassword.value ? "mdi-eye" : "mdi-eye-off");
 const passAppendIconConfirm = computed(() => showPasswordConfirm.value ? "mdi-eye" : "mdi-eye-off");
+
+onBeforeRouteLeave((_to, _from, next) => {
+  const { organization, name, email, password, passwordConfirm } = formData;
+  if (organization !== "" || name !== "" || email !== "" || password !== "" || passwordConfirm !== "") {
+    const confirmed = confirm("ページを移動すると、入力途中の内容は失われてしまいます。\n本当にページを移動しますか？");
+    if (confirmed) {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 const submit = async () => {
   const validation = await form.value?.validate();
@@ -120,7 +148,7 @@ const submit = async () => {
             const { user } = credential;
             if (!user.emailVerified) {
               await sendEmailVerification(user, {
-                url: `${ config.public.apiBaseUrl }/auth/verify?email=${ encodeURIComponent(formData.email) }`,
+                url: `${config.public.apiBaseUrl}/auth/verify?email=${encodeURIComponent(formData.email)}`,
               });
               alert(DialogMessages.VERIFICATION_EMAIL_SENT);
             } else {
