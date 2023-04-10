@@ -1,7 +1,7 @@
 <template lang="pug">
 SettingCard(
   title="チャットツール連携"
-  subtitle="チャットツール (Slack, LINE) とPopaiを接続するための設定です。"
+  subtitle="チャットツール (Slack, LINE) とPOPAIを接続するための設定です。"
 )
   template(#content)
     CardSection(title="Slack")

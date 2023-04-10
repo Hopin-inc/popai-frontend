@@ -19,3 +19,12 @@ onMounted(async () => {
   finishLoading();
 });
 </script>
+
+<style lang="sass">
+$font-family: "Inter", "Noto Sans JP", sans-serif
+
+.v-application
+  [class*='text-']
+    font-family: $font-family !important
+  font-family: $font-family !important
+</style>

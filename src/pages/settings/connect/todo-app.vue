@@ -1,7 +1,7 @@
 <template lang="pug">
 SettingCard(
   title="タスク管理ツール連携"
-  subtitle="タスク管理ツール (Notion, Trello) とPopaiを接続するための設定です。"
+  subtitle="タスク管理ツール (Notion, Trello) とPOPAIを接続するための設定です。"
 )
   template(#content)
     CardSection(title="Notion")

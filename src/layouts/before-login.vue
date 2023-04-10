@@ -6,7 +6,7 @@ v-main
 
 <script setup lang="ts">
 useHead({
-  titleTemplate: title => title ? `${title} - Popai` : "Popai"
+  titleTemplate: title => title ? `${title} - POPAI` : "POPAI"
 });
 </script>
 

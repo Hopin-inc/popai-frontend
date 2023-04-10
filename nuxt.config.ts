@@ -51,7 +51,7 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       "Noto+Sans+JP": true,
-      Roboto: true
+      "Inter": true
     }
   }
 });
