@@ -1,9 +1,9 @@
 <template lang="pug">
 .fill-height
   v-app-bar(flat).px-4.px-md-8.menu-bar.border-b
-    v-app-bar-title
-      NuxtLink(to="/")
-        img(src="/images/logo_name.svg" height="36").mt-2
+    template(#prepend)
+      NuxtLink(to="/").d-flex.align-center
+        img(src="/images/logo_name.svg" height="40")
     template(#append)
       v-menu(v-model="menu" :close-on-content-click="false")
         template(#activator="{ props }")

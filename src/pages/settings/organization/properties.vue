@@ -12,21 +12,21 @@ SettingCard(
       )
     CardSection(title="カラム設定")
       v-row
-        v-col(cols="4")
+        v-col(cols="12" md="4")
           FormPart(title="タスク名")
             SelectBox(
               v-model="name.property"
               :items="propertiesForName"
               label="カラムを選択"
             )
-        v-col(cols="4")
+        v-col(cols="12" md="4")
           FormPart(title="担当者")
             SelectBox(
               v-model="assignee.property"
               :items="propertiesForPeople"
               label="カラムを選択"
             )
-        v-col(cols="4")
+        v-col(cols="12" md="4")
           FormPart(title="期日")
             SelectBox(
               v-model="deadline.property"
@@ -36,19 +36,19 @@ SettingCard(
         v-col(cols="12")
           FormPart(title="完了しているかどうか")
             v-row
-              v-col(cols="4")
+              v-col(cols="12" md="4")
                 SelectBox(
                   v-model="isDone.property"
                   :items="propertiesForStatus"
                   label="カラムを選択"
                 )
-              v-col(cols="8" v-if="isDone.requireOptions")
+              v-col(cols="12" md="8" v-if="isDone.requireOptions")
                 MultipleSelectBox(
                   v-model="isDone.options"
                   :items="isDone.availableOptions"
                   label="「完了」に対応するラベル"
                 )
-              v-col(cols="8" v-if="isDone.requireCheckbox").d-flex.align-center
+              v-col(cols="12" md="8" v-if="isDone.requireCheckbox").d-flex.align-center
                 p.text-body-2 「完了」に対応する値:
                 v-checkbox(
                   v-model="isDone.isChecked"
@@ -59,19 +59,19 @@ SettingCard(
         v-col(cols="12")
           FormPart(title="保留かどうか")
             v-row
-              v-col(cols="4")
+              v-col(cols="12" md="4")
                 SelectBox(
                   v-model="isClosed.property"
                   :items="propertiesForStatus"
                   label="カラムを選択"
                 )
-              v-col(cols="8" v-if="isClosed.requireOptions")
+              v-col(cols="12" md="8" v-if="isClosed.requireOptions")
                 MultipleSelectBox(
                   v-model="isClosed.options"
                   :items="isClosed.availableOptions"
                   label="「保留」に対応するラベル"
                 )
-              v-col(cols="8" v-if="isClosed.requireCheckbox").d-flex.align-center
+              v-col(cols="12" md="8" v-if="isClosed.requireCheckbox").d-flex.align-center
                 p.text-body-2 「保留」に対応する値:
                 v-checkbox(
                   v-model="isClosed.isChecked"
