@@ -29,5 +29,5 @@ body
     font-family: $font-family !important
   .v-checkbox-btn, .v-radio, .v-selection-control
     > .v-label
-      opacity: initial
+      opacity: var(--v-high-emphasis-opacity)
 </style>
