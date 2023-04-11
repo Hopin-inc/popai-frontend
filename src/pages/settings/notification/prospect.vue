@@ -17,16 +17,18 @@ SettingCard(
                 span タスクの着手日から
             v-radio(:value="2")
               template(#label)
-                .d-flex.align-center
+                .d-flex.align-center.flex-wrap
                   span 期日の
                   InlineSelectBox(v-model="fromDaysBefore" :items="daysBefore" :readonly="from !== 2").w-80px
                   span から
             v-radio(:value="3")
               template(#label)
-                .d-flex.align-center
-                  span 期日が属する週の初め（
-                  InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
-                  span 曜日）
+                .d-flex.align-center.flex-wrap
+                  span 期日が属する週の初め
+                  .d-flex.align-center
+                    span （
+                    InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
+                    span 曜日）
             v-radio(:value="4")
               template(#label)
                 span タスクの作成日から
@@ -45,34 +47,41 @@ SettingCard(
                 span 中間日のみ
             v-radio(:value="3").fill-label.allow-overflow.flex-fill
               template(#label)
-                span.mr-2 指定日:
-                MultipleSelectBox(
-                  v-model="frequencyDaysBefore"
-                  label="期日の…"
-                  :items="daysBefore"
-                  :readonly="frequency !== 3"
-                  density="compact"
-                ).flex-fill
+                .d-flex.align-center.flex-wrap.w-100
+                  span.mr-2 指定日:
+                  MultipleSelectBox(
+                    v-model="frequencyDaysBefore"
+                    label="期日の…"
+                    :items="daysBefore"
+                    :readonly="frequency !== 3"
+                    density="compact"
+                  ).flex-fill.my-2
     CardSection(title="通知時刻")
-      v-table(v-if="timings.length").overflow-x-auto
-        thead
-          tr
-            th.w-160px 時刻
-            th.w-fit-content 指定時刻までに着手するタスクを選択
-            th.w-80px 操作
-        tbody
-          tr(v-for="(timing, index) in timings" :key="timing")
-            td: SettingTableSelectBox(v-model="timing.time" :items="times")
-            td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
-              .d-flex.align-center(v-if="timing.askPlan")
-                InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
-                span までに着手するタスクを選択
-            td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
-      p(v-else) 通知時刻が設定されていません。
-      v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加
+      v-form(ref="prospectTimingForm")
+        .d-flex.align-center(v-if="timingsMessage")
+          v-icon(color="error" size="sm" ).mr-1 mdi-alert
+          p.text-caption.text-error.font-weight-bold {{ timingsMessage }}
+        v-table(v-if="timings.length").overflow-x-auto
+          thead
+            tr
+              th.w-160px 時刻
+              th.w-fit-content.text-no-wrap 指定時刻までに着手するタスクを選択
+              th.w-80px 操作
+          tbody
+            tr(v-for="(timing, index) in timings" :key="timing")
+              td: SettingTableSelectBox(v-model="timing.time" :items="times" :rules="[validationNoDuplicate]")
+              td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
+                .d-flex.align-center(v-if="timing.askPlan")
+                  InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
+                  span まで
+              td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
+        p(v-else) 通知時刻が設定されていません。
+        v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { VForm } from "vuetify/components";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 
@@ -106,6 +115,7 @@ type ConfigProspectTiming = {
 const { startLoading, finishLoading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 
+const prospectTimingForm = ref<VForm>();
 const isInit = ref<boolean>(true);
 const enabled = ref<boolean>(false);
 const channel = ref<string | null>(null);
@@ -116,6 +126,7 @@ const beginOfWeek = ref<number | null>(1);
 const frequency = ref<number | null>(null);
 const frequencyDaysBefore = ref<number[]>([]);
 const timings = ref<Timing[]>([]);
+const timingsMessage = ref<string | null>(null);
 
 const days: SelectItem[] = DAYS_OF_WEEK;
 const daysBefore: SelectItem[] = DAYS_BEFORE;
@@ -142,16 +153,35 @@ watch(() => [from, fromDaysBefore, beginOfWeek], async () => {
     });
   }
 }, { deep: true });
-watch(() => [frequency, ...frequencyDaysBefore.value], async () => {
+watch(frequency, async () => {
+  if (frequency.value !== 3) {
+    frequencyDaysBefore.value = [];
+  }
   if (frequency.value) {
     await update({
       frequency: frequency.value,
-      frequencyDaysBefore: frequencyDaysBefore.value
+      frequencyDaysBefore: frequencyDaysBefore.value,
+    });
+  }
+});
+watch(() => [...frequencyDaysBefore.value], async () => {
+  if (frequency.value) {
+    await update({
+      frequency: frequency.value,
+      frequencyDaysBefore: frequencyDaysBefore.value,
     });
   }
 }, { deep: true });
 watch(() => [...timings.value], async (next) => {
-  await update({ timings: next });
+  const validation = await prospectTimingForm.value?.validate();
+  if (validation?.valid) {
+    timingsMessage.value = null;
+    await update({ timings: next });
+  } else {
+    const errors = validation?.errors ?? [];
+    const errorMessages = [...new Set(errors.map(e => e.errorMessages.join(", ")))];
+    timingsMessage.value = errorMessages.join(", ");
+  }
 }, { deep: true });
 const update = async (config: Partial<ConfigProspect>) => {
   if (!isInit.value) {
@@ -194,13 +224,16 @@ const addRow = () => {
   timings.value.push({
     time: "09:00:00",
     askPlan: false,
-    askPlanMilestone: "13:00:00"
+    askPlanMilestone: "13:00:00",
   });
 };
 const deleteRow = (index: number) => {
   timings.value.splice(index, 1);
 };
 const times: SelectItem[] = TIME_LIST;
+const validationNoDuplicate = (value: string) => {
+  return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : false;
+};
 </script>
 
 <style scoped lang="sass">

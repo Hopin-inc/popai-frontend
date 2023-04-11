@@ -28,7 +28,7 @@ type User = {
 };
 
 useHead({
-  title: "タスク管理ツール連携"
+  title: "タスク管理ツール連携",
 });
 
 const { startLoading, finishLoading } = useLoading();

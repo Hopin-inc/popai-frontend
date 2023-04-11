@@ -6,7 +6,7 @@ export const generateTimeListByInterval = (
   intervalMinutes: number,
   from?: Dayjs,
   to?: Dayjs,
-  fmt: string = "HH:mm"
+  fmt: string = "HH:mm",
 ): string[] => {
   if (!from) {
     from = $dayjs().set("hour", 0).set("minute", 0).set("second", 0);
@@ -27,7 +27,7 @@ export const getTimingDayAfterText = (days: number): string => {
     case 1:
       return "翌日";
     default:
-      return `${days}日後`;
+      return `${ days }日後`;
   }
 };
 
@@ -38,7 +38,7 @@ export const getTimingDayBeforeText = (days: number): string => {
     case 1:
       return "前日";
     default:
-      return `${days}日前`;
+      return `${ days }日前`;
   }
 };
 

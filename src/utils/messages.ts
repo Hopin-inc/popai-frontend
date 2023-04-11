@@ -1,4 +1,5 @@
-export const getMessageByLoginError = (code: string): string => {
+
+export const getMessageByAuthError = (code: string): string => {
   switch (code) {
     case "auth/invalid-email":
       return "無効なメールアドレスです。\n" +
@@ -19,4 +20,18 @@ export const getMessageByLoginError = (code: string): string => {
       return "ログインできませんでした。\n" +
         "ネットワークの接続状態を確認し、もう一度ログインしてください。";
   }
+};
+
+export const ErrorMessages = {
+  EMAIL_NOT_VERIFIED: "ご利用には、メールアドレスの確認が必要です。\n" +
+    "メールに記載されたURLにアクセスして、メールアドレスの確認を完了させてください。\n\n" +
+    "メールの再送をご希望されますか？",
+};
+
+export const DialogMessages = {
+  VERIFICATION_EMAIL_SENT: "ご登録のメールアドレス宛にメールが送信されます。\n" +
+    "メールに記載されたURLにアクセスして、メールアドレスの確認を完了させてください。\n\n" +
+    "※ 5分程度待ってもメールが届かない場合は、迷惑メールフォルダに振り分けられていないか、" +
+    "また登録したメールアドレスが誤っていないか、ご確認ください。",
+
 };

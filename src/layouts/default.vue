@@ -1,9 +1,9 @@
 <template lang="pug">
 .fill-height
   v-app-bar(flat).px-4.px-md-8.menu-bar.border-b
-    v-app-bar-title
-      NuxtLink(to="/")
-        img(src="/images/logo_name.svg" height="28").mt-2
+    template(#prepend)
+      NuxtLink(to="/").d-flex.align-center
+        img(src="/images/logo_name.svg" height="40")
     template(#append)
       v-menu(v-model="menu" :close-on-content-click="false")
         template(#activator="{ props }")
@@ -23,7 +23,7 @@
 import { ref } from "vue";
 
 useHead({
-  titleTemplate: title => title ? `${title} - sakura3` : "sakura3"
+  titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
 });
 
 const { organization, name, logout } = useAuth();

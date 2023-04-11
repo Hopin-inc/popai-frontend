@@ -17,7 +17,7 @@ export const useLoading = () => {
   };
 
   return {
-    loading: loading,
+    loading,
     startLoading: start(loadingCount),
     finishLoading: finish(loadingCount),
   };

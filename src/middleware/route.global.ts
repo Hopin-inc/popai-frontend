@@ -1,10 +1,10 @@
 import { toQueryString } from "~/utils/common";
 
-export default defineNuxtRouteMiddleware(async (to, _from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   if (!process.server) {
     const { isLoggedIn } = useAuth();
     if (!isLoggedIn && (to.meta.layout === "default" || to.meta.layout === undefined)) {
-      const redirectTo = `/login?${toQueryString({ redirect: to.fullPath })}`;
+      const redirectTo = `/login?${ toQueryString({ redirect: to.fullPath }) }`;
       return navigateTo(redirectTo);
     }
     switch (to.path) {
@@ -19,7 +19,6 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
       case "/settings/notification":
         return navigateTo("/settings/notification/common");
       default:
-        return;
     }
   }
 });

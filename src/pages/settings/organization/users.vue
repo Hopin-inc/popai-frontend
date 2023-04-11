@@ -43,7 +43,7 @@ type User = {
 };
 
 useHead({
-  title: "従業員の紐付け"
+  title: "従業員の紐付け",
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
@@ -74,7 +74,7 @@ const fetchUserConfigs = async () => {
         chatToolUserId: config.chatToolUserId ?? null,
         todoAppUserId: config.todoAppUserId ?? null,
         index,
-        new: false
+        new: false,
       }));
     });
   }
@@ -84,11 +84,11 @@ const createConfig = (config: Config) => {
   const reactiveUser = reactive({
     id: config.user.id,
     name: customRef((track, trigger) => ({
-      get() {
+      get () {
         track();
         return config.user.name;
       },
-      async set(next) {
+      async set (next) {
         if (config.user.name !== next) {
           config.user.name = next;
           await onUserNameChanged(config.index);
@@ -100,11 +100,11 @@ const createConfig = (config: Config) => {
   return reactive({
     user: reactiveUser,
     chatToolUserId: customRef((track, trigger) => ({
-      get() {
+      get () {
         track();
         return config.chatToolUserId;
       },
-      async set(next) {
+      async set (next) {
         if (config.chatToolUserId !== next) {
           config.chatToolUserId = next;
           await onChatToolUserIdChanged(config.index, next);
@@ -113,11 +113,11 @@ const createConfig = (config: Config) => {
       },
     })),
     todoAppUserId: customRef((track, trigger) => ({
-      get() {
+      get () {
         track();
         return config.todoAppUserId;
       },
-      async set(next) {
+      async set (next) {
         if (config.todoAppUserId !== next) {
           config.todoAppUserId = next;
           await onTodoAppUserIdChanged(config.index, next);
@@ -126,7 +126,7 @@ const createConfig = (config: Config) => {
       },
     })),
     new: config.new,
-    index: config.index
+    index: config.index,
   });
 };
 const onUserNameChanged = async (index: number) => {

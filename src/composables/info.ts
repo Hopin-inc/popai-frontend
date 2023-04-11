@@ -63,14 +63,14 @@ export const useInfo = () => {
       fetchTodoAppAccounts(todoAppAccounts)(),
       fetchTodoAppBoards(todoAppBoards)(),
     ]);
-  }
+  };
   const fetchChatTools = async () => {
     await fetchChatToolInfo(chatTools)();
     await Promise.all([
       fetchChatToolAccounts(chatToolAccounts)(),
       fetchChatToolChannels(chatToolChannels)(),
     ]);
-  }
+  };
   const fetchAll = async () => {
     await Promise.all([
       fetchTodoApps(),

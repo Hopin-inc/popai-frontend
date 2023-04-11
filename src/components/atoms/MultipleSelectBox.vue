@@ -46,14 +46,14 @@ const props = withDefaults(defineProps<Props>(), {
   itemValue: "id",
   itemTitle: "name",
   density: "comfortable",
-  readonly: false
+  readonly: false,
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
 const value = computed({
   get: () => modelValue.value,
-  set: value => emits("update:model-value", value)
+  set: value => emits("update:model-value", value),
 });
 
 const removeItem = (_e: Event, index: number) => {

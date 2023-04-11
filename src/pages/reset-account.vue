@@ -19,7 +19,7 @@
         autofocus
       ).mb-4
       .d-flex.flex-column.align-center
-        v-btn(type="submit" color="primary") 送信する
+        v-btn(type="submit" color="primary" flat) 送信する
   v-btn(nuxt :to="{ path: '/login', query }" variant="text" color="primary" prepend-icon="mdi-chevron-left").px-2.mt-2 戻る
 </template>
 
@@ -27,13 +27,13 @@
 import { ref } from "vue";
 import { VForm } from "vuetify/components";
 import Validations from "~/utils/validations";
-import { reset } from "~/apis/accounts";
+import { reset } from "~/apis/auth";
 
 definePageMeta({
-  layout: "before-login"
+  layout: "before-login",
 });
 useHead({
-  title: "パスワードの再設定"
+  title: "パスワードの再設定",
 });
 
 const { query } = useRoute();

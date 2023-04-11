@@ -7,25 +7,21 @@ import { Property, PropertyUsage, TodoAppInfo } from "~/types/settings";
 export const getTodoApps = async (): Promise<TodoAppInfo[]> => {
   const { data, error } = await useAsyncData<ApiResponse<TodoAppInfo[]>>(
     "getTodoApps",
-    fetcher("/todo-app", { method: "GET" })
+    fetcher("/todo-app", { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
 
 export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
-    `getTodoAppAccounts-${todoAppId}`,
-    fetcher(`/todo-app/${todoAppId}/accounts`, { method: "GET" })
+    `getTodoAppAccounts-${ todoAppId }`,
+    fetcher(`/todo-app/${ todoAppId }/accounts`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
@@ -37,26 +33,22 @@ export const updateTodoAppUser = async (
 ): Promise<SelectItem<string>[]> => {
   const body = { id: appUserId };
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
-    `updateTodoAppUser-${todoAppId}-${userId}`,
-    fetcher(`/todo-app/${todoAppId}/users/${userId}`, { body, method: "PATCH" })
+    `updateTodoAppUser-${ todoAppId }-${ userId }`,
+    fetcher(`/todo-app/${ todoAppId }/users/${ userId }`, { body, method: "PATCH" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
 
 export const getTodoAppBoards = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
-    `getTodoAppBoards-${todoAppId}`,
-    fetcher(`/todo-app/${todoAppId}/boards`, { method: "GET" })
+    `getTodoAppBoards-${ todoAppId }`,
+    fetcher(`/todo-app/${ todoAppId }/boards`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
@@ -65,13 +57,11 @@ export const getBoardConfig = async (
   todoAppId: ValueOf<typeof TodoAppId>,
 ): Promise<string | null> => {
   const { data, error } = await useAsyncData<ApiResponse<{ boardId: string | null }>>(
-    `getBoardConfig-${todoAppId}`,
-    fetcher(`/todo-app/${todoAppId}/board`, { method: "GET" })
+    `getBoardConfig-${ todoAppId }`,
+    fetcher(`/todo-app/${ todoAppId }/board`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data.boardId;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return null;
 };
@@ -81,27 +71,22 @@ export const updateBoardConfig = async (
   boardId: string,
 ): Promise<void> => {
   const body = { boardId };
-  const { error } = await useAsyncData<ApiResponse<void>>(
-    `updateBoardConfig-${todoAppId}`,
-    fetcher(`/todo-app/${todoAppId}/board`, { body, method: "PATCH" })
+  await useAsyncData<ApiResponse<void>>(
+    `updateBoardConfig-${ todoAppId }`,
+    fetcher(`/todo-app/${ todoAppId }/board`, { body, method: "PATCH" }),
   );
-  if (error.value) {
-    console.error(error.value);
-  }
 };
 
 export const getTodoAppProperties = async (
   todoAppId: ValueOf<typeof TodoAppId>,
-  boardId: string
+  boardId: string,
 ): Promise<Property[]> => {
   const { data, error } = await useAsyncData<ApiResponse<Property[]>>(
-    `getTodoAppProperties-${todoAppId}-${boardId}`,
-    fetcher(`/todo-app/${todoAppId}/boards/${boardId}/properties`, { method: "GET" })
+    `getTodoAppProperties-${ todoAppId }-${ boardId }`,
+    fetcher(`/todo-app/${ todoAppId }/boards/${ boardId }/properties`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
@@ -111,13 +96,11 @@ export const getTodoAppPropertyUsages = async (
   boardId: string,
 ): Promise<PropertyUsage[]> => {
   const { data, error } = await useAsyncData<ApiResponse<PropertyUsage[]>>(
-    `getTodoAppPropertyUsages-${todoAppId}-${boardId}`,
-    fetcher(`/todo-app/${todoAppId}/boards/${boardId}/usages`, { method: "GET" })
+    `getTodoAppPropertyUsages-${ todoAppId }-${ boardId }`,
+    fetcher(`/todo-app/${ todoAppId }/boards/${ boardId }/usages`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return [];
 };
@@ -128,13 +111,11 @@ export const updateTodoAppPropertyUsage = async (
   usage: PropertyUsage,
 ): Promise<PropertyUsage | null> => {
   const { data, error } = await useAsyncData<ApiResponse<PropertyUsage>>(
-    `updateTodoAppPropertyUsage-${todoAppId}-${usage.id}_${usage.usage}`,
-    fetcher(`/todo-app/${todoAppId}/boards/${boardId}/usages`, { body: usage, method: "PATCH" })
+    `updateTodoAppPropertyUsage-${ todoAppId }-${ usage.id }_${ usage.usage }`,
+    fetcher(`/todo-app/${ todoAppId }/boards/${ boardId }/usages`, { body: usage, method: "PATCH" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
-  } else if (error.value) {
-    console.error(error.value);
   }
   return null;
 };

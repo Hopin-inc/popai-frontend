@@ -1,3 +1,4 @@
 export type ValueOf<T> = T[keyof T];
 
-export type IdOptional<T extends { id: any }> = Omit<T, "id"> & { id?: T["id"] };
+export type IdOptional<T extends Record<string, any>> = SetOptional<T, "id">;
+export type SetOptional<T extends Record<string, any>, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

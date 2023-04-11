@@ -11,19 +11,19 @@ export default defineNuxtPlugin((nuxtApp) => {
       themes: {
         light: {
           colors: {
-            primary: "#2979FF",
-            secondary: "#002C75",
-            accent: "#448AFF",
-            error: "#FF1744",
-            warning: "#FFC400",
-            info: "#607D8B",
-            success: "#00C853",
-            background: "#F4F8FF"
+            primary: "#598B15",
+            secondary: "#1F3007",
+            accent: "#85BB41",
+            error: "#ca493a",
+            warning: "#ddab31",
+            info: "#2AA7AC",
+            success: "#B0C62E",
+            background: "#FCFBF6",
           },
-          dark: false
-        }
-      }
-    }
+          dark: false,
+        },
+      },
+    },
   });
 
   nuxtApp.vueApp.use(vuetify);

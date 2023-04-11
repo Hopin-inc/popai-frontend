@@ -5,37 +5,37 @@ import "@nuxtjs/google-fonts";
 export default defineNuxtConfig({
   ssr: false,
   devServer: {
-    port: 8000
+    port: 8000,
   },
   srcDir: "src",
   typescript: {
-    shim: false
+    shim: false,
   },
   css: [
     "vuetify/styles",
     "@mdi/font/css/materialdesignicons.css",
     "~/assets/sass/variables.sass",
-    "~/assets/sass/style.sass"
+    "~/assets/sass/style.sass",
   ],
   build: {
     transpile: [
-      "vuetify"
+      "vuetify",
     ],
   },
   modules: [
-    "@nuxtjs/google-fonts"
+    "@nuxtjs/google-fonts",
   ],
   components: [
     { path: "~/components/atoms/", prefix: undefined },
     { path: "~/components/molecules/", prefix: undefined },
-    { path: "~/components/organisms/", prefix: undefined }
+    { path: "~/components/organisms/", prefix: undefined },
   ],
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
       clientBaseUrl: process.env.CLIENT_BASE_URL,
       identityApiKey: process.env.IDENTITY_API_KEY,
-    }
+    },
   },
   app: {
     head: {
@@ -51,7 +51,7 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       "Noto+Sans+JP": true,
-      Roboto: true
-    }
-  }
+      Lato: true,
+    },
+  },
 });

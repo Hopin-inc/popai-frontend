@@ -5,6 +5,7 @@ v-select(
   :item-value="props.itemValue"
   :item-title="props.itemTitle"
   :readonly="props.readonly"
+  :rules="props.rules"
   variant="outlined"
   density="compact"
   color="primary"
@@ -23,6 +24,7 @@ type Props = {
   itemValue?: string;
   itemTitle?: string;
   readonly?: boolean;
+  rules?: any[];
 };
 type Emits = {
   (e: "update:model-value", value: number | string | null): void
@@ -33,14 +35,15 @@ const props = withDefaults(defineProps<Props>(), {
   items: () => [],
   itemValue: "id",
   itemTitle: "name",
-  readonly: false
+  readonly: false,
+  rules: () => [],
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
 const value = computed({
   get: () => modelValue.value,
-  set: value => emits("update:model-value", value)
+  set: value => emits("update:model-value", value),
 });
 </script>
 
