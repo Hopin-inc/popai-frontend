@@ -26,7 +26,7 @@ useHead({
   title: "タスク管理ツール連携",
 });
 
-const { implementedTodoApps } = useInfo();
+const { implementedTodoApp } = useInfo();
 const config = useRuntimeConfig();
-const isNotionConnected = computed(() => implementedTodoApps.value.some(t => t.todoAppId === TodoAppId.NOTION));
+const isNotionConnected = computed(() => implementedTodoApp.value?.todoAppId === TodoAppId.NOTION);
 </script>

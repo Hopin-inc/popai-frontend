@@ -10,7 +10,7 @@
           v-btn(icon="mdi-account" v-bind="props").bg-grey-lighten-4
         v-card.w-100
           v-list
-            v-list-item(:title="organization" :subtitle="name" prepend-icon="mdi-account")
+            v-list-item(:title="name" prepend-icon="mdi-office-building")
           v-divider
           v-list
             v-list-item(title="ログアウト" @click.once="signOut" prepend-icon="mdi-logout")
@@ -41,5 +41,7 @@ const signOut = async () => {
 .page-container
   max-width: 1280px
   margin: auto
-
+:deep(.v-list-item__prepend > .v-icon)
+  margin-inline-end: 16px
+  -webkit-margin-end: 16px
 </style>

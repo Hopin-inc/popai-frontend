@@ -32,12 +32,10 @@ const menuRounded = computed(() => mdAndUp.value ? "lg" : undefined);
 const menusBeforeConnect: MenuItem[] = [
   { type: "subheader", title: "ツール連携" },
   { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
-  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" },
 ];
 const menusAfterConnect: MenuItem[] = [
   { type: "subheader", title: "ツール連携" },
   { type: "item", title: "タスク管理ツール", href: "/settings/connect/todo-app" },
-  { type: "item", title: "チャットツール", href: "/settings/connect/chat-tool" },
   { type: "divider" },
   { type: "subheader", title: "チーム情報" },
   { type: "item", title: "従業員の紐付け", href: "/settings/organization/users" },
@@ -46,8 +44,6 @@ const menusAfterConnect: MenuItem[] = [
   { type: "divider" },
   { type: "subheader", title: "通知" },
   { type: "item", title: "通知日時設定", href: "/settings/notification/common" },
-  { type: "item", title: "日報設定", href: "/settings/notification/daily-report" },
-  { type: "item", title: "タスク更新通知設定", href: "/settings/notification/update" },
   { type: "item", title: "見立て共有設定", href: "/settings/notification/prospect" },
 ];
 
@@ -56,9 +52,8 @@ watch(currentRoute, () => {
 });
 watch(connected, async (next) => {
   const { path } = useRoute();
-  if (!next && !["/settings/connect/todo-app", "/settings/connect/chat-tool"].includes(path)) {
-    const to = !implementedTodoAppId.value ? "/settings/connect/todo-app" : "/settings/connect/chat-tool";
-    await navigateTo(to);
+  if (!next && !["/settings/connect/todo-app"].includes(path)) {
+    await navigateTo("/settings/connect/todo-app");
   }
 });
 </script>

@@ -23,7 +23,7 @@ type Config = {
   superiorUsers: number[];
 };
 type User = {
-  id: number;
+  id: string;
   name: string;
 };
 

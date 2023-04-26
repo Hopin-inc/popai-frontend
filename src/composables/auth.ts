@@ -1,8 +1,15 @@
 import type { Ref } from "vue";
-import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
+import {
+  getAuth,
+  OAuthProvider,
+  signInWithPopup,
+} from "@firebase/auth";
 import { Account } from "~/types/common";
 import { getLoggedInAccount, signIn, signOut } from "~/apis/auth";
-import { ErrorMessages, getMessageByAuthError } from "~/utils/messages";
+import { getMessageByAuthError } from "~/utils/messages";
+import { ChatToolId } from "~/consts/enum";
+
+type ProviderId = "oidc.slack";
 
 export const useAuth = () => {
   const currentUser = useState<Account | null>("currentUser", () => null);
@@ -24,21 +31,14 @@ export const useAuth = () => {
   };
 
   const login = (state: Ref<Account | null>) => {
-    return async (email: string, password: string) => {
+    return async (providerId: ProviderId, scopes: string[] = [], initial: boolean = false) => {
+      const chatToolId = providerId === "oidc.slack" ? ChatToolId.SLACK : null;
+      const provider = new OAuthProvider(providerId);
+      scopes.forEach(scope => provider.addScope(scope));
       const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password)
+      await signInWithPopup(auth, provider)
         .then(async (credential) => {
           const { user } = credential;
-          if (!user.emailVerified) {
-            const resend = confirm(ErrorMessages.EMAIL_NOT_VERIFIED);
-            if (resend) {
-              const config = useRuntimeConfig();
-              await sendEmailVerification(user, {
-                url: `${ config.public.apiBaseUrl }/auth/verify?email=${ encodeURIComponent(email) }`,
-              });
-            }
-            return;
-          }
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
           if (account) {
@@ -51,10 +51,15 @@ export const useAuth = () => {
               await navigateTo("/");
             }
             await useInfo().fetchAll();
+          } else if (initial && chatToolId) {
+            await navigateTo({ path: "/install", query: { chatToolId } });
           }
         })
         .catch((error) => {
-          alert(getMessageByAuthError(error.code));
+          console.error(error); // FIXME
+          if (!["auth/popup-closed-by-user", "auth/user-cancelled"].includes(error.code)) {
+            alert(getMessageByAuthError(error.code));
+          }
         });
     };
   };

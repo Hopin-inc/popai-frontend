@@ -9,13 +9,15 @@ v-app
 const { loading, startLoading, finishLoading } = useLoading();
 const { fetchAll } = useInfo();
 const { fetchAuthState } = useAuth();
+const route = useRoute();
 
 onMounted(async () => {
   startLoading();
-  await Promise.all([
-    fetchAll(),
-    fetchAuthState(),
-  ]);
+  const { layout } = route.meta;
+  if (layout === "default" || layout === undefined) {
+    await fetchAuthState();
+    await fetchAll();
+  }
   finishLoading();
 });
 </script>

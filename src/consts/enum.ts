@@ -35,8 +35,16 @@ export const ChatToolId = {
   SLACK: 2,
 };
 
+export const ChatToolName = {
+  [ChatToolId.SLACK]: "Slack",
+};
+
 export const TodoAppId = {
-  TRELLO: 1,
-  MICROSOFT: 2,
+  // TRELLO: 1,
+  // MICROSOFT: 2,
   NOTION: 3,
+};
+
+export const TodoAppName = {
+  [TodoAppId.NOTION]: "Notion",
 };

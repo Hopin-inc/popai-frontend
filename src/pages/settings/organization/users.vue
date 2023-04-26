@@ -38,7 +38,7 @@ type Config = {
   index: number;
 };
 type User = {
-  id?: number;
+  id?: string;
   name: string;
 };
 

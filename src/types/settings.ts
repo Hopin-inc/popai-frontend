@@ -11,11 +11,11 @@ export type UserConfig = {
 
 export type UserReportingLine = {
   user: User;
-  superiorUsers: number[];
+  superiorUsers: string[];
 }
 
 export type User = {
-  id: number;
+  id: string;
   name: string;
 };
 

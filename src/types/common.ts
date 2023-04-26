@@ -19,14 +19,7 @@ export type MenuItem = {
   title: string;
 };
 
-export type LoginInfo = {
-  email: string;
-  password: string;
-};
-
-export type SignUpInfo = LoginInfo & {
-  passwordConfirm: string;
-  organization: string;
+export type SignUpInfo = {
   name: string;
   agree: boolean;
 };

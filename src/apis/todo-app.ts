@@ -4,15 +4,15 @@ import { ValueOf } from "~/types/utils";
 import { TodoAppId } from "~/consts/enum";
 import { Property, PropertyUsage, TodoAppInfo } from "~/types/settings";
 
-export const getTodoApps = async (): Promise<TodoAppInfo[]> => {
-  const { data, error } = await useAsyncData<ApiResponse<TodoAppInfo[]>>(
+export const getTodoApp = async (): Promise<TodoAppInfo | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<TodoAppInfo>>(
     "getTodoApps",
     fetcher("/todo-app", { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
   }
-  return [];
+  return null;
 };
 
 export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
@@ -28,7 +28,7 @@ export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): 
 
 export const updateTodoAppUser = async (
   todoAppId: ValueOf<typeof TodoAppId>,
-  userId: number,
+  userId: string,
   appUserId: string,
 ): Promise<SelectItem<string>[]> => {
   const body = { id: appUserId };

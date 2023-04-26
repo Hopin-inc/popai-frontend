@@ -35,6 +35,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL,
       clientBaseUrl: process.env.CLIENT_BASE_URL,
       identityApiKey: process.env.IDENTITY_API_KEY,
+      identityAuthDomain: process.env.IDENTITY_AUTH_DOMAIN,
     },
   },
   app: {
