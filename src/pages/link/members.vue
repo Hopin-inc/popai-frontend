@@ -10,7 +10,7 @@ CommonPage(title="メンバー")
         v-table(v-if="configs.length && chatToolAccounts.length && todoAppAccounts.length").overflow-x-auto
           thead
             tr
-              th.w-240px 従業員名
+              th.w-240px 名前
               th.w-200px Slackアカウント
               th.w-200px Notionアカウント
               th 操作
@@ -24,15 +24,15 @@ CommonPage(title="メンバー")
         v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 従業員を追加
     v-col(cols="12")
       SectionCard(
-        title="シェア対象のメンバーを設定する"
-        description="相談事項をシェアするメンバーを設定します。"
+        title="相談先のメンバーを設定する"
+        description="相談相手となるメンバーを設定します。"
         icon-src="/images/waving_hands.svg"
       )
         v-table(v-if="reportingLines.length").overflow-x-auto
           thead
             tr
-              th 従業員名
-              th 報告先の従業員
+              th 名前
+              th 相談先のメンバー
           tbody
             tr(v-for="config in reportingLines" :key="config")
               td {{ config.user.name }}

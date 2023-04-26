@@ -6,7 +6,7 @@ CommonPage(title="利用設定")
       p チャンネルに追加する機能を選んでください。
       v-row.mt-4
         v-col(cols="6")
-          v-card(flat).pa-8.pt-6
+          v-card(flat rounded="xl").pa-8.pt-6
             .d-flex.justify-center.align-center
               img(src="/images/handshake.svg" width="32")
               h3.text-h5.font-weight-bold.mx-2 シェア

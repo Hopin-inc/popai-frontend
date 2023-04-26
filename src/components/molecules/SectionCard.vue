@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card(flat).pa-8.fill-width
+v-card(flat rounded="xl").pa-8.fill-width
   v-row
     v-col(cols="12")
       .d-flex.align-center.mb-2

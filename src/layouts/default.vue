@@ -2,7 +2,7 @@
 v-main.fill-height
   v-container.pa-0.fill-height
     v-row.flex-wrap.flex-md-nowrap.fill-height.ma-0
-      v-col(cols="12" md="auto").px-4.py-6.select-menu.bg-white.fill-height
+      v-col(cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
           img(src="/images/logo_name.svg" width="160")
         div(v-if="isPc")
@@ -13,8 +13,9 @@ v-main.fill-height
               v-list-item(v-bind="props" title="設定メニュー")
             v-list-item.pa-0.py-2
               SideMenu(:menus="menus" :rounded="menuRounded")
-      v-col(cols="12" md="auto").pa-8.mx-auto.flex-fill.fill-height.content
-        slot
+      v-col(cols="12" md="auto").pa-8.flex-fill.scroll-y
+        .mx-auto.content
+          slot
 </template>
 
 <script setup lang="ts">
@@ -92,6 +93,9 @@ watch(connected, async (next) => {
 .select-menu
   width: 240px
   min-width: 240px
+.scroll-y
+  max-height: 100vh
+  overflow-y: scroll
 .content
   max-width: 1080px
 :deep(.v-list-group)
