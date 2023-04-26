@@ -12,10 +12,8 @@ export default defineNuxtConfig({
     shim: false,
   },
   css: [
-    "vuetify/styles",
+    "~/assets/main.scss",
     "@mdi/font/css/materialdesignicons.css",
-    "~/assets/sass/variables.sass",
-    "~/assets/sass/style.sass",
   ],
   build: {
     transpile: [
@@ -51,8 +49,8 @@ export default defineNuxtConfig({
   },
   googleFonts: {
     families: {
-      "Noto+Sans+JP": true,
-      Lato: true,
+      "Noto+Sans+JP": [400, 700, 900],
+      "Lato": [400, 700, 900],
     },
   },
 });

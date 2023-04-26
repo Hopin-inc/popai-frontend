@@ -9,16 +9,9 @@ export default defineNuxtRouteMiddleware((to, _from) => {
     }
     switch (to.path) {
       case "/":
-        return navigateTo("/settings");
-      case "/settings":
-        return navigateTo("/settings/connect");
-      case "/settings/connect":
-        return navigateTo("/settings/connect/todo-app");
-      case "/settings/organization":
-        return navigateTo("/settings/organization/users");
-      case "/settings/notification":
-        return navigateTo("/settings/notification/common");
+        return navigateTo("/settings/general");
       default:
+        return;
     }
   }
 });

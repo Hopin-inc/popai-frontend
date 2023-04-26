@@ -1,86 +1,100 @@
 <template lang="pug">
-SettingCard(
-  v-model:switch="enabled"
-  title="見立て共有設定"
-  subtitle="指定した時刻に、タスクの見立てや相談事項を尋ねるメッセージを個別に送信します。"
-  append-type="switch"
-)
-  template(#content)
-    CardSection(title="通知先 (Slack)")
-      SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネルを選択").mt-4
-    CardSection(title="見立てを尋ねるタイミング")
-      .d-flex.flex-column
-        FormPart(title="開始日")
-          v-radio-group(v-model="from" color="primary")
-            v-radio(:value="1")
-              template(#label)
-                span タスクの着手日から
-            v-radio(:value="2")
-              template(#label)
-                .d-flex.align-center.flex-wrap
-                  span 期日の
-                  InlineSelectBox(v-model="fromDaysBefore" :items="daysBefore" :readonly="from !== 2").w-80px
-                  span から
-            v-radio(:value="3")
-              template(#label)
-                .d-flex.align-center.flex-wrap
-                  span 期日が属する週の初め
-                  .d-flex.align-center
-                    span （
-                    InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
-                    span 曜日）
-            v-radio(:value="4")
-              template(#label)
-                span タスクの作成日から
-        FormPart(title="終了日")
-          v-radio-group(v-model="to" color="primary")
-            v-radio(:value="1")
-              template(#label)
-                span タスクの期日まで
-        FormPart(title="頻度")
-          v-radio-group(v-model="frequency" color="primary")
-            v-radio(:value="1")
-              template(#label)
-                span 毎日
-            v-radio(:value="2")
-              template(#label)
-                span 中間日のみ
-            v-radio(:value="3").fill-label.allow-overflow.flex-fill
-              template(#label)
-                .d-flex.align-center.flex-wrap.w-100
-                  span.mr-2 指定日:
-                  MultipleSelectBox(
-                    v-model="frequencyDaysBefore"
-                    label="期日の…"
-                    :items="daysBefore"
-                    :readonly="frequency !== 3"
-                    density="compact"
-                  ).flex-fill.my-2
-    CardSection(title="通知時刻")
-      v-form(ref="prospectTimingForm")
-        .d-flex.align-center(v-if="timingsMessage")
-          v-icon(color="error" size="sm" ).mr-1 mdi-alert
-          p.text-caption.text-error.font-weight-bold {{ timingsMessage }}
-        v-table(v-if="timings.length").overflow-x-auto
-          thead
-            tr
-              th.w-160px 時刻
-              th.w-fit-content.text-no-wrap 指定時刻までに着手するタスクを選択
-              th.w-80px 操作
-          tbody
-            tr(v-for="(timing, index) in timings" :key="timing")
-              td: SettingTableSelectBox(v-model="timing.time" :items="times" :rules="[validationNoDuplicate]")
-              td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
-                .d-flex.align-center(v-if="timing.askPlan")
-                  InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
-                  span まで
-              td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
-        p(v-else) 通知時刻が設定されていません。
-        v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加
+CommonPage(title="シェアのカスタマイズ")
+  v-row(v-if="enabled")
+    v-col(cols="12")
+      SectionCard(
+        title="進捗を共有するチャンネル"
+        description="皆さんに聞いた進捗を共有するチャンネルを指定します。"
+        icon-src="/images/slack_logo.svg"
+      )
+        v-row
+          v-col(cols="12" md="6")
+            SelectBox(v-model="channel" :items="chatToolChannels" label="チャンネルを選択").mt-4
+    v-col(cols="12")
+      SectionCard(
+        title="進捗を聞く期間"
+        description="進捗を聞く期間の始まり・終わりと、進捗を聞く頻度をカスタマイズできます。"
+        icon-src="/images/calendar.svg"
+      )
+        .d-flex.flex-column
+          FormPart(title="開始日")
+            v-radio-group(v-model="from" color="primary")
+              v-radio(:value="1")
+                template(#label)
+                  span タスクの着手日から
+              v-radio(:value="2")
+                template(#label)
+                  .d-flex.align-center.flex-wrap
+                    span 期日の
+                    InlineSelectBox(v-model="fromDaysBefore" :items="daysBefore" :readonly="from !== 2").w-80px
+                    span から
+              v-radio(:value="3")
+                template(#label)
+                  .d-flex.align-center.flex-wrap
+                    span 期日が属する週の初め
+                    .d-flex.align-center
+                      span （
+                      InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
+                      span 曜日）
+              v-radio(:value="4")
+                template(#label)
+                  span タスクの作成日から
+          FormPart(title="終了日")
+            v-radio-group(v-model="to" color="primary")
+              v-radio(:value="1")
+                template(#label)
+                  span タスクの期日まで
+          FormPart(title="頻度")
+            v-radio-group(v-model="frequency" color="primary")
+              v-radio(:value="1")
+                template(#label)
+                  span 毎日
+              v-radio(:value="2")
+                template(#label)
+                  span 中間日のみ
+              v-radio(:value="3").fill-label.allow-overflow.flex-fill
+                template(#label)
+                  .d-flex.align-center.flex-wrap.w-100
+                    span.mr-2 指定日:
+                    MultipleSelectBox(
+                      v-model="frequencyDaysBefore"
+                      label="期日の…"
+                      :items="daysBefore"
+                      :readonly="frequency !== 3"
+                      density="compact"
+                    ).flex-fill.my-2
+    v-col(cols="12")
+      SectionCard(
+        title="進捗を聞く時刻"
+        description="何時に進捗を聞くかをカスタマイズできます。"
+        icon-src="/images/alarm_clock.svg"
+      )
+        v-form(ref="prospectTimingForm")
+          .d-flex.align-center(v-if="timingsMessage")
+            v-icon(color="error" size="sm" ).mr-1 mdi-alert
+            p.text-caption.text-error.font-weight-bold {{ timingsMessage }}
+          v-table(v-if="timings.length").overflow-x-auto
+            thead
+              tr
+                th.w-160px 時刻
+                th.w-fit-content.text-no-wrap 指定時刻までに着手するタスクを選択
+                th.w-80px 操作
+            tbody
+              tr(v-for="(timing, index) in timings" :key="timing")
+                td: SettingTableSelectBox(v-model="timing.time" :items="times" :rules="[validationNoDuplicate]")
+                td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
+                  .d-flex.align-center(v-if="timing.askPlan")
+                    InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
+                    span まで
+                td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
+          p(v-else) 通知時刻が設定されていません。
+          v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加
+  v-row(v-else-if="!init")
+    v-col(cols="12")
+      p シェア機能がオフになっています。
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { VForm } from "vuetify/components";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";

@@ -51,6 +51,10 @@ export type ConfigCommon = {
   excludedDates: string[];
 };
 
+export type ConfigFeatures = {
+  prospect: boolean;
+};
+
 export type ConfigDailyReport = {
   enabled: boolean;
   chatToolId: number;

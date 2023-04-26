@@ -1,47 +1,99 @@
 <template lang="pug">
-.fill-height
-  v-app-bar(flat).px-4.px-md-8.menu-bar.border-b
-    template(#prepend)
-      NuxtLink(to="/").d-flex.align-center
-        img(src="/images/logo_name.svg" height="40")
-    template(#append)
-      v-menu(v-model="menu" :close-on-content-click="false")
-        template(#activator="{ props }")
-          v-btn(icon="mdi-account" v-bind="props").bg-grey-lighten-4
-        v-card.w-100
-          v-list
-            v-list-item(:title="name" prepend-icon="mdi-office-building")
-          v-divider
-          v-list
-            v-list-item(title="ログアウト" @click.once="signOut" prepend-icon="mdi-logout")
-  v-main.px-4.px-md-8.px-lg-16.py-8.mt-16
-    v-container.page-container
-      slot
+v-main.fill-height
+  v-container.pa-0.fill-height
+    v-row.flex-wrap.flex-md-nowrap.fill-height.ma-0
+      v-col(cols="12" md="auto").px-4.py-6.select-menu.bg-white.fill-height
+        NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
+          img(src="/images/logo_name.svg" width="160")
+        div(v-if="isPc")
+          SideMenu(:menus="menus" rounded="lg")
+        v-list(v-else v-model:opened="menu").py-0.rounded-lg
+          v-list-group(value="menu")
+            template(#activator="{ props }")
+              v-list-item(v-bind="props" title="設定メニュー")
+            v-list-item.pa-0.py-2
+              SideMenu(:menus="menus" :rounded="menuRounded")
+      v-col(cols="12" md="auto").pa-8.mx-auto.flex-fill.fill-height.content
+        slot
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useDisplay } from "vuetify";
+import type { MenuItem } from "~/types/common";
 
 useHead({
   titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
 });
 
-const { organization, name, logout } = useAuth();
+const { name, logout } = useAuth();
 const { startLoading, finishLoading } = useLoading();
+const { connected } = useInfo();
+const { mdAndUp } = useDisplay();
+const { currentRoute } = useRouter();
 
-const menu = ref<boolean>(false);
+const menu = ref<string[]>([]);
+const isPc = computed(() => mdAndUp.value);
+const menuRounded = computed(() => mdAndUp.value ? "lg" : undefined);
+
 const signOut = async () => {
   startLoading();
   await logout();
   finishLoading();
 };
+const menus = ref<MenuItem[]>([
+  { type: "subheader", title: "機能ごとのカスタマイズ" },
+  { type: "item", title: "シェア", to: "/features/prospect", disabled: false },
+  { type: "divider" },
+  { type: "subheader", title: "連携" },
+  { type: "item", title: "タスク管理ツール", to: "/link/todo-app", disabled: false },
+  { type: "item", title: "メンバー", to: "/link/members", disabled: false },
+  { type: "divider" },
+  { type: "subheader", title: "設定" },
+  { type: "item", title: "利用設定", to: "/settings/general", disabled: false },
+  { type: "item", title: "通知設定", to: "/settings/notification", disabled: false },
+  { type: "divider" },
+  { type: "item", title: "ログアウト", action: signOut, disabled: false },
+]);
+
+watch(currentRoute, () => {
+  menu.value = [];
+});
+watch(connected, async (next) => {
+  const { path } = useRoute();
+  if (!next) {
+    menus.value.forEach((v, idx) => {
+      const target = menus.value[idx];
+      if (target.type === "item") {
+        target.disabled = target.to !== "/link/todo-app";
+      }
+    });
+    if (!["/settings/connect/todo-app"].includes(path)) {
+      await navigateTo("/settings/connect/todo-app");
+    }
+  } else {
+    menus.value.forEach((v, idx) => {
+      const target = menus.value[idx];
+      if (target.type === "item") {
+        target.disabled = false;
+      }
+    });
+  }
+});
 </script>
 
 <style scoped lang="sass">
-.page-container
-  max-width: 1280px
-  margin: auto
+.v-container
+  max-width: none
+  height: 100%
 :deep(.v-list-item__prepend > .v-icon)
   margin-inline-end: 16px
   -webkit-margin-end: 16px
+.select-menu
+  width: 240px
+  min-width: 240px
+.content
+  max-width: 1080px
+:deep(.v-list-group)
+  --parent-padding: 0
 </style>

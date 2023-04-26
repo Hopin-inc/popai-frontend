@@ -9,7 +9,9 @@ export type ApiResponse<T> = {
 export type MenuItem = {
   type: "item";
   title: string;
+  disabled: boolean;
   icon?: string;
+  to?: string;
   href?: string;
   action?: (...args: any[]) => any;
 } | {

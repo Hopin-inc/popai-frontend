@@ -1,55 +1,80 @@
 <template lang="pug">
-SettingCard(
-  title="従業員の紐付け"
-  subtitle="従業員を登録し、チャットツール・タスク管理ツールとの紐付けを設定します。"
-)
-  template(#content)
-    v-table(v-if="configs.length && chatToolAccounts.length && todoAppAccounts.length").overflow-x-auto
-      thead
-        tr
-          th.w-240px 従業員名
-          th.w-200px Slackアカウント
-          th.w-200px Notionアカウント
-          th 操作
-      tbody
-        tr(v-for="(config, index) in configs" :key="config")
-          td: SettingTableTextField(v-model="config.user.name" :always-editable="config.new")
-          td: SettingTableSelectBox(v-model="config.chatToolUserId" :items="chatToolAccounts")
-          td: SettingTableSelectBox(v-model="config.todoAppUserId" :items="todoAppAccounts")
-          td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
-    p(v-else-if="!isInit || !loading") 従業員が登録されていません。
-    v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 従業員を追加
+CommonPage(title="メンバー")
+  v-row(v-if="!isInit")
+    v-col(cols="12")
+      SectionCard(
+        title="メンバーを紐付ける"
+        :description="`メンバーを登録し、${ ChatToolName[implementedChatToolId] }・${ TodoAppName[implementedTodoAppId] }のユーザーと紐付けます。`"
+        icon-src="/images/person_2.svg"
+      )
+        v-table(v-if="configs.length && chatToolAccounts.length && todoAppAccounts.length").overflow-x-auto
+          thead
+            tr
+              th.w-240px 従業員名
+              th.w-200px Slackアカウント
+              th.w-200px Notionアカウント
+              th 操作
+          tbody
+            tr(v-for="(config, index) in configs" :key="config")
+              td: SettingTableTextField(v-model="config.user.name" :always-editable="config.new")
+              td: SettingTableSelectBox(v-model="config.chatToolUserId" :items="chatToolAccounts")
+              td: SettingTableSelectBox(v-model="config.todoAppUserId" :items="todoAppAccounts")
+              td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
+        p(v-else-if="!isInit || !loading") 従業員が登録されていません。
+        v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 従業員を追加
+    v-col(cols="12")
+      SectionCard(
+        title="シェア対象のメンバーを設定する"
+        description="相談事項をシェアするメンバーを設定します。"
+        icon-src="/images/waving_hands.svg"
+      )
+        v-table(v-if="reportingLines.length").overflow-x-auto
+          thead
+            tr
+              th 従業員名
+              th 報告先の従業員
+          tbody
+            tr(v-for="config in reportingLines" :key="config")
+              td {{ config.user.name }}
+              td: MultipleSelectBox(v-model="config.superiorUsers" :items="users").my-3
 </template>
 
 <script setup lang="ts">
 import { updateChatToolUsers } from "~/apis/chat-tool";
 import { updateTodoAppUser } from "~/apis/todo-app";
-import { deleteUser, getUserConfigs, updateUser } from "~/apis/users";
+import { deleteUser, getUserConfigs, getUserReportingLines, updateUser, updateUserReportingLines } from "~/apis/users";
+import { ChatToolName, TodoAppName } from "~/consts/enum";
 
 type SelectItem = {
   id: number | string;
   name: string;
 };
 type Config = {
-  user: User;
+  user: Omit<User, "id"> & Partial<Pick<User, "id">>;
   chatToolUserId: string | null;
   todoAppUserId: string | null;
   new: boolean;
   index: number;
 };
+type ReportingLine = {
+  user: User;
+  superiorUsers: string[];
+};
 type User = {
-  id?: string;
+  id: string;
   name: string;
 };
 
 useHead({
-  title: "従業員の紐付け",
+  title: "メンバー",
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
 const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts } = useInfo();
 const isInit = ref<boolean>(true);
 const configs = ref<Config[]>([]);
+const reportingLines = ref<ReportingLine[]>([]);
+const users = computed(() => reportingLines.value.map(config => config.user));
 
 onMounted(async () => {
   await init();
@@ -61,9 +86,21 @@ const init = async () => {
   if (isInit.value && implementedChatToolId.value && implementedTodoAppId.value) {
     isInit.value = false;
     startLoading();
-    await fetchUserConfigs();
+    await Promise.all([
+      reportingLineInit(),
+      fetchUserConfigs(),
+    ]);
     finishLoading();
   }
+};
+const reportingLineInit = async () => {
+  reportingLines.value = await getUserReportingLines();
+  reportingLines.value.forEach((config, index) => {
+    watch(() => config.superiorUsers, async () => {
+      const { user, superiorUsers } = reportingLines.value[index];
+      await onSuperiorUsersChanged(user.id, superiorUsers);
+    }, { deep: true });
+  });
 };
 const fetchUserConfigs = async () => {
   if (implementedChatToolId.value && implementedTodoAppId.value) {
@@ -132,6 +169,7 @@ const createConfig = (config: Config) => {
 const onUserNameChanged = async (index: number) => {
   startLoading();
   await updateUserName(index);
+  await reportingLineInit();
   finishLoading();
 };
 const onChatToolUserIdChanged = async (index: number, next: string | null) => {
@@ -184,9 +222,16 @@ const deleteRow = async (index: number) => {
     if (deletedUser?.id) {
       startLoading();
       await deleteUser(deletedUser.id);
+      await reportingLineInit();
       finishLoading();
     }
   }
+};
+
+const onSuperiorUsersChanged = async (subordinateUserId: string, superiorUserIds: string[]) => {
+  startLoading();
+  await updateUserReportingLines(subordinateUserId, superiorUserIds);
+  finishLoading();
 };
 </script>
 

@@ -1,4 +1,4 @@
 <template lang="pug">
-p.text-h6.mb-2
+h3.text-h6.mb-4
   slot
 </template>

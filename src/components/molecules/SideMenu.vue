@@ -3,10 +3,19 @@ v-list(density="compact").pa-0.bg-transparent
   template(v-for="item in props.menus")
     template(v-if="item.type === 'item'")
       v-list-item(
-        v-if="item.href"
+        v-if="item.to"
         :prepend-icon="item.icon"
         :title="item.title"
-        :to="item.href"
+        :to="item.to"
+        active-color="primary"
+        :rounded="props.rounded"
+      )
+      v-list-item(
+        v-else-if="item.href"
+        :prepend-icon="item.icon"
+        :title="item.title"
+        :href="item.href"
+        target="_blank"
         active-color="primary"
         :rounded="props.rounded"
       )
@@ -30,6 +39,7 @@ type Props = {
 type MenuItem = {
   type: "item";
   title: string;
+  disabled: boolean;
   icon?: string;
   href?: string;
   action?: (...args: any[]) => any;
