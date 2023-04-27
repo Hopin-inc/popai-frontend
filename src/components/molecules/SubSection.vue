@@ -16,5 +16,5 @@ const props = withDefaults(defineProps<Props>(), {
 
 <style scoped lang="sass">
 section:not(:first-child)
-  margin-top: 24px
+  margin-top: 32px
 </style>

@@ -11,11 +11,11 @@ export type UserConfig = {
 
 export type UserReportingLine = {
   user: User;
-  superiorUsers: number[];
+  superiorUsers: string[];
 }
 
 export type User = {
-  id: number;
+  id: string;
   name: string;
 };
 
@@ -49,6 +49,10 @@ export type ConfigCommon = {
   daysOfWeek: number[];
   disabledOnHolidaysJp: boolean;
   excludedDates: string[];
+};
+
+export type ConfigFeatures = {
+  prospect: boolean;
 };
 
 export type ConfigDailyReport = {

@@ -12,10 +12,8 @@ export default defineNuxtConfig({
     shim: false,
   },
   css: [
-    "vuetify/styles",
+    "~/assets/main.scss",
     "@mdi/font/css/materialdesignicons.css",
-    "~/assets/sass/variables.sass",
-    "~/assets/sass/style.sass",
   ],
   build: {
     transpile: [
@@ -35,6 +33,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL,
       clientBaseUrl: process.env.CLIENT_BASE_URL,
       identityApiKey: process.env.IDENTITY_API_KEY,
+      identityAuthDomain: process.env.IDENTITY_AUTH_DOMAIN,
     },
   },
   app: {
@@ -50,8 +49,8 @@ export default defineNuxtConfig({
   },
   googleFonts: {
     families: {
-      "Noto+Sans+JP": true,
-      Lato: true,
+      "Noto+Sans+JP": [400, 700, 900],
+      "Lato": [400, 700, 900],
     },
   },
 });

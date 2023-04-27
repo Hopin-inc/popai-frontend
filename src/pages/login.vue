@@ -3,51 +3,28 @@
   img(src="/images/logo_name.svg" height="48").mb-6
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle ログイン
-    v-form(ref="form" @submit.prevent="submit")
-      v-row.justify-center
-        v-col(cols="12" md="11")
-          v-text-field(
-            v-model="formData.email"
-            autocomplete="email"
-            type="email"
-            :rules="[Validations.required, Validations.email]"
-            label="メールアドレス"
-            prepend-icon="mdi-email"
-            variant="outlined"
-            color="primary"
-            autofocus
-            hide-details="auto"
-          ).mb-4
-        v-col(cols="12" md="11")
-          v-text-field(
-            v-model="formData.password"
-            autocomplete="current-password"
-            :type="passType"
-            :rules="[Validations.required]"
-            label="パスワード"
-            prepend-icon="mdi-lock"
-            :append-inner-icon="passAppendIcon"
-            @click:append-inner="showPassword = !showPassword"
-            variant="outlined"
-            color="primary"
-            hide-details="auto"
-          ).mb-4
-        v-col(cols="12" md="10")
-          .d-flex.flex-column.align-center
-            v-btn(type="submit" color="primary" flat) ログイン
-            NuxtLink(:to="toResetAccount").mt-4.text-caption.text-grey パスワードをお忘れの方はこちら
-  .d-flex.justify-center.mt-4
-    v-btn(nuxt to="/create-account" variant="text" color="primary" append-icon="mdi-arrow-right").px-2 アカウントを作成する (無料)
+    v-row(justify="center")
+      v-col(cols="12" sm="6")
+        a(@click.stop="signIn('oidc.slack')").slack-btn
+          img(src="/images/slack_logo.svg" height="20")
+          span Slackでログイン
+    v-row(justify="center")
+      v-col(cols="12" sm="9").d-flex.align-center
+        span.flex-fill.border-b
+        p.mx-4.text-caption.text-grey 初めての方は…
+        span.flex-fill.border-b
+    v-row(justify="center")
+      v-col(cols="auto").d-flex.justify-center.pa-0
+        p.font-weight-bold 新規アカウント作成
+    v-row(justify="center")
+      v-col(cols="12" sm="6")
+        a(@click.stop="signIn('oidc.slack', true)").slack-btn
+          img(src="/images/slack_logo.svg" height="20")
+          span Slackで登録
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { VForm } from "vuetify/components";
-import Validations from "~/utils/validations";
-type LoginInfo = {
-  email: string;
-  password: string;
-};
+type ProviderId = "oidc.slack";
 
 definePageMeta({
   layout: "before-login",
@@ -57,25 +34,31 @@ useHead({
 });
 
 const { login } = useAuth();
-const { startLoading, finishLoading } = useLoading();
+const config = useRuntimeConfig();
 
-const form = ref<VForm>();
-const formData = reactive<LoginInfo>({ email: "", password: "" });
-const showPassword = ref<boolean>(false);
-const passType = computed(() => showPassword.value ? "text" : "password");
-const passAppendIcon = computed(() => showPassword.value ? "mdi-eye" : "mdi-eye-off");
-const { query } = useRoute();
-
-const toResetAccount = computed(() => {
-  return { path: "/reset-account", query };
-});
-
-const submit = async () => {
-  const validation = await form.value?.validate();
-  if (validation?.valid) {
-    startLoading();
-    await login(formData.email, formData.password);
-    finishLoading();
-  }
+const signIn = async (providerId: ProviderId, initial: boolean = false) => {
+  await login(providerId, [], initial);
 };
 </script>
+
+<style scoped lang="sass">
+.btn
+  align-items: center
+  color: #000
+  cursor: pointer
+  background-color: #fff
+  border: 1px solid #ddd
+  border-radius: 4px
+  display: inline-flex
+  font-size: 16px
+  font-weight: 600
+  gap: 20px
+  height: 48px
+  justify-content: center
+  padding: 4px 16px
+  text-decoration: none
+  width: 100%
+
+.slack-btn
+  @extend .btn
+</style>

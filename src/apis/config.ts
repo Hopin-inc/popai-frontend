@@ -1,5 +1,5 @@
 import { ApiResponse } from "~/types/common";
-import { ConfigCommon, ConfigDailyReport, ConfigNotify, ConfigProspect } from "~/types/settings";
+import { ConfigCommon, ConfigDailyReport, ConfigFeatures, ConfigNotify, ConfigProspect } from "~/types/settings";
 import { fetcher } from "~/apis/base-api";
 
 export const getCommonConfig = async (): Promise<ConfigCommon | null> => {
@@ -17,6 +17,17 @@ export const updateCommonConfig = async (config: Partial<ConfigCommon>): Promise
   const { data, error } = await useAsyncData<ApiResponse<ConfigCommon | null>>(
     "updateCommonConfig",
     fetcher("/config", { body: config, method: "PATCH" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return null;
+};
+
+export const getFeatures = async (): Promise<ConfigFeatures | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<ConfigFeatures | null>>(
+    "getFeatures",
+    fetcher("/config/features", { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;

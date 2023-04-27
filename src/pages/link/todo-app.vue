@@ -1,88 +1,105 @@
 <template lang="pug">
-SettingCard(
-  title="タスク情報の紐付け"
-  subtitle="タスクを管理するボードを設定し、タスク情報を同期するためのカラムの紐付けを行います。"
-)
-  template(#content v-if="!isInit")
-    CardSection(title="ボード設定")
-      SelectBox(
-        v-model="boardId"
-        :items="todoAppBoards"
-        label="ボードを選択"
+CommonPage(title="タスク管理ツール")
+  v-row(v-if="!isInit")
+    v-col(cols="12").mb-4
+      h2.font-weight-bold 連携可能なツール
+      p POPAIにタスクデータを同期するツールを選んでください。
+      .d-flex.mt-4
+        v-btn(
+          :href="`${ config.public.apiBaseUrl }/notion/install`"
+          :disabled="!!implementedTodoApp"
+          :class="implementedTodoAppId === TodoAppId.NOTION ? 'tool-selected' : ''"
+          :variant="implementedTodoAppId === TodoAppId.NOTION ? 'outlined' : 'flat'"
+          flat
+        ).pa-4.fill-height
+          img(src="/images/notion_logo.svg" height="40")
+    v-col(cols="12" v-if="!!implementedTodoApp")
+      SectionCard(
+        title="プロパティを設定する"
+        :description="`${ TodoAppName[implementedTodoAppId] }のデータを同期するために、対応するプロパティを選択してください。`"
+        icon-src="/images/notion_logo.svg"
       )
-    CardSection(title="カラム設定")
-      v-row
-        v-col(cols="12" md="4")
-          FormPart(title="タスク名")
-            SelectBox(
-              v-model="name.property"
-              :items="propertiesForName"
-              label="カラムを選択"
-            )
-        v-col(cols="12" md="4")
-          FormPart(title="担当者")
-            SelectBox(
-              v-model="assignee.property"
-              :items="propertiesForPeople"
-              label="カラムを選択"
-            )
-        v-col(cols="12" md="4")
-          FormPart(title="期日")
-            SelectBox(
-              v-model="deadline.property"
-              :items="propertiesForDate"
-              label="カラムを選択"
-            )
-        v-col(cols="12")
-          FormPart(title="完了しているかどうか")
-            v-row
-              v-col(cols="12" md="4")
+        SubSection(title="ボード設定")
+          v-row
+            v-col(cols="12" sm="8" md="6")
+              SelectBox(
+                v-model="boardId"
+                :items="todoAppBoards"
+                label="ボードを選択"
+              )
+        SubSection(title="カラム設定")
+          v-row
+            v-col(cols="12" sm="6" md="4")
+              FormPart(title="タスク名")
                 SelectBox(
-                  v-model="isDone.property"
-                  :items="propertiesForStatus"
+                  v-model="name.property"
+                  :items="propertiesForName"
                   label="カラムを選択"
                 )
-              v-col(cols="12" md="8" v-if="isDone.requireOptions")
-                MultipleSelectBox(
-                  v-model="isDone.options"
-                  :items="isDone.availableOptions"
-                  label="「完了」に対応するラベル"
-                )
-              v-col(cols="12" md="8" v-if="isDone.requireCheckbox").d-flex.align-center
-                p.text-body-2 「完了」に対応する値:
-                v-checkbox(
-                  v-model="isDone.isChecked"
-                  color="primary"
-                  density="comfortable"
-                  hide-details
-                )
-        v-col(cols="12")
-          FormPart(title="保留かどうか")
-            v-row
-              v-col(cols="12" md="4")
+            v-col(cols="12" sm="6" md="4")
+              FormPart(title="担当者")
                 SelectBox(
-                  v-model="isClosed.property"
-                  :items="propertiesForStatus"
+                  v-model="assignee.property"
+                  :items="propertiesForPeople"
                   label="カラムを選択"
                 )
-              v-col(cols="12" md="8" v-if="isClosed.requireOptions")
-                MultipleSelectBox(
-                  v-model="isClosed.options"
-                  :items="isClosed.availableOptions"
-                  label="「保留」に対応するラベル"
+            v-col(cols="12" sm="6" md="4")
+              FormPart(title="期日")
+                SelectBox(
+                  v-model="deadline.property"
+                  :items="propertiesForDate"
+                  label="カラムを選択"
                 )
-              v-col(cols="12" md="8" v-if="isClosed.requireCheckbox").d-flex.align-center
-                p.text-body-2 「保留」に対応する値:
-                v-checkbox(
-                  v-model="isClosed.isChecked"
-                  color="primary"
-                  density="comfortable"
-                  hide-details
-                )
+            v-col(cols="12")
+              FormPart(title="完了しているかどうか")
+                v-row
+                  v-col(cols="12" sm="6" md="4")
+                    SelectBox(
+                      v-model="isDone.property"
+                      :items="propertiesForStatus"
+                      label="カラムを選択"
+                    )
+                  v-col(cols="12" md="8" v-if="isDone.requireOptions")
+                    MultipleSelectBox(
+                      v-model="isDone.options"
+                      :items="isDone.availableOptions"
+                      label="「完了」に対応するラベル"
+                    )
+                  v-col(cols="12" sm="6" md="8" v-if="isDone.requireCheckbox").d-flex.align-center
+                    p.text-body-2 「完了」に対応する値:
+                    v-checkbox(
+                      v-model="isDone.isChecked"
+                      color="primary"
+                      density="comfortable"
+                      hide-details
+                    )
+            v-col(cols="12")
+              FormPart(title="保留かどうか")
+                v-row
+                  v-col(cols="12" sm="6" md="4")
+                    SelectBox(
+                      v-model="isClosed.property"
+                      :items="propertiesForStatus"
+                      label="カラムを選択"
+                    )
+                  v-col(cols="12" md="8" v-if="isClosed.requireOptions")
+                    MultipleSelectBox(
+                      v-model="isClosed.options"
+                      :items="isClosed.availableOptions"
+                      label="「保留」に対応するラベル"
+                    )
+                  v-col(cols="12" sm="6" md="8" v-if="isClosed.requireCheckbox").d-flex.align-center
+                    p.text-body-2 「保留」に対応する値:
+                    v-checkbox(
+                      v-model="isClosed.isChecked"
+                      color="primary"
+                      density="comfortable"
+                      hide-details
+                    )
 </template>
 
 <script setup lang="ts">
-import { NotionPropertyType, PropertyUsageType } from "~/consts/enum";
+import { NotionPropertyType, PropertyUsageType, TodoAppId, TodoAppName } from "~/consts/enum";
 import {
   NOTION_PROPERTY_TYPES_WITH_LABELS,
   NOTION_PROPERTY_TYPES_FOR_NAME,
@@ -137,11 +154,12 @@ type PropertyUsage = {
 };
 
 useHead({
-  title: "タスク情報の紐付け",
+  title: "タスク管理ツール",
 });
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedTodoAppId, todoAppBoards } = useInfo();
+const { implementedTodoApp, implementedTodoAppId, todoAppBoards } = useInfo();
+const config = useRuntimeConfig();
 
 const isInit = ref<boolean>(true);
 let isUpdating: boolean = false;
@@ -336,9 +354,9 @@ const init = async () => {
       fetchProperties(),
       fetchConfigs(),
     ]);
-    isInit.value = false;
     finishLoading();
   }
+  isInit.value = false;
 };
 const fetchBoardId = async () => {
   if (implementedTodoAppId.value) {
@@ -380,3 +398,12 @@ const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageTyp
   }
 };
 </script>
+
+<style scoped lang="sass">
+.tool-selected
+  background-color: rgba(var(--v-theme-accent), .3)
+  color: rgb(var(--v-theme-accent))
+  opacity: 1
+  :deep(.v-btn__overlay)
+    opacity: 0
+</style>

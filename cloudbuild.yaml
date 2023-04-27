@@ -14,6 +14,7 @@ steps:
       - |-
         cat <<EOF > ./.env
         IDENTITY_API_KEY=$$IDENTITY_API_KEY
+        IDENTITY_AUTH_DOMAIN=$_IDENTITY_AUTH_DOMAIN
         CLIENT_BASE_URL=$_CLIENT_BASE_URL
         API_BASE_URL=$_API_BASE_URL
         EOF

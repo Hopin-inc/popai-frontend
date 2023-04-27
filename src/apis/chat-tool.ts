@@ -4,15 +4,15 @@ import { fetcher } from "~/apis/base-api";
 import { ValueOf } from "~/types/utils";
 import { ChatToolId } from "~/consts/enum";
 
-export const getChatTools = async (): Promise<ChatToolInfo[]> => {
-  const { data, error } = await useAsyncData<ApiResponse<ChatToolInfo[]>>(
+export const getChatTool = async (): Promise<ChatToolInfo | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<ChatToolInfo>>(
     "getChatTools",
     fetcher("/chat-tool", { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
   }
-  return [];
+  return null;
 };
 
 export const getChatToolAccounts = async (chatToolId: ValueOf<typeof ChatToolId>): Promise<SelectItem<string>[]> => {
@@ -28,7 +28,7 @@ export const getChatToolAccounts = async (chatToolId: ValueOf<typeof ChatToolId>
 
 export const updateChatToolUsers = async (
   chatToolId: ValueOf<typeof ChatToolId>,
-  userId: number,
+  userId: string,
   appUserId: string,
 ): Promise<SelectItem<string>[]> => {
   const body = { id: appUserId };

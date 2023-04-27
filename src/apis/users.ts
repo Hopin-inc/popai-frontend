@@ -15,7 +15,7 @@ export const updateUser = async (user: IdOptional<User>): Promise<User | null> =
   return null;
 };
 
-export const deleteUser = async (id: number): Promise<void> => {
+export const deleteUser = async (id: string): Promise<void> => {
   await useAsyncData<ApiResponse<undefined>>(
     `updateUser-${ id }`,
     fetcher(`/users/${ id }`, { method: "DELETE" }),
@@ -49,8 +49,8 @@ export const getUserReportingLines = async (): Promise<UserReportingLine[]> => {
 };
 
 export const updateUserReportingLines = async (
-  subordinateUserId: number,
-  superiorUserIds: number[],
+  subordinateUserId: string,
+  superiorUserIds: string[],
 ): Promise<void> => {
   await useAsyncData<ApiResponse<void>>(
     `updateUserReportingLines-${ subordinateUserId }`,

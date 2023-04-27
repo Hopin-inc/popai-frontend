@@ -1,31 +1,31 @@
 import { type Ref } from "vue";
-import { getTodoAppAccounts, getTodoAppBoards, getTodoApps } from "~/apis/todo-app";
-import { getChatToolAccounts, getChatToolChannels, getChatTools } from "~/apis/chat-tool";
+import { getTodoAppAccounts, getTodoAppBoards, getTodoApp } from "~/apis/todo-app";
+import { getChatToolAccounts, getChatToolChannels, getChatTool } from "~/apis/chat-tool";
 import { ChatToolInfo, TodoAppInfo } from "~/types/settings";
 import { SelectItem } from "~/types/common";
 
 export const useInfo = () => {
-  const todoApps = useState<TodoAppInfo[]>("todoApps", () => []);
-  const chatTools = useState<ChatToolInfo[]>("chatTools", () => []);
+  const todoApp = useState<TodoAppInfo | null>("todoApp");
+  const chatTool = useState<ChatToolInfo | null>("chatTool");
   const todoAppAccounts = useState<SelectItem<string>[]>("todoAppAccounts", () => []);
   const chatToolAccounts = useState<SelectItem<string>[]>("chatToolAccounts", () => []);
   const todoAppBoards = useState<SelectItem<string>[]>("todoAppBoards", () => []);
   const chatToolChannels = useState<SelectItem<string>[]>("chatToolChannels", () => []);
 
   const connected = computed(() => todoAppConnected.value && chatToolConnected.value);
-  const todoAppConnected = computed(() => !!todoApps.value.length);
-  const chatToolConnected = computed(() => !!chatTools.value.length);
-  const todoAppId = computed(() => todoApps.value.length ? todoApps.value[0].todoAppId : null);
-  const chatToolId = computed(() => chatTools.value.length ? chatTools.value[0].chatToolId : null);
+  const todoAppConnected = computed(() => !!todoApp.value);
+  const chatToolConnected = computed(() => !!chatTool.value);
+  const todoAppId = computed(() => todoApp.value?.todoAppId ?? null);
+  const chatToolId = computed(() => chatTool.value?.chatToolId ?? null);
 
-  const fetchTodoAppInfo = (state: Ref<TodoAppInfo[]>) => {
+  const fetchTodoAppInfo = (state: Ref<TodoAppInfo | null>) => {
     return async () => {
-      state.value = await getTodoApps();
+      state.value = await getTodoApp();
     };
   };
-  const fetchChatToolInfo = (state: Ref<ChatToolInfo[]>) => {
+  const fetchChatToolInfo = (state: Ref<ChatToolInfo | null>) => {
     return async () => {
-      state.value = await getChatTools();
+      state.value = await getChatTool();
     };
   };
   const fetchTodoAppAccounts = (state: Ref<SelectItem<string>[]>) => {
@@ -58,14 +58,14 @@ export const useInfo = () => {
   };
 
   const fetchTodoApps = async () => {
-    await fetchTodoAppInfo(todoApps)();
+    await fetchTodoAppInfo(todoApp)();
     await Promise.all([
       fetchTodoAppAccounts(todoAppAccounts)(),
       fetchTodoAppBoards(todoAppBoards)(),
     ]);
   };
   const fetchChatTools = async () => {
-    await fetchChatToolInfo(chatTools)();
+    await fetchChatToolInfo(chatTool)();
     await Promise.all([
       fetchChatToolAccounts(chatToolAccounts)(),
       fetchChatToolChannels(chatToolChannels)(),
@@ -79,8 +79,8 @@ export const useInfo = () => {
   };
 
   return {
-    implementedTodoApps: readonly(todoApps),
-    implementedChatTools: readonly(chatTools),
+    implementedTodoApp: readonly(todoApp),
+    implementedChatTool: readonly(chatTool),
     todoAppAccounts: readonly(todoAppAccounts),
     chatToolAccounts: readonly(chatToolAccounts),
     todoAppBoards: readonly(todoAppBoards),

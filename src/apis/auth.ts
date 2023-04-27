@@ -41,12 +41,12 @@ export const signOut = async () => {
 };
 
 export const signUp = async (info: SignUpInfo) => {
-  const { email, organization, name, password } = info;
+  const { name } = info;
   const { data, error } = await useAsyncData<ApiResponse<null>>(
     "signUp",
     fetcher("/auth/signup", {
       method: "POST",
-      body: { email, organization, name, password },
+      body: { name },
     }),
   );
   if (data.value && !error.value) {
