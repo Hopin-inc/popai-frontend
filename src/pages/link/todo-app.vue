@@ -13,7 +13,7 @@ CommonPage(title="タスク管理ツール")
           flat
         ).pa-4.fill-height
           img(src="/images/notion_logo.svg" height="40")
-    v-col(cols="12")
+    v-col(cols="12" v-if="!!implementedTodoApp")
       SectionCard(
         title="プロパティを設定する"
         :description="`${ TodoAppName[implementedTodoAppId] }のデータを同期するために、対応するプロパティを選択してください。`"
@@ -354,9 +354,9 @@ const init = async () => {
       fetchProperties(),
       fetchConfigs(),
     ]);
-    isInit.value = false;
     finishLoading();
   }
+  isInit.value = false;
 };
 const fetchBoardId = async () => {
   if (implementedTodoAppId.value) {
