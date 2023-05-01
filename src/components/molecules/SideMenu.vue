@@ -5,6 +5,8 @@ v-list(density="compact").pa-0.bg-transparent
       v-list-item(
         v-if="item.to"
         :prepend-icon="item.icon"
+        :append-icon="item.disabled ? 'mdi-lock' : undefined"
+        :disabled="item.disabled"
         :title="item.title"
         :to="item.to"
         active-color="primary"
@@ -13,6 +15,8 @@ v-list(density="compact").pa-0.bg-transparent
       v-list-item(
         v-else-if="item.href"
         :prepend-icon="item.icon"
+        :append-icon="item.disabled ? 'mdi-lock' : undefined"
+        :disabled="item.disabled"
         :title="item.title"
         :href="item.href"
         target="_blank"
@@ -20,8 +24,10 @@ v-list(density="compact").pa-0.bg-transparent
         :rounded="props.rounded"
       )
       v-list-item(
-        v-else
+        v-else-if="item.action"
         :prepend-icon="item.icon"
+        :append-icon="item.disabled ? 'mdi-lock' : undefined"
+        :disabled="item.disabled"
         :title="item.title"
         @click.stop="item.action"
         active-color="primary"

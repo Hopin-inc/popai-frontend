@@ -32,15 +32,18 @@ export const useAuth = () => {
 
   const login = (state: Ref<Account | null>) => {
     return async (providerId: ProviderId, scopes: string[] = [], initial: boolean = false) => {
+      const { startLoading, finishLoading } = useLoading();
       const chatToolId = providerId === "oidc.slack" ? ChatToolId.SLACK : null;
       const provider = new OAuthProvider(providerId);
       scopes.forEach(scope => provider.addScope(scope));
       const auth = getAuth();
       await signInWithPopup(auth, provider)
         .then(async (credential) => {
+          startLoading();
           const { user } = credential;
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
+          finishLoading();
           if (account) {
             const { organization, name } = account;
             state.value = { organization, name };
