@@ -43,8 +43,10 @@ export const TodoAppId = {
   // TRELLO: 1,
   // MICROSOFT: 2,
   NOTION: 3,
+  BACKLOG: 4,
 };
 
 export const TodoAppName = {
   [TodoAppId.NOTION]: "Notion",
+  [TodoAppId.BACKLOG]: "Backlog",
 };

@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-center.w-100
-  img(src="/images/logo_name.svg" height="48").mb-6
+  img(:src="ServiceLogos.LOGO_WITH_NAME" height="48").mb-6
   v-card(flat).pa-6.w-100.rounded-lg
     v-row(justify="center")
       v-col(cols="12")
@@ -8,12 +8,13 @@
         p 続いて、POPAIを{{ ChatToolName[chatToolId] }}にインストールしましょう 🙌
       v-col(v-if="chatToolId === ChatToolId.SLACK" cols="12" sm="8")
         a(:href="`${ config.public.apiBaseUrl }/slack/install`").slack-btn
-          img(src="/images/slack_logo.svg" height="20")
+          img(:src="ExternalServiceLogos.SLACK" height="20")
           span Slackに追加
 </template>
 
 <script setup lang="ts">
 import { ChatToolId, ChatToolName } from "~/consts/enum";
+import { ServiceLogos, ExternalServiceLogos } from "~/consts/images";
 
 const config = useRuntimeConfig();
 const { query } = useRoute();

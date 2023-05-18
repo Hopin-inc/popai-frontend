@@ -4,7 +4,7 @@ CommonPage(title="タスク管理ツール")
     v-col(cols="12").mb-4
       h2.font-weight-bold 連携可能なツール
       p POPAIにタスクデータを同期するツールを選んでください。
-      .d-flex.mt-4
+      .d-flex.mt-4.align-center.set-gap
         v-btn(
           :href="`${ config.public.apiBaseUrl }/notion/install`"
           :disabled="!!implementedTodoApp"
@@ -12,20 +12,28 @@ CommonPage(title="タスク管理ツール")
           :variant="implementedTodoAppId === TodoAppId.NOTION ? 'outlined' : 'flat'"
           flat
         ).pa-4.fill-height
-          img(src="/images/notion_logo.svg" height="40")
-    v-col(cols="12" v-if="!!implementedTodoApp")
+          img(:src="ExternalServiceLogos.NOTION" height="40")
+        v-btn(
+          @click.stop="backlogSetup = true"
+          :disabled="!!implementedTodoApp"
+          :class="implementedTodoAppId === TodoAppId.BACKLOG ? 'tool-selected' : ''"
+          :variant="implementedTodoAppId === TodoAppId.BACKLOG ? 'outlined' : 'flat'"
+          flat
+        ).pa-4.fill-height
+          img(:src="ExternalServiceLogos.BACKLOG" height="40")
+    v-col(cols="12" v-if="implementedTodoAppId === TodoAppId.NOTION")
       SectionCard(
         title="プロパティを設定する"
-        :description="`${ TodoAppName[implementedTodoAppId] }のデータを同期するために、対応するプロパティを選択してください。`"
-        icon-src="/images/notion_logo.svg"
+        :description="`${ TodoAppName[TodoAppId.NOTION] }のデータを同期するために、データベースと対応するプロパティを選択してください。`"
+        :icon-src="ExternalServiceLogos.NOTION"
       )
-        SubSection(title="ボード設定")
+        SubSection(title="データベース設定")
           v-row
             v-col(cols="12" sm="8" md="6")
               SelectBox(
                 v-model="boardId"
                 :items="todoAppBoards"
-                label="ボードを選択"
+                label="データベースを選択"
               )
         SubSection(title="カラム設定")
           v-row
@@ -96,6 +104,71 @@ CommonPage(title="タスク管理ツール")
                       density="comfortable"
                       hide-details
                     )
+    v-col(cols="12" v-if="implementedTodoAppId === TodoAppId.BACKLOG")
+      SectionCard(
+        title="プロジェクトを設定する"
+        :description="`${ TodoAppName[TodoAppId.BACKLOG] }のデータを同期するために、プロジェクトと状態を選択してください。`"
+        :icon-src="ExternalServiceLogos.BACKLOG"
+      )
+        SubSection(title="プロジェクト設定")
+          v-row
+            v-col(cols="12" sm="8" md="6")
+              SelectBox(
+                v-model="boardId"
+                :items="todoAppBoards"
+                label="プロジェクトを選択"
+              )
+        SubSection(title="状態の設定")
+          v-row
+            v-col(cols="12" md="6")
+              FormPart(title="完了しているかどうか")
+                v-row
+                  v-col(cols="12")
+                    MultipleSelectBox(
+                      v-model="isDone.options"
+                      :items="isDone.availableOptions"
+                      label="「完了」に対応する状態"
+                    )
+            v-col(cols="12" md="6")
+              FormPart(title="保留かどうか")
+                v-row
+                  v-col(cols="12")
+                    MultipleSelectBox(
+                      v-model="isClosed.options"
+                      :items="isClosed.availableOptions"
+                      label="「保留」に対応する状態"
+                    )
+BtnModalSet(
+  v-model="backlogSetup"
+  title="Backlogを設定する"
+  :max-width="640"
+  closable
+)
+  template(#content)
+    v-row
+      v-col(cols="12")
+        p BacklogのスペースIDを入力してください。
+    v-row
+      v-col(cols="12")
+        .d-flex.align-center.set-gap
+          span https://
+          v-text-field(
+            v-model="backlogSpaceId.id"
+            :rules="[Validations.required]"
+            placeholder="スペースIDを入力"
+            variant="outlined"
+            density="comfortable"
+            hide-details="auto"
+          ).flex-fill
+          SelectBox(v-model="backlogSpaceId.domain" :items="backlogDomains")
+  template(#actions)
+    v-btn(
+      :href="`${ config.public.apiBaseUrl }/backlog/install?host=${ backlogSpaceId.id }${ backlogSpaceId.domain }`"
+      :disabled="backlogSpaceId.id === ''"
+      append-icon="mdi-arrow-right"
+      color="primary"
+      variant="flat"
+    ).px-4 連携を開始する
 </template>
 
 <script setup lang="ts">
@@ -115,6 +188,8 @@ import {
   updateBoardConfig,
   updateTodoAppPropertyUsage,
 } from "~/apis/todo-app";
+import Validations from "~/utils/validations";
+import { ExternalServiceLogos } from "~/consts/images";
 
 type ValueOf<T> = T[keyof T];
 type PropertyConfig = {
@@ -152,6 +227,10 @@ type PropertyUsage = {
   options?: string[];
   isChecked?: boolean;
 };
+type BacklogSpaceId = {
+  id: string;
+  domain: ".backlog.com" | ".backlog.jp";
+};
 
 useHead({
   title: "タスク管理ツール",
@@ -162,6 +241,12 @@ const { implementedTodoApp, implementedTodoAppId, todoAppBoards } = useInfo();
 const config = useRuntimeConfig();
 
 const isInit = ref<boolean>(true);
+const backlogSetup = ref<boolean>(false);
+const backlogSpaceId = reactive<BacklogSpaceId>({ id: "", domain: ".backlog.com" });
+const backlogDomains: SelectItem[] = [
+  { id: ".backlog.com", name: ".backlog.com" },
+  { id: ".backlog.jp", name: ".backlog.jp" },
+];
 let isUpdating: boolean = false;
 const properties = ref<Property[]>([]);
 const boardId = ref<string | null>(null);
@@ -174,7 +259,14 @@ const isDone = ref<PropertyConfig>({
   requireOptions: true,
   options: [],
   get availableOptions () {
-    return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+      case TodoAppId.BACKLOG:
+        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
+      default:
+        return [];
+    }
   },
 });
 const isClosed = ref<PropertyConfig>({
@@ -182,7 +274,14 @@ const isClosed = ref<PropertyConfig>({
   requireOptions: true,
   options: [],
   get availableOptions () {
-    return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+      case TodoAppId.BACKLOG:
+        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
+      default:
+        return [];
+    }
   },
 });
 
@@ -282,21 +381,29 @@ watch(() => [
 const onStatusPropertyChanged = (propConfig: PropertyConfig, nextProp: string) => {
   const prop = properties.value.find(p => p.id === nextProp);
   if (prop) {
-    if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(prop.type)) {
-      propConfig.requireOptions = true;
-      propConfig.requireCheckbox = false;
-      if (propConfig.requireOptions) {
-        propConfig.options = [];
-      }
-    } else if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(prop.type)) {
-      propConfig.requireOptions = false;
-      propConfig.requireCheckbox = true;
-      if (propConfig.requireCheckbox) {
-        propConfig.isChecked = true;
-      }
-    } else {
-      propConfig.requireOptions = false;
-      propConfig.requireCheckbox = false;
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(prop.type)) {
+          propConfig.requireOptions = true;
+          propConfig.requireCheckbox = false;
+          if (propConfig.requireOptions) {
+            propConfig.options = [];
+          }
+        } else if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(prop.type)) {
+          propConfig.requireOptions = false;
+          propConfig.requireCheckbox = true;
+          if (propConfig.requireCheckbox) {
+            propConfig.isChecked = true;
+          }
+        } else {
+          propConfig.requireOptions = false;
+          propConfig.requireCheckbox = false;
+        }
+        break;
+      case TodoAppId.BACKLOG:
+        propConfig.requireOptions = true;
+        propConfig.requireCheckbox = false;
+        break;
     }
   }
 };
@@ -312,7 +419,7 @@ const updatePropertyUsage = async (
   usage: ValueOf<typeof PropertyUsageType>,
   nextProp: string,
 ) => {
-  if (!isInit.value && nextProp && implementedTodoAppId.value && boardId.value) {
+  if (!isInit.value && implementedTodoAppId.value && boardId.value) {
     startLoading();
     const prop = properties.value.find(p => p.id === nextProp)!;
     const selections: Partial<{ options: string[], isChecked: boolean }> = {};
@@ -383,18 +490,31 @@ const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageTyp
   if (usage) {
     propConfig.id = usage.id ?? null;
     propConfig.property = usage.property ?? null;
-    if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(usage.type)) {
-      propConfig.requireOptions = true;
-      if (propConfig.requireOptions) {
-        propConfig.options = usage.options ?? [];
-      }
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        if (NOTION_PROPERTY_TYPES_WITH_LABELS.includes(usage.type)) {
+          propConfig.requireOptions = true;
+          if (propConfig.requireOptions) {
+            propConfig.options = usage.options ?? [];
+          }
+        }
+        if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(usage.type)) {
+          propConfig.requireCheckbox = true;
+          if (propConfig.requireCheckbox) {
+            propConfig.isChecked = usage.isChecked ?? false;
+          }
+        }
+        break;
+      case TodoAppId.BACKLOG:
+        propConfig.requireOptions = true;
+        if (propConfig.requireOptions) {
+          propConfig.options = usage.options ?? [];
+        }
+        break;
     }
-    if (NOTION_PROPERTY_TYPES_WITH_CHECKBOX.includes(usage.type)) {
-      propConfig.requireCheckbox = true;
-      if (propConfig.requireCheckbox) {
-        propConfig.isChecked = usage.isChecked ?? false;
-      }
-    }
+  }
+  if (implementedTodoAppId.value === TodoAppId.BACKLOG) {
+    propConfig.requireOptions = true;
   }
 };
 </script>
@@ -406,4 +526,6 @@ const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageTyp
   opacity: 1
   :deep(.v-btn__overlay)
     opacity: 0
+.set-gap
+  gap: 12px
 </style>

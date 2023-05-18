@@ -1,18 +1,21 @@
 <template lang="pug">
+v-navigation-drawer(v-if="!isPc" v-model="menuOpened" location="end" :temporary="!isPc")
+  .d-flex.justify-end
+    v-btn(@click.stop="menuOpened = false" icon="mdi-close" flat).ma-2
+  SideMenu(:menus="menus")
 v-main.fill-height
   v-container.pa-0.fill-height
+    v-app-bar(v-if="!isPc" flat)
+      template(#prepend)
+        NuxtLink(to="/").d-flex.align-center.px-2
+          img(:src="ServiceLogos.LOGO_WITH_NAME" width="144")
+      template(#append)
+        v-app-bar-nav-icon(@click.stop="menuOpened = true")
     v-row.flex-wrap.flex-md-nowrap.fill-height.ma-0
-      v-col(cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y
+      v-col(cols="12" md="auto" v-if="isPc").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
-          img(src="/images/logo_name.svg" width="160")
-        div(v-if="isPc")
-          SideMenu(:menus="menus" rounded="lg")
-        v-list(v-else v-model:opened="menu").py-0.rounded-lg
-          v-list-group(value="menu")
-            template(#activator="{ props }")
-              v-list-item(v-bind="props" title="設定メニュー")
-            v-list-item.pa-0.py-2
-              SideMenu(:menus="menus" :rounded="menuRounded")
+          img(:src="ServiceLogos.LOGO_WITH_NAME" width="160")
+        SideMenu(v-if="isPc" :menus="menus" rounded="lg")
       v-col(cols="12" md="auto").pa-8.flex-fill.scroll-y
         .mx-auto.content
           slot
@@ -22,6 +25,7 @@ v-main.fill-height
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import type { MenuItem } from "~/types/common";
+import { ServiceLogos } from "~/consts/images";
 
 useHead({
   titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
@@ -34,6 +38,7 @@ const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
 
 const menu = ref<string[]>([]);
+const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
 const menuRounded = computed(() => mdAndUp.value ? "lg" : undefined);
 

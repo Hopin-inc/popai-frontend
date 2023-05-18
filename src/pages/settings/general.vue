@@ -5,10 +5,10 @@ CommonPage(title="利用設定")
       h2.font-weight-bold POPAIにできること
       p チャンネルに追加する機能を選んでください。
       v-row.mt-4
-        v-col(cols="6")
+        v-col(cols="12" sm="6")
           v-card(flat rounded="xl").pa-8.pt-6
             .d-flex.justify-center.align-center
-              img(src="/images/handshake.svg" width="32")
+              img(:src="Icons.HANDSHAKE" width="32")
               h3.text-h5.font-weight-bold.mx-2 シェア
             p.mt-4
               | スケジュール通りに進めたくても、進捗共有だけのミーティングは何かとタイヘン。
@@ -36,6 +36,7 @@ CommonPage(title="利用設定")
 <script setup lang="ts">
 import { getFeatures, updateProspectConfig } from "~/apis/config";
 import { useLoading } from "~/composables/loading";
+import { Icons } from "~/consts/images";
 
 type ConfigFeatures = {
   prospect: boolean;

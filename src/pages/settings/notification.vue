@@ -5,7 +5,7 @@ CommonPage(title="通知設定")
       SectionCard(
         title="通知日時の設定"
         description="POPAIにメッセージを送ってほしい日時・送ってほしくない日時を設定します。"
-        icon-src="/images/calendar.svg"
+        :icon-src="Icons.CALENDAR"
       )
         SubSection(title="通知する曜日")
           .d-flex.flex-wrap
@@ -46,9 +46,9 @@ CommonPage(title="通知設定")
               ).mt-4
                 template(#selection="{ item, index }")
                   v-chip(
-                    closable
-                    @click:close.prevent="removeItem(e, index)"
+                    @click:close.prevent="removeItem(index)"
                     :key="index"
+                    closable
                     density="comfortable"
                   ) {{ item.title }}
 </template>
@@ -58,6 +58,7 @@ import Datepicker from "@vuepic/vue-datepicker";
 import type { SelectItem } from "~/types/common";
 import { DAYS_OF_WEEK } from "~/consts";
 import { getCommonConfig, updateCommonConfig } from "~/apis/config";
+import { Icons } from "~/consts/images";
 
 type ConfigCommon = {
   daysOfWeek: number[];
@@ -123,7 +124,7 @@ const onDatePickerOpened = () => {
   }
 };
 
-const removeItem = (_: Event, index: number) => {
+const removeItem = (index: number) => {
   excludedDates.value.splice(index, 1);
 };
 </script>

@@ -5,7 +5,7 @@ CommonPage(title="シェアのカスタマイズ")
       SectionCard(
         title="進捗を共有するチャンネル"
         description="皆さんに聞いた進捗を共有するチャンネルを指定します。"
-        icon-src="/images/slack_logo.svg"
+        :icon-src="ExternalServiceLogos.SLACK"
       )
         v-row
           v-col(cols="12" md="6")
@@ -14,7 +14,7 @@ CommonPage(title="シェアのカスタマイズ")
       SectionCard(
         title="進捗を聞く期間"
         description="進捗を聞く期間の始まり・終わりと、進捗を聞く頻度をカスタマイズできます。"
-        icon-src="/images/calendar.svg"
+        :icon-src="Icons.CALENDAR"
       )
         .d-flex.flex-column
           FormPart(title="開始日")
@@ -54,20 +54,18 @@ CommonPage(title="シェアのカスタマイズ")
                   span 中間日のみ
               v-radio(:value="3").fill-label.allow-overflow.flex-fill
                 template(#label)
-                  .d-flex.align-center.flex-wrap.w-100
-                    span.mr-2 指定日:
-                    MultipleSelectBox(
-                      v-model="frequencyDaysBefore"
-                      label="期日の…"
-                      :items="daysBefore"
-                      :readonly="frequency !== 3"
-                      density="compact"
-                    ).flex-fill.my-2
+                  span.mr-2 指定日:
+                  MultipleSelectBox(
+                    v-model="frequencyDaysBefore"
+                    label="期日の…"
+                    :items="daysBefore"
+                    :readonly="frequency !== 3"
+                  ).flex-fill
     v-col(cols="12")
       SectionCard(
         title="進捗を聞く時刻"
         description="何時に進捗を聞くかをカスタマイズできます。"
-        icon-src="/images/alarm_clock.svg"
+        :icon-src="Icons.ALARM"
       )
         v-form(ref="prospectTimingForm")
           .d-flex.align-center(v-if="timingsMessage")
@@ -98,6 +96,7 @@ CommonPage(title="シェアのカスタマイズ")
 import { VForm } from "vuetify/components";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
+import { ExternalServiceLogos, Icons } from "~/consts/images";
 
 type SelectItem = {
   id: number | string;
