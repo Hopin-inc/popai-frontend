@@ -50,7 +50,7 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       "Noto+Sans+JP": [400, 700, 900],
-      "Lato": [400, 700, 900],
+      Lato: [400, 700, 900],
     },
   },
 });

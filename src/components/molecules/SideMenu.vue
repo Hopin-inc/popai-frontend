@@ -47,6 +47,7 @@ type MenuItem = {
   title: string;
   disabled: boolean;
   icon?: string;
+  to?: string;
   href?: string;
   action?: (...args: any[]) => any;
 } | {
@@ -58,5 +59,6 @@ type MenuItem = {
 
 const props = withDefaults(defineProps<Props>(), {
   menus: () => [],
+  rounded: undefined,
 });
 </script>

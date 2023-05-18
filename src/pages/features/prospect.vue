@@ -94,6 +94,7 @@ CommonPage(title="シェアのカスタマイズ")
 
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
+import type { Ref } from "vue";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import { ExternalServiceLogos, Icons } from "~/consts/images";
@@ -129,17 +130,17 @@ const { startLoading, finishLoading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 
 const prospectTimingForm = ref<VForm>();
-const isInit = ref<boolean>(true);
-const enabled = ref<boolean>(false);
-const channel = ref<string | null>(null);
-const from = ref<number | null>(null);
-const to = ref<number | null>(null);
-const fromDaysBefore = ref<number | null>(0);
-const beginOfWeek = ref<number | null>(1);
-const frequency = ref<number | null>(null);
-const frequencyDaysBefore = ref<number[]>([]);
-const timings = ref<Timing[]>([]);
-const timingsMessage = ref<string | null>(null);
+const isInit: Ref<boolean> = ref<boolean>(true);
+const enabled: Ref<boolean> = ref<boolean>(false);
+const channel: Ref<string | null> = ref<string | null>(null);
+const from: Ref<number | null> = ref<number | null>(null);
+const to: Ref<number | null> = ref<number | null>(null);
+const fromDaysBefore: Ref<number | null> = ref<number | null>(0);
+const beginOfWeek: Ref<number | null> = ref<number | null>(1);
+const frequency: Ref<number | null> = ref<number | null>(null);
+const frequencyDaysBefore: Ref<number[]> = ref<number[]>([]);
+const timings: Ref<Timing[]> = ref<Timing[]>([]);
+const timingsMessage: Ref<string | null> = ref<string | null>(null);
 
 const days: SelectItem[] = DAYS_OF_WEEK;
 const daysBefore: SelectItem[] = DAYS_BEFORE;

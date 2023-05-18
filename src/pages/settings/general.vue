@@ -43,11 +43,11 @@ type ConfigFeatures = {
 };
 
 const { startLoading, finishLoading } = useLoading();
-const features = reactive<ConfigFeatures>({ prospect: false });
+const features: ConfigFeatures = reactive<ConfigFeatures>({ prospect: false });
 
 onMounted(async () => {
   startLoading();
-  const configs = await getFeatures()
+  const configs = await getFeatures();
   features.prospect = configs?.prospect ?? false;
   finishLoading();
 });

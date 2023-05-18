@@ -65,14 +65,22 @@ const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
   color: "primary",
   variant: "flat",
-  closable: false
+  closable: false,
+  maxWidth: undefined,
+  btnText: undefined,
+  title: undefined,
+  btnSize: undefined,
+  btnWidth: undefined,
+  btnHeight: undefined,
+  btnPrependIcon: undefined,
+  btnAppendIcon: undefined,
 });
 const emits = defineEmits<Emits>();
 
 const { modelValue } = toRefs(props);
 const value = computed({
   get: () => modelValue.value,
-  set: v => emits("update:model-value", v)
+  set: v => emits("update:model-value", v),
 });
 </script>
 

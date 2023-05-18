@@ -55,7 +55,7 @@ const { startLoading, finishLoading } = useLoading();
 const config = useRuntimeConfig();
 
 const form = ref<VForm>();
-const formData = reactive<SignUpInfo>({
+const formData: SignUpInfo = reactive<SignUpInfo>({
   name: "",
   agree: false,
 });

@@ -20,6 +20,7 @@ type Emits = {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
+  label: undefined,
 });
 const emits = defineEmits<Emits>();
 

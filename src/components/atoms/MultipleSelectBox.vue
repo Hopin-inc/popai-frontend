@@ -14,28 +14,29 @@ v-select(
 )
   template(#selection="{ item, index }")
     v-chip(
-      closable
-      @click:close.prevent="removeItem(e, index)"
+      @click:close.prevent="removeItem($event, index)"
       :key="item"
+      closable
       density="comfortable"
     ) {{ item.title }}
 </template>
 
 <script setup lang="ts">
-type SelectItem<IdType = number> = {
-  id: IdType;
-  name: string;
-}
-
+type ItemDef = {
+  itemValue: string;
+  itemTitle: string;
+};
 type Props = {
   modelValue: number[];
-  items: SelectItem[];
-  itemValue?: string;
-  itemTitle?: string;
+  item: {
+    [K in ItemDef[keyof ItemDef]]: K extends ItemDef["itemValue"]
+      ? string | number | null
+      : K extends ItemDef["itemTitle"] ? string : unknown;
+  } & Record<string, any>[];
   label?: string;
   density?: "compact" | "comfortable" | "default";
   readonly?: boolean;
-};
+} & Partial<ItemDef>;
 type Emits = {
   (e: "update:model-value", value: number[]): void
 };

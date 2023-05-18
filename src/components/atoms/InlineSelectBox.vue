@@ -33,6 +33,7 @@ type Emits = {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: null,
   items: () => [],
+  label: undefined,
   readonly: false,
   itemValue: "id",
   itemTitle: "name",

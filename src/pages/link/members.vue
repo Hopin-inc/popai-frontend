@@ -40,6 +40,7 @@ CommonPage(title="メンバー")
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
 import { updateChatToolUsers } from "~/apis/chat-tool";
 import { updateTodoAppUser } from "~/apis/todo-app";
 import { deleteUser, getUserConfigs, getUserReportingLines, updateUser, updateUserReportingLines } from "~/apis/users";
@@ -72,9 +73,9 @@ useHead({
 
 const { startLoading, finishLoading, loading } = useLoading();
 const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts } = useInfo();
-const isInit = ref<boolean>(true);
-const configs = ref<Config[]>([]);
-const reportingLines = ref<ReportingLine[]>([]);
+const isInit: Ref<boolean> = ref<boolean>(true);
+const configs: Ref<Config[]> = ref<Config[]>([]);
+const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
 const users = computed(() => reportingLines.value.map(config => config.user));
 
 onMounted(async () => {

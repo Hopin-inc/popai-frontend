@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 type Props = {
   modelValue: string;
   alwaysEditable?: boolean;
@@ -33,9 +35,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emits = defineEmits<Emits>();
 
-const value = ref<string>(props.modelValue);
-const editable = ref<boolean>(props.alwaysEditable ?? false);
-const readonly = ref<boolean>(props.alwaysReadonly ?? false);
+const value: Ref<string> = ref<string>(props.modelValue);
+const editable: Ref<boolean> = ref<boolean>(props.alwaysEditable ?? false);
+const readonly: Ref<boolean> = ref<boolean>(props.alwaysReadonly ?? false);
 
 const onInput = (e: InputEvent) => {
   if (e.target instanceof HTMLInputElement) {

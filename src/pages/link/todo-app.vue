@@ -172,6 +172,7 @@ BtnModalSet(
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
 import { NotionPropertyType, PropertyUsageType, TodoAppId, TodoAppName } from "~/consts/enum";
 import {
   NOTION_PROPERTY_TYPES_WITH_LABELS,
@@ -240,21 +241,21 @@ const { startLoading, finishLoading } = useLoading();
 const { implementedTodoApp, implementedTodoAppId, todoAppBoards } = useInfo();
 const config = useRuntimeConfig();
 
-const isInit = ref<boolean>(true);
-const backlogSetup = ref<boolean>(false);
+const isInit: Ref<boolean> = ref<boolean>(true);
+const backlogSetup: Ref<boolean> = ref<boolean>(false);
 const backlogSpaceId = reactive<BacklogSpaceId>({ id: "", domain: ".backlog.com" });
 const backlogDomains: SelectItem[] = [
   { id: ".backlog.com", name: ".backlog.com" },
   { id: ".backlog.jp", name: ".backlog.jp" },
 ];
 let isUpdating: boolean = false;
-const properties = ref<Property[]>([]);
-const boardId = ref<string | null>(null);
+const properties: Ref<Property[]> = ref<Property[]>([]);
+const boardId: Ref<string | null> = ref<string | null>(null);
 const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
-const name = ref<PropertyConfig>({ ...propInitVal });
-const assignee = ref<PropertyConfig>({ ...propInitVal });
-const deadline = ref<PropertyConfig>({ ...propInitVal });
-const isDone = ref<PropertyConfig>({
+const name: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const assignee: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const deadline: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const isDone: Ref<PropertyConfig> = ref<PropertyConfig>({
   ...propInitVal,
   requireOptions: true,
   options: [],
@@ -269,7 +270,7 @@ const isDone = ref<PropertyConfig>({
     }
   },
 });
-const isClosed = ref<PropertyConfig>({
+const isClosed: Ref<PropertyConfig> = ref<PropertyConfig>({
   ...propInitVal,
   requireOptions: true,
   options: [],

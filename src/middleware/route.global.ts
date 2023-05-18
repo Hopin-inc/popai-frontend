@@ -11,7 +11,6 @@ export default defineNuxtRouteMiddleware((to, _from) => {
       case "/":
         return navigateTo("/settings/general");
       default:
-        return;
     }
   }
 });

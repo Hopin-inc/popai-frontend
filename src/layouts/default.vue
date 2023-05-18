@@ -40,7 +40,6 @@ const { currentRoute } = useRouter();
 const menu = ref<string[]>([]);
 const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
-const menuRounded = computed(() => mdAndUp.value ? "lg" : undefined);
 
 const signOut = async () => {
   startLoading();

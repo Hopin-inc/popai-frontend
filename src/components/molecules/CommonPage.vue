@@ -14,5 +14,6 @@ type Props = {
 };
 const props = withDefaults(defineProps<Props>(), {
   title: "",
+  iconSrc: undefined,
 });
 </script>
