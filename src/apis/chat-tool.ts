@@ -1,8 +1,6 @@
 import { ApiResponse, SelectItem } from "~/types/common";
 import { ChatToolInfo } from "~/types/settings";
 import { fetcher } from "~/apis/base-api";
-import { ValueOf } from "~/types/utils";
-import { ChatToolId } from "~/consts/enum";
 
 export const getChatTool = async (): Promise<ChatToolInfo | null> => {
   const { data, error } = await useAsyncData<ApiResponse<ChatToolInfo>>(
@@ -15,7 +13,7 @@ export const getChatTool = async (): Promise<ChatToolInfo | null> => {
   return null;
 };
 
-export const getChatToolAccounts = async (chatToolId: ValueOf<typeof ChatToolId>): Promise<SelectItem<string>[]> => {
+export const getChatToolAccounts = async (chatToolId: number): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getChatToolAccounts-${ chatToolId }`,
     fetcher(`/chat-tool/${ chatToolId }/accounts`, { method: "GET" }),
@@ -27,7 +25,7 @@ export const getChatToolAccounts = async (chatToolId: ValueOf<typeof ChatToolId>
 };
 
 export const updateChatToolUsers = async (
-  chatToolId: ValueOf<typeof ChatToolId>,
+  chatToolId: number,
   userId: string,
   appUserId: string,
 ): Promise<SelectItem<string>[]> => {
@@ -42,7 +40,7 @@ export const updateChatToolUsers = async (
   return [];
 };
 
-export const getChatToolChannels = async (chatToolId: ValueOf<typeof ChatToolId>): Promise<SelectItem<string>[]> => {
+export const getChatToolChannels = async (chatToolId: number): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getChatToolChannels-${ chatToolId }`,
     fetcher(`/chat-tool/${ chatToolId }/channels`, { method: "GET" }),

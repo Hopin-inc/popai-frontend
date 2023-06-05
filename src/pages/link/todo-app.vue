@@ -58,6 +58,13 @@ CommonPage(title="タスク管理ツール")
                   :items="propertiesForDate"
                   label="カラムを選択"
                 )
+            v-col(cols="12" sm="6" md="4")
+              FormPart(title="親レコード")
+                SelectBox(
+                  v-model="parent.property"
+                  :items="propertiesForRelation"
+                  label="カラムを選択"
+                )
             v-col(cols="12")
               FormPart(title="完了しているかどうか")
                 v-row
@@ -104,19 +111,24 @@ CommonPage(title="タスク管理ツール")
                       density="comfortable"
                       hide-details
                     )
+        SubSection(title="プロジェクトとタスクの設定方法")
+          v-row
+            v-col(cols="12")
+              v-radio-group(v-model="projectRule" color="primary" hide-details)
+                v-radio(v-for="rule in projectRules" :key="rule" :value="rule.id" :label="rule.name").my-1.my-md-0
     v-col(cols="12" v-if="implementedTodoAppId === TodoAppId.BACKLOG")
       SectionCard(
         title="プロジェクトを設定する"
-        :description="`${ TodoAppName[TodoAppId.BACKLOG] }のデータを同期するために、プロジェクトと状態を選択してください。`"
+        :description="`データを同期するために、${ TodoAppName[TodoAppId.BACKLOG] }のプロジェクトと状態を選択してください。`"
         :icon-src="ExternalServiceLogos.BACKLOG"
       )
-        SubSection(title="プロジェクト設定")
+        SubSection(title="同期するBacklogプロジェクトの設定")
           v-row
             v-col(cols="12" sm="8" md="6")
               SelectBox(
                 v-model="boardId"
                 :items="todoAppBoards"
-                label="プロジェクトを選択"
+                label="Backlogのプロジェクトを選択"
               )
         SubSection(title="状態の設定")
           v-row
@@ -138,6 +150,11 @@ CommonPage(title="タスク管理ツール")
                       :items="isClosed.availableOptions"
                       label="「保留」に対応する状態"
                     )
+        SubSection(title="プロジェクトとタスクの設定方法")
+          v-row
+            v-col(cols="12")
+              v-radio-group(v-model="projectRule" color="primary" hide-details)
+                v-radio(v-for="rule in projectRules" :key="rule" :value="rule.id" :label="rule.name").my-1.my-md-0
 BtnModalSet(
   v-model="backlogSetup"
   title="Backlogを設定する"
@@ -172,8 +189,8 @@ BtnModalSet(
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
-import { NotionPropertyType, PropertyUsageType, TodoAppId, TodoAppName } from "~/consts/enum";
+import type { ComputedRef, Ref } from "vue";
+import { ProjectRule, PropertyUsageType, TodoAppId, TodoAppName } from "~/consts/enum";
 import {
   NOTION_PROPERTY_TYPES_WITH_LABELS,
   NOTION_PROPERTY_TYPES_FOR_NAME,
@@ -181,6 +198,7 @@ import {
   NOTION_PROPERTY_TYPES_FOR_PEOPLE,
   NOTION_PROPERTY_TYPES_FOR_STATUS,
   NOTION_PROPERTY_TYPES_WITH_CHECKBOX,
+  NOTION_PROPERTY_TYPES_FOR_RELATION,
 } from "~/consts";
 import {
   getBoardConfig,
@@ -192,7 +210,6 @@ import {
 import Validations from "~/utils/validations";
 import { ExternalServiceLogos } from "~/consts/images";
 
-type ValueOf<T> = T[keyof T];
 type PropertyConfig = {
   id: number | null;
   property: string | null;
@@ -213,18 +230,18 @@ type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = Require
 type Property = {
   id: string;
   name: string;
-  type: ValueOf<typeof NotionPropertyType>;
+  type: number;
   availableOptions?: SelectItem[];
 };
-type SelectItem = {
-  id: string;
+type SelectItem<I = string> = {
+  id: I;
   name: string;
 };
 type PropertyUsage = {
   id: number;
   property: string;
-  usage: ValueOf<typeof PropertyUsageType>;
-  type: ValueOf<typeof NotionPropertyType>;
+  usage: number;
+  type: number;
   options?: string[];
   isChecked?: boolean;
 };
@@ -255,6 +272,7 @@ const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: 
 const name: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
 const assignee: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
 const deadline: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const parent: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
 const isDone: Ref<PropertyConfig> = ref<PropertyConfig>({
   ...propInitVal,
   requireOptions: true,
@@ -285,6 +303,7 @@ const isClosed: Ref<PropertyConfig> = ref<PropertyConfig>({
     }
   },
 });
+const projectRule: Ref<number | null> = ref<number | null>(null);
 
 const propertiesForName = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_NAME.includes(p.type);
@@ -298,10 +317,28 @@ const propertiesForDate = computed(() => properties.value.filter((p) => {
 const propertiesForStatus = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_STATUS.includes(p.type);
 }));
+const propertiesForRelation = computed(() => properties.value.filter((p) => {
+  return NOTION_PROPERTY_TYPES_FOR_RELATION.includes(p.type);
+}));
+const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
+  switch (implementedTodoAppId.value) {
+    case TodoAppId.NOTION:
+      return [
+        { id: ProjectRule.PARENT_TODO, name: "親レコードがあるレコードをタスク、ないレコードをプロジェクトとみなす。" },
+      ];
+    case TodoAppId.BACKLOG:
+      return [
+        { id: ProjectRule.MILESTONE, name: "マイルストーンをプロジェクトとして、課題はすべてタスクとみなす。" },
+        { id: ProjectRule.PARENT_TODO, name: "親課題がある課題をタスク、ない課題をプロジェクトとみなす。" },
+      ];
+    default:
+      return [];
+  }
+});
 
 // Get property data on boardId changed.
 watch(boardId, async (next) => {
-  if (!isInit.value && !isUpdating && implementedTodoAppId.value && next) {
+  if (!isUpdating && implementedTodoAppId.value && next) {
     startLoading();
     isUpdating = true;
     resetPropertyUsages();
@@ -337,6 +374,14 @@ watch(() => deadline.value.property, async (next) => {
     isUpdating = true;
     onStatusPropertyChanged(deadline.value, next);
     await updatePropertyUsage(deadline.value, PropertyUsageType.DEADLINE, next);
+    isUpdating = false;
+  }
+}, { deep: true });
+watch(() => parent.value.property, async (next) => {
+  if (!isUpdating && next && implementedTodoAppId.value) {
+    isUpdating = true;
+    onStatusPropertyChanged(parent.value, next);
+    await updatePropertyUsage(parent.value, PropertyUsageType.PARENT_TODO, next);
     isUpdating = false;
   }
 }, { deep: true });
@@ -378,6 +423,15 @@ watch(() => [
     isUpdating = false;
   }
 }, { deep: true });
+watch(projectRule, async () => {
+  if (!isUpdating && implementedTodoAppId.value && boardId.value && projectRule.value) {
+    isUpdating = true;
+    startLoading();
+    await updateBoardConfig(implementedTodoAppId.value, boardId.value, projectRule.value);
+    finishLoading();
+    isUpdating = false;
+  }
+})
 
 const onStatusPropertyChanged = (propConfig: PropertyConfig, nextProp: string) => {
   const prop = properties.value.find(p => p.id === nextProp);
@@ -412,12 +466,13 @@ const resetPropertyUsages = () => {
   Object.assign(name.value, { ...propInitVal });
   Object.assign(assignee.value, { ...propInitVal });
   Object.assign(deadline.value, { ...propInitVal });
+  Object.assign(parent.value, { ...propInitVal });
   Object.assign(isDone.value, { ...propInitVal });
   Object.assign(isClosed.value, { ...propInitVal });
 };
 const updatePropertyUsage = async (
   propConfig: PropertyConfig,
-  usage: ValueOf<typeof PropertyUsageType>,
+  usage: number,
   nextProp: string,
 ) => {
   if (!isInit.value && implementedTodoAppId.value && boardId.value) {
@@ -455,6 +510,7 @@ watch(todoAppBoards, async () => {
 }, { deep: true });
 const init = async () => {
   if (implementedTodoAppId.value && todoAppBoards.value.length) {
+    isUpdating = true;
     startLoading();
     resetPropertyUsages();
     await fetchBoardId();
@@ -463,12 +519,15 @@ const init = async () => {
       fetchConfigs(),
     ]);
     finishLoading();
+    isUpdating = false;
   }
   isInit.value = false;
 };
 const fetchBoardId = async () => {
   if (implementedTodoAppId.value) {
-    boardId.value = await getBoardConfig(implementedTodoAppId.value);
+    const boardConfig = await getBoardConfig(implementedTodoAppId.value);
+    boardId.value = boardConfig.boardId;
+    projectRule.value = boardConfig.projectRule;
   }
 };
 const fetchProperties = async () => {
@@ -482,11 +541,12 @@ const fetchConfigs = async () => {
     setConfig(usages, name.value, PropertyUsageType.TITLE);
     setConfig(usages, assignee.value, PropertyUsageType.ASSIGNEE);
     setConfig(usages, deadline.value, PropertyUsageType.DEADLINE);
+    setConfig(usages, parent.value, PropertyUsageType.PARENT_TODO);
     setConfig(usages, isDone.value, PropertyUsageType.IS_DONE);
     setConfig(usages, isClosed.value, PropertyUsageType.IS_CLOSED);
   }
 };
-const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: ValueOf<typeof PropertyUsageType>) => {
+const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: number) => {
   const usage = usages.find(u => u.usage === usageType);
   if (usage) {
     propConfig.id = usage.id ?? null;

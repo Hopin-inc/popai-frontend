@@ -79,10 +79,10 @@ export const updateNotifyConfig = async (config: Partial<ConfigNotify>): Promise
   return null;
 };
 
-export const getProspectConfig = async (): Promise<ConfigProspect | null> => {
+export const getProspectConfig = async (type: number): Promise<ConfigProspect | null> => {
   const { data, error } = await useAsyncData<ApiResponse<ConfigProspect | null>>(
     "getProspectConfig",
-    fetcher("/config/prospect", { method: "GET" }),
+    fetcher(`/config/prospect?type=${ type }`, { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;

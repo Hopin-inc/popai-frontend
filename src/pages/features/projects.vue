@@ -1,5 +1,5 @@
 <template lang="pug">
-CommonPage(title="シェアのカスタマイズ")
+CommonPage(title="プロジェクトのシェア設定")
   v-row(v-if="enabled")
     v-col(cols="12")
       SectionCard(
@@ -21,29 +21,29 @@ CommonPage(title="シェアのカスタマイズ")
             v-radio-group(v-model="from" color="primary")
               v-radio(:value="1")
                 template(#label)
-                  span タスクの着手日から
+                  span プロジェクトの開始日から
               v-radio(:value="2")
                 template(#label)
                   .d-flex.align-center.flex-wrap
-                    span 期日の
+                    span プロジェクトの期日の
                     InlineSelectBox(v-model="fromDaysBefore" :items="daysBefore" :readonly="from !== 2").w-80px
                     span から
               v-radio(:value="3")
                 template(#label)
                   .d-flex.align-center.flex-wrap
-                    span 期日が属する週の初め
+                    span プロジェクトの期日が属する週の初め
                     .d-flex.align-center
                       span （
                       InlineSelectBox(v-model="beginOfWeek" :items="days" :readonly="from !== 3").w-40px
-                      span 曜日）
+                      span 曜日）から
               v-radio(:value="4")
                 template(#label)
-                  span タスクの作成日から
+                  span プロジェクトの作成日から
           FormPart(title="終了日")
             v-radio-group(v-model="to" color="primary")
               v-radio(:value="1")
                 template(#label)
-                  span タスクの期日まで
+                  span プロジェクトの期日まで
           FormPart(title="頻度")
             v-radio-group(v-model="frequency" color="primary")
               v-radio(:value="1")
@@ -74,22 +74,19 @@ CommonPage(title="シェアのカスタマイズ")
           v-table(v-if="timings.length").overflow-x-auto
             thead
               tr
-                th.w-160px 時刻
-                th.w-fit-content.text-no-wrap 指定時刻までに着手するタスクを選択
+                th 時刻
                 th.w-80px 操作
             tbody
               tr(v-for="(timing, index) in timings" :key="timing")
-                td: SettingTableSelectBox(v-model="timing.time" :items="times" :rules="[validationNoDuplicate]")
-                td.w-fit-content: Switch(v-model="timing.askPlan").w-fit-content
-                  .d-flex.align-center(v-if="timing.askPlan")
-                    InlineSelectBox(v-model="timing.askPlanMilestone" :items="times").w-80px
-                    span まで
-                td: v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
+                td
+                  SettingTableSelectBox(v-model="timing.time" :items="times" :rules="[validationNoDuplicate]")
+                td
+                  v-btn(@click.stop="deleteRow(index)" prepend-icon="mdi-delete" variant="outlined" color="error") 削除
           p(v-else) 通知時刻が設定されていません。
           v-btn.mt-2(@click.stop="addRow" prepend-icon="mdi-plus" variant="text" color="primary") 通知時刻を追加
-  v-row(v-else-if="!init")
+  v-row(v-else-if="!loading")
     v-col(cols="12")
-      p シェア機能がオフになっています。
+      p 機能がオフになっています。
 </template>
 
 <script setup lang="ts">
@@ -98,6 +95,7 @@ import type { Ref } from "vue";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import { ExternalServiceLogos, Icons } from "~/consts/images";
+import { AskType, AskMode } from "~/consts/enum";
 
 type SelectItem = {
   id: number | string;
@@ -105,10 +103,11 @@ type SelectItem = {
 };
 type Timing = {
   time: string;
-  askPlan: boolean;
-  askPlanMilestone?: string;
+  type: number;
+  mode: number;
 };
 type ConfigProspect = {
+  type: number;
   enabled: boolean;
   chatToolId: number;
   channel: string;
@@ -122,11 +121,13 @@ type ConfigProspect = {
 };
 type ConfigProspectTiming = {
   time: string;
-  askPlan: boolean;
-  askPlanMilestone?: string;
+  type: number;
+  mode: number;
 };
 
-const { startLoading, finishLoading } = useLoading();
+const TYPE = AskType.PROJECTS;
+
+const { startLoading, finishLoading, loading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 
 const prospectTimingForm = ref<VForm>();
@@ -197,10 +198,10 @@ watch(() => [...timings.value], async (next) => {
     timingsMessage.value = errorMessages.join(", ");
   }
 }, { deep: true });
-const update = async (config: Partial<ConfigProspect>) => {
+const update = async (config: Partial<Omit<ConfigProspect, "type">>) => {
   if (!isInit.value) {
     startLoading();
-    await updateProspectConfig(config);
+    await updateProspectConfig({ ...config, type: TYPE });
     finishLoading();
   }
 };
@@ -220,7 +221,7 @@ const init = async () => {
   }
 };
 const fetchConfig = async () => {
-  const config = await getProspectConfig();
+  const config = await getProspectConfig(TYPE);
   if (config) {
     enabled.value = config.enabled;
     channel.value = config.channel;
@@ -237,8 +238,8 @@ const fetchConfig = async () => {
 const addRow = () => {
   timings.value.push({
     time: "09:00:00",
-    askPlan: false,
-    askPlanMilestone: "13:00:00",
+    type: TYPE,
+    mode: AskMode.UNDEFINED,
   });
 };
 const deleteRow = (index: number) => {

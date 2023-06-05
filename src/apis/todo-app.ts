@@ -1,8 +1,6 @@
 import { ApiResponse, SelectItem } from "~/types/common";
 import { fetcher } from "~/apis/base-api";
-import { ValueOf } from "~/types/utils";
-import { TodoAppId } from "~/consts/enum";
-import { Property, PropertyUsage, TodoAppInfo } from "~/types/settings";
+import { BoardConfig, Property, PropertyUsage, TodoAppInfo } from "~/types/settings";
 
 export const getTodoApp = async (): Promise<TodoAppInfo | null> => {
   const { data, error } = await useAsyncData<ApiResponse<TodoAppInfo>>(
@@ -15,7 +13,7 @@ export const getTodoApp = async (): Promise<TodoAppInfo | null> => {
   return null;
 };
 
-export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
+export const getTodoAppAccounts = async (todoAppId: number): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getTodoAppAccounts-${ todoAppId }`,
     fetcher(`/todo-app/${ todoAppId }/accounts`, { method: "GET" }),
@@ -27,7 +25,7 @@ export const getTodoAppAccounts = async (todoAppId: ValueOf<typeof TodoAppId>): 
 };
 
 export const updateTodoAppUser = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
+  todoAppId: number,
   userId: string,
   appUserId: string,
 ): Promise<SelectItem<string>[]> => {
@@ -42,7 +40,7 @@ export const updateTodoAppUser = async (
   return [];
 };
 
-export const getTodoAppBoards = async (todoAppId: ValueOf<typeof TodoAppId>): Promise<SelectItem<string>[]> => {
+export const getTodoAppBoards = async (todoAppId: number): Promise<SelectItem<string>[]> => {
   const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
     `getTodoAppBoards-${ todoAppId }`,
     fetcher(`/todo-app/${ todoAppId }/boards`, { method: "GET" }),
@@ -53,24 +51,26 @@ export const getTodoAppBoards = async (todoAppId: ValueOf<typeof TodoAppId>): Pr
   return [];
 };
 
-export const getBoardConfig = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
-): Promise<string | null> => {
-  const { data, error } = await useAsyncData<ApiResponse<{ boardId: string | null }>>(
+export const getBoardConfig = async (todoAppId: number): Promise<BoardConfig> => {
+  const { data, error } = await useAsyncData<ApiResponse<BoardConfig>>(
     `getBoardConfig-${ todoAppId }`,
     fetcher(`/todo-app/${ todoAppId }/board`, { method: "GET" }),
   );
   if (data.value && !error.value) {
-    return data.value.data.boardId;
+    return data.value.data;
   }
-  return null;
+  return {
+    boardId: null,
+    projectRule: null,
+  };
 };
 
 export const updateBoardConfig = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
+  todoAppId: number,
   boardId: string,
+  projectRule?: number,
 ): Promise<void> => {
-  const body = { boardId };
+  const body = { boardId, projectRule };
   await useAsyncData<ApiResponse<void>>(
     `updateBoardConfig-${ todoAppId }`,
     fetcher(`/todo-app/${ todoAppId }/board`, { body, method: "PATCH" }),
@@ -78,7 +78,7 @@ export const updateBoardConfig = async (
 };
 
 export const getTodoAppProperties = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
+  todoAppId: number,
   boardId: string,
 ): Promise<Property[]> => {
   const { data, error } = await useAsyncData<ApiResponse<Property[]>>(
@@ -92,7 +92,7 @@ export const getTodoAppProperties = async (
 };
 
 export const getTodoAppPropertyUsages = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
+  todoAppId: number,
   boardId: string,
 ): Promise<PropertyUsage[]> => {
   const { data, error } = await useAsyncData<ApiResponse<PropertyUsage[]>>(
@@ -106,7 +106,7 @@ export const getTodoAppPropertyUsages = async (
 };
 
 export const updateTodoAppPropertyUsage = async (
-  todoAppId: ValueOf<typeof TodoAppId>,
+  todoAppId: number,
   boardId: string,
   usage: PropertyUsage,
 ): Promise<PropertyUsage | null> => {

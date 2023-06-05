@@ -1,6 +1,4 @@
 import { SetOptional } from "type-fest";
-import { ValueOf } from "~/types/utils";
-import { NotionPropertyType, PropertyUsageType } from "~/consts/enum";
 import { SelectItem } from "~/types/common";
 
 export type UserConfig = {
@@ -32,15 +30,15 @@ export type TodoAppInfo = {
 export type Property = {
   id: string;
   name: string;
-  type: ValueOf<typeof NotionPropertyType>;
+  type: number;
   availableOptions?: SelectItem<string>[];
 };
 
 export type PropertyUsage = {
   id: number;
   property: string;
-  usage: ValueOf<typeof PropertyUsageType>;
-  type: ValueOf<typeof NotionPropertyType>;
+  usage: number;
+  type: number;
   options?: string[];
   isChecked?: boolean;
 };
@@ -52,7 +50,8 @@ export type ConfigCommon = {
 };
 
 export type ConfigFeatures = {
-  prospect: boolean;
+  projects: boolean;
+  todos: boolean;
 };
 
 export type ConfigDailyReport = {
@@ -76,6 +75,7 @@ export type ConfigNotify = {
 };
 
 export type ConfigProspect = {
+  type: number;
   enabled: boolean;
   chatToolId: number;
   channel: string;
@@ -90,6 +90,11 @@ export type ConfigProspect = {
 
 export type ConfigProspectTiming = {
   time: string;
-  askPlan: boolean;
-  askPlanMilestone?: string;
+  type: number;
+  mode: number;
+};
+
+export type BoardConfig = {
+  boardId: string | null;
+  projectRule: number | null;
 };

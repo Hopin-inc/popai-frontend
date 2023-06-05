@@ -47,9 +47,6 @@ const signOut = async () => {
   finishLoading();
 };
 const menus = ref<MenuItem[]>([
-  { type: "subheader", title: "機能ごとのカスタマイズ" },
-  { type: "item", title: "シェア", to: "/features/prospect", disabled: false },
-  { type: "divider" },
   { type: "subheader", title: "連携" },
   { type: "item", title: "タスク管理ツール", to: "/link/todo-app", disabled: false },
   { type: "item", title: "メンバー", to: "/link/members", disabled: false },
@@ -57,6 +54,10 @@ const menus = ref<MenuItem[]>([
   { type: "subheader", title: "設定" },
   { type: "item", title: "利用設定", to: "/settings/general", disabled: false },
   { type: "item", title: "通知設定", to: "/settings/notification", disabled: false },
+  { type: "divider" },
+  { type: "subheader", title: "機能ごとのカスタマイズ" },
+  { type: "item", title: "タスクのシェア", to: "/features/todos", disabled: false },
+  { type: "item", title: "プロジェクトのシェア", to: "/features/projects", disabled: false },
   { type: "divider" },
   { type: "item", title: "ログアウト", action: signOut, disabled: false },
 ]);

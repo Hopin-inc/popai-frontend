@@ -15,7 +15,9 @@ export namespace Icons {
   const baseUri = "/images/icons/";
   export const ALARM = baseUri + "alarm_clock.svg";
   export const CALENDAR = baseUri + "calendar.svg";
+  export const CHECK = baseUri + "check_mark.svg";
   export const HANDSHAKE = baseUri + "handshake.svg";
+  export const FLAG = baseUri + "flag.svg";
   export const PEOPLE = baseUri + "person_2.svg";
   export const WAVING_HANDS = baseUri + "waving_hands.svg";
 }

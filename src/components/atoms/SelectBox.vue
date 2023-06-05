@@ -14,20 +14,18 @@ v-select(
 </template>
 
 <script setup lang="ts">
-type ItemDef = {
-  itemValue: string;
-  itemTitle: string;
+type SelectItem = {
+  id: number | string | null;
+  name: string;
 };
 type Props = {
   modelValue: number | string | null;
-  item: {
-    [K in ItemDef[keyof ItemDef]]: K extends ItemDef["itemValue"]
-      ? string | number | null
-      : K extends ItemDef["itemTitle"] ? string : unknown;
-  } & Record<string, any>[];
+  items: SelectItem[];
   label?: string;
+  itemValue?: string;
+  itemTitle?: string;
   readonly?: boolean;
-} & Partial<ItemDef>;
+};
 type Emits = {
   (e: "update:model-value", value: number | string | null): void
 };
