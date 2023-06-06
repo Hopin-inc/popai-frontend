@@ -14,9 +14,9 @@ v-select(
 )
   template(#selection="{ item, index }")
     v-chip(
+      @click:close.prevent="removeItem($event, index)"
+      :key="item"
       closable
-      @click:close.prevent="removeItem(e, index)"
-      :key="index"
       density="comfortable"
     ) {{ item.title }}
 </template>

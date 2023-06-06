@@ -1,12 +1,12 @@
 <template lang="pug">
 .d-flex.flex-column.align-center.w-100
-  img(src="/images/logo_name.svg" height="48").mb-6
+  img(:src="ServiceLogos.LOGO_WITH_NAME" height="48").mb-6
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle ログイン
     v-row(justify="center")
       v-col(cols="12" sm="6")
         a(@click.stop="signIn('oidc.slack')").slack-btn
-          img(src="/images/slack_logo.svg" height="20")
+          img(:src="ExternalServiceLogos.SLACK" height="20")
           span Slackでログイン
     v-row(justify="center")
       v-col(cols="12" sm="9").d-flex.align-center
@@ -19,11 +19,13 @@
     v-row(justify="center")
       v-col(cols="12" sm="6")
         a(@click.stop="signIn('oidc.slack', true)").slack-btn
-          img(src="/images/slack_logo.svg" height="20")
+          img(:src="ExternalServiceLogos.SLACK" height="20")
           span Slackで登録
 </template>
 
 <script setup lang="ts">
+import { ServiceLogos, ExternalServiceLogos } from "~/consts/images";
+
 type ProviderId = "oidc.slack";
 
 definePageMeta({

@@ -8,10 +8,21 @@ import { Account } from "~/types/common";
 import { getLoggedInAccount, signIn, signOut } from "~/apis/auth";
 import { getMessageByAuthError } from "~/utils/messages";
 import { ChatToolId } from "~/consts/enum";
+import { ReadonlyRef } from "~/types/utils";
 
 type ProviderId = "oidc.slack";
+interface UseAuth {
+  currentUser: ReadonlyRef<Account | null>;
+  isLoggedIn: boolean;
+  organization: string | undefined;
+  name: string | undefined;
+  fetchAuthState: () => Promise<void>;
+  setUser: (user: Account | null) => void;
+  login: (providerId: ProviderId, scopes?: string[], initial?: boolean) => Promise<void>;
+  logout: () => Promise<void>;
+}
 
-export const useAuth = () => {
+export const useAuth = (): UseAuth => {
   const currentUser = useState<Account | null>("currentUser", () => null);
 
   const isLoggedIn = !!currentUser.value;
@@ -32,15 +43,18 @@ export const useAuth = () => {
 
   const login = (state: Ref<Account | null>) => {
     return async (providerId: ProviderId, scopes: string[] = [], initial: boolean = false) => {
+      const { startLoading, finishLoading } = useLoading();
       const chatToolId = providerId === "oidc.slack" ? ChatToolId.SLACK : null;
       const provider = new OAuthProvider(providerId);
       scopes.forEach(scope => provider.addScope(scope));
       const auth = getAuth();
       await signInWithPopup(auth, provider)
         .then(async (credential) => {
+          startLoading();
           const { user } = credential;
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
+          finishLoading();
           if (account) {
             const { organization, name } = account;
             state.value = { organization, name };
@@ -56,7 +70,6 @@ export const useAuth = () => {
           }
         })
         .catch((error) => {
-          console.error(error); // FIXME
           if (!["auth/popup-closed-by-user", "auth/user-cancelled"].includes(error.code)) {
             alert(getMessageByAuthError(error.code));
           }

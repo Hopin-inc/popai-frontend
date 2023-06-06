@@ -1,6 +1,12 @@
-import { type Ref } from "vue";
+import { ComputedRef, type Ref } from "vue";
 
-export const useLoading = () => {
+interface UseLoading {
+  loading: ComputedRef<boolean>;
+  startLoading: () => void;
+  finishLoading: () => void;
+}
+
+export const useLoading = (): UseLoading => {
   const loadingCount = useState<number>("loading", () => 0);
   const loading = computed(() => !!loadingCount.value);
 

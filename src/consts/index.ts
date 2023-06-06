@@ -1,5 +1,4 @@
 import { SelectItem } from "~/types/common";
-import { ValueOf } from "~/types/utils";
 import { NotionPropertyType } from "~/consts/enum";
 import { range } from "~/utils/common";
 import { generateTimeListByInterval, getTimingDayBeforeText } from "~/utils/datetime";
@@ -28,31 +27,35 @@ export const TIME_LIST: SelectItem<string>[] = generateTimeListByInterval(15).ma
   };
 });
 
-export const NOTION_PROPERTY_TYPES_WITH_LABELS: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_WITH_LABELS: number[] = [
   NotionPropertyType.SELECT,
   NotionPropertyType.MULTI_SELECT,
   NotionPropertyType.STATUS,
 ];
 
-export const NOTION_PROPERTY_TYPES_WITH_CHECKBOX: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_WITH_CHECKBOX: number[] = [
   NotionPropertyType.CHECKBOX,
 ];
 
-export const NOTION_PROPERTY_TYPES_FOR_NAME: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_FOR_NAME: number[] = [
   NotionPropertyType.TITLE,
 ];
 
-export const NOTION_PROPERTY_TYPES_FOR_PEOPLE: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_FOR_PEOPLE: number[] = [
   NotionPropertyType.PEOPLE,
 ];
 
-export const NOTION_PROPERTY_TYPES_FOR_DATE: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_FOR_DATE: number[] = [
   NotionPropertyType.DATE,
 ];
 
-export const NOTION_PROPERTY_TYPES_FOR_STATUS: ValueOf<typeof NotionPropertyType>[] = [
+export const NOTION_PROPERTY_TYPES_FOR_STATUS: number[] = [
   NotionPropertyType.CHECKBOX,
   NotionPropertyType.SELECT,
   NotionPropertyType.MULTI_SELECT,
   NotionPropertyType.STATUS,
+];
+
+export const NOTION_PROPERTY_TYPES_FOR_RELATION: number[] = [
+  NotionPropertyType.RELATION,
 ];

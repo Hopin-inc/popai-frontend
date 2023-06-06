@@ -3,16 +3,16 @@ CommonPage(title="メンバー")
   v-row(v-if="!isInit")
     v-col(cols="12")
       SectionCard(
-        title="メンバーを紐付ける"
         :description="`メンバーを登録し、${ ChatToolName[implementedChatToolId] }・${ TodoAppName[implementedTodoAppId] }のユーザーと紐付けます。`"
-        icon-src="/images/person_2.svg"
+        :icon-src="Icons.PEOPLE"
+        title="メンバーを紐付ける"
       )
         v-table(v-if="configs.length && chatToolAccounts.length && todoAppAccounts.length").overflow-x-auto
           thead
             tr
               th.w-240px 名前
-              th.w-200px Slackアカウント
-              th.w-200px Notionアカウント
+              th.w-200px {{ ChatToolName[implementedChatToolId] }}アカウント
+              th.w-200px {{ TodoAppName[implementedTodoAppId] }}アカウント
               th 操作
           tbody
             tr(v-for="(config, index) in configs" :key="config")
@@ -26,7 +26,7 @@ CommonPage(title="メンバー")
       SectionCard(
         title="相談先のメンバーを設定する"
         description="相談相手となるメンバーを設定します。"
-        icon-src="/images/waving_hands.svg"
+        :icon-src="Icons.WAVING_HANDS"
       )
         v-table(v-if="reportingLines.length").overflow-x-auto
           thead
@@ -40,10 +40,12 @@ CommonPage(title="メンバー")
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
 import { updateChatToolUsers } from "~/apis/chat-tool";
 import { updateTodoAppUser } from "~/apis/todo-app";
 import { deleteUser, getUserConfigs, getUserReportingLines, updateUser, updateUserReportingLines } from "~/apis/users";
 import { ChatToolName, TodoAppName } from "~/consts/enum";
+import { Icons } from "~/consts/images";
 
 type SelectItem = {
   id: number | string;
@@ -71,9 +73,9 @@ useHead({
 
 const { startLoading, finishLoading, loading } = useLoading();
 const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts } = useInfo();
-const isInit = ref<boolean>(true);
-const configs = ref<Config[]>([]);
-const reportingLines = ref<ReportingLine[]>([]);
+const isInit: Ref<boolean> = ref<boolean>(true);
+const configs: Ref<Config[]> = ref<Config[]>([]);
+const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
 const users = computed(() => reportingLines.value.map(config => config.user));
 
 onMounted(async () => {

@@ -1,8 +1,7 @@
 import { ApiResponse } from "~/types/common";
 import { fetcher } from "~/apis/base-api";
 import { User, UserConfig, UserReportingLine } from "~/types/settings";
-import { IdOptional, ValueOf } from "~/types/utils";
-import { ChatToolId, TodoAppId } from "~/consts/enum";
+import { IdOptional } from "~/types/utils";
 
 export const updateUser = async (user: IdOptional<User>): Promise<User | null> => {
   const { data, error } = await useAsyncData<ApiResponse<User>>(
@@ -23,8 +22,8 @@ export const deleteUser = async (id: string): Promise<void> => {
 };
 
 export const getUserConfigs = async (
-  chatToolId: ValueOf<typeof ChatToolId>,
-  todoAppId: ValueOf<typeof TodoAppId>,
+  chatToolId: number,
+  todoAppId: number,
 ): Promise<UserConfig[]> => {
   const query = { chatToolId, todoAppId };
   const { data, error } = await useAsyncData<ApiResponse<UserConfig[]>>(

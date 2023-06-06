@@ -1,10 +1,24 @@
-import { type Ref } from "vue";
+import { ComputedRef, type Ref } from "vue";
 import { getTodoAppAccounts, getTodoAppBoards, getTodoApp } from "~/apis/todo-app";
 import { getChatToolAccounts, getChatToolChannels, getChatTool } from "~/apis/chat-tool";
 import { ChatToolInfo, TodoAppInfo } from "~/types/settings";
 import { SelectItem } from "~/types/common";
+import { ReadonlyArrayRef, ReadonlyRef } from "~/types/utils";
 
-export const useInfo = () => {
+interface UseInfo {
+  implementedTodoApp: ReadonlyRef<TodoAppInfo | null>;
+  implementedChatTool: ReadonlyRef<ChatToolInfo | null>;
+  todoAppAccounts: ReadonlyArrayRef<SelectItem<string>>;
+  chatToolAccounts: ReadonlyArrayRef<SelectItem<string>>;
+  todoAppBoards: ReadonlyArrayRef<SelectItem<string>>;
+  chatToolChannels: ReadonlyArrayRef<SelectItem<string>>;
+  connected: ComputedRef<boolean>;
+  implementedTodoAppId: ComputedRef<number | null>;
+  implementedChatToolId: ComputedRef<number | null>;
+  fetchAll: () => Promise<void>;
+}
+
+export const useInfo = (): UseInfo => {
   const todoApp = useState<TodoAppInfo | null>("todoApp");
   const chatTool = useState<ChatToolInfo | null>("chatTool");
   const todoAppAccounts = useState<SelectItem<string>[]>("todoAppAccounts", () => []);

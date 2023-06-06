@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-start.w-100
-  img(src="/images/logo_name.svg" height="48").mb-6.mx-auto
+  img(:src="ServiceLogos.LOGO" height="48").mb-6.mx-auto
   v-card(flat).pa-6.w-100.rounded-lg
     v-form(ref="form" @submit.prevent="submit")
       v-row
@@ -33,13 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { VForm } from "vuetify/components";
-import { getAuth, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
 import Validations from "~/utils/validations";
 import { signUp } from "~/apis/auth";
 import { URL_TERMS_OF_USE, URL_PRIVACY_POLICY } from "~/consts/links";
-import { DialogMessages, getMessageByAuthError } from "~/utils/messages";
+import { ServiceLogos } from "~/consts/images";
 
 type SignUpInfo = {
   name: string;
@@ -57,14 +55,15 @@ const { startLoading, finishLoading } = useLoading();
 const config = useRuntimeConfig();
 
 const form = ref<VForm>();
-const formData = reactive<SignUpInfo>({
+const formData: SignUpInfo = reactive<SignUpInfo>({
   name: "",
   agree: false,
 });
+let allowRouteLeave: boolean = false;
 
 onBeforeRouteLeave((_to, _from, next) => {
   const { name } = formData;
-  if (name !== "") {
+  if (!allowRouteLeave && name !== "") {
     const confirmed = confirm("ページを移動すると、入力途中の内容は失われてしまいます。\n本当にページを移動しますか？");
     if (confirmed) {
       next();
@@ -80,6 +79,7 @@ const submit = async () => {
     startLoading();
     await signUp(formData);
     finishLoading();
+    allowRouteLeave = true;
     await navigateTo("/");
   } else if (validation?.valid && !formData.agree) {
     alert("利用規約に同意してください。");

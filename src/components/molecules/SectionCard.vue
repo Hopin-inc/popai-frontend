@@ -20,6 +20,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
   title: "",
   description: "",
+  iconSrc: undefined,
 });
 </script>
 
