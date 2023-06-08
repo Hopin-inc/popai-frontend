@@ -34,7 +34,6 @@ CommonPage(title="利用設定")
 <script setup lang="ts">
 import type { ComputedRef } from "vue";
 import { getFeatures, updateProspectConfig } from "~/apis/config";
-import { useLoading } from "~/composables/loading";
 import { Icons } from "~/consts/images";
 import FeatureCard from "~/components/molecules/FeatureCard.vue";
 import { AskType } from "~/consts/enum";
@@ -45,6 +44,7 @@ type ConfigFeatures = {
 };
 
 const { startLoading, finishLoading } = useLoading();
+const { fetchConfigStatus } = useInfo();
 const features: ConfigFeatures = reactive<ConfigFeatures>({ projects: false, todos: false });
 const projectsEnabled: ComputedRef<boolean> = computed(() => features.projects);
 const todosEnabled: ComputedRef<boolean> = computed(() => features.todos);
@@ -57,6 +57,7 @@ const switchFeature = async (feature: keyof ConfigFeatures) => {
       enabled: !features[feature],
     });
     features[feature] = !features[feature];
+    await fetchConfigStatus();
   }
   finishLoading();
 };

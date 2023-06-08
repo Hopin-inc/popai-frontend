@@ -268,7 +268,7 @@ useHead({
 });
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedTodoApp, implementedTodoAppId, todoAppBoards } = useInfo();
+const { implementedTodoApp, implementedTodoAppId, todoAppBoards, fetchConfigStatus } = useInfo();
 const config = useRuntimeConfig();
 
 const isInit: Ref<boolean> = ref<boolean>(true);
@@ -355,12 +355,8 @@ watch(boardId, async (next) => {
   if (!isUpdating && implementedTodoAppId.value && next) {
     startLoading();
     isUpdating = true;
-    resetPropertyUsages();
-    const [props, _] = await Promise.all([
-      getTodoAppProperties(implementedTodoAppId.value, next),
-      updateBoardConfig(implementedTodoAppId.value, next),
-    ]);
-    properties.value = props;
+    await updateBoardConfig(implementedTodoAppId.value, next);
+    await init();
     isUpdating = false;
     finishLoading();
   }
@@ -531,6 +527,7 @@ const init = async () => {
     await Promise.all([
       fetchProperties(),
       fetchConfigs(),
+      fetchConfigStatus(),
     ]);
     finishLoading();
     isUpdating = false;
