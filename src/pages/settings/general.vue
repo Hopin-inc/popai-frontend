@@ -32,12 +32,12 @@ CommonPage(title="利用設定")
 </template>
 
 <script setup lang="ts">
+import type { ComputedRef } from "vue";
 import { getFeatures, updateProspectConfig } from "~/apis/config";
 import { useLoading } from "~/composables/loading";
 import { Icons } from "~/consts/images";
 import FeatureCard from "~/components/molecules/FeatureCard.vue";
 import { AskType } from "~/consts/enum";
-import type { ComputedRef } from "vue";
 
 type ConfigFeatures = {
   projects: boolean;

@@ -98,3 +98,16 @@ export type BoardConfig = {
   boardId: string | null;
   projectRule: number | null;
 };
+
+export type ConfigStatus = {
+  todoApp: boolean;
+  users: boolean;
+  projects: {
+    enabled: boolean;
+    isValid: boolean;
+  };
+  todos: {
+    enabled: boolean;
+    isValid: boolean;
+  };
+};

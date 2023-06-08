@@ -155,6 +155,18 @@ CommonPage(title="タスク管理ツール")
             v-col(cols="12")
               v-radio-group(v-model="projectRule" color="primary" hide-details)
                 v-radio(v-for="rule in projectRules" :key="rule" :value="rule.id" :label="rule.name").my-1.my-md-0
+        SubSection(title="データの初回同期")
+          v-row
+            v-col(cols="12")
+              p プロジェクトを選択/変更し、上記の設定が完了した後、1回だけ「初回同期」の実行が必要です。
+            v-col(cols="12")
+              v-btn(
+                @click.stop="fetchData"
+                :disabled="fetchDisabled"
+                prepend-icon="mdi-update"
+                color="primary"
+                flat
+              ) データの初回同期を実行する
 BtnModalSet(
   v-model="backlogSetup"
   title="Backlogを設定する"
@@ -201,6 +213,7 @@ import {
   NOTION_PROPERTY_TYPES_FOR_RELATION,
 } from "~/consts";
 import {
+  fetchDataForBoard,
   getBoardConfig,
   getTodoAppProperties,
   getTodoAppPropertyUsages,
@@ -335,6 +348,7 @@ const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
       return [];
   }
 });
+const fetchDisabled = computed(() => !(implementedTodoAppId.value && boardId.value && projectRule.value));
 
 // Get property data on boardId changed.
 watch(boardId, async (next) => {
@@ -431,7 +445,7 @@ watch(projectRule, async () => {
     finishLoading();
     isUpdating = false;
   }
-})
+});
 
 const onStatusPropertyChanged = (propConfig: PropertyConfig, nextProp: string) => {
   const prop = properties.value.find(p => p.id === nextProp);
@@ -544,6 +558,13 @@ const fetchConfigs = async () => {
     setConfig(usages, parent.value, PropertyUsageType.PARENT_TODO);
     setConfig(usages, isDone.value, PropertyUsageType.IS_DONE);
     setConfig(usages, isClosed.value, PropertyUsageType.IS_CLOSED);
+  }
+};
+const fetchData = async () => {
+  if (implementedTodoAppId.value && boardId.value && projectRule.value) {
+    startLoading();
+    await fetchDataForBoard(implementedTodoAppId.value);
+    finishLoading();
   }
 };
 const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: number) => {

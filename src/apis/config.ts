@@ -1,11 +1,40 @@
 import { ApiResponse } from "~/types/common";
-import { ConfigCommon, ConfigDailyReport, ConfigFeatures, ConfigNotify, ConfigProspect } from "~/types/settings";
+import {
+  ConfigCommon,
+  ConfigDailyReport,
+  ConfigFeatures,
+  ConfigNotify,
+  ConfigProspect,
+  ConfigStatus,
+} from "~/types/settings";
 import { fetcher } from "~/apis/base-api";
+
+export const getConfigStatus = async (): Promise<ConfigStatus> => {
+  const { data, error } = await useAsyncData<ApiResponse<ConfigStatus>>(
+    "getConfigStatus",
+    fetcher("/config", { method: "GET" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return {
+    users: false,
+    todoApp: false,
+    todos: {
+      enabled: false,
+      isValid: false,
+    },
+    projects: {
+      enabled: false,
+      isValid: false,
+    },
+  };
+};
 
 export const getCommonConfig = async (): Promise<ConfigCommon | null> => {
   const { data, error } = await useAsyncData<ApiResponse<ConfigCommon | null>>(
     "getCommonConfig",
-    fetcher("/config", { method: "GET" }),
+    fetcher("/config/common", { method: "GET" }),
   );
   if (data.value && !error.value) {
     return data.value.data;
@@ -16,7 +45,7 @@ export const getCommonConfig = async (): Promise<ConfigCommon | null> => {
 export const updateCommonConfig = async (config: Partial<ConfigCommon>): Promise<ConfigCommon | null> => {
   const { data, error } = await useAsyncData<ApiResponse<ConfigCommon | null>>(
     "updateCommonConfig",
-    fetcher("/config", { body: config, method: "PATCH" }),
+    fetcher("/config/common", { body: config, method: "PATCH" }),
   );
   if (data.value && !error.value) {
     return data.value.data;

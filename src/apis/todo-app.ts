@@ -65,6 +65,13 @@ export const getBoardConfig = async (todoAppId: number): Promise<BoardConfig> =>
   };
 };
 
+export const fetchDataForBoard = async (todoAppId: number): Promise<void> => {
+  await useAsyncData<ApiResponse<void>>(
+    `fetchDataForBoard-${ todoAppId }`,
+    fetcher(`/todo-app/${ todoAppId }/board`, { method: "POST" }),
+  );
+};
+
 export const updateBoardConfig = async (
   todoAppId: number,
   boardId: string,

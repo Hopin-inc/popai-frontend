@@ -24,7 +24,6 @@ v-main.fill-height
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
-import type { MenuItem } from "~/types/common";
 import { ServiceLogos } from "~/consts/images";
 
 useHead({
@@ -33,7 +32,13 @@ useHead({
 
 const { name, logout } = useAuth();
 const { startLoading, finishLoading } = useLoading();
-const { connected } = useInfo();
+const {
+  connected,
+  projectsEnabled,
+  todosEnabled,
+  todoAppConfigured,
+  usersConfigured,
+} = useInfo();
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
 
@@ -46,20 +51,55 @@ const signOut = async () => {
   await logout();
   finishLoading();
 };
-const menus = ref<MenuItem[]>([
+const menus = computed(() => [
   { type: "subheader", title: "連携" },
-  { type: "item", title: "タスク管理ツール", to: "/link/todo-app", disabled: false },
-  { type: "item", title: "メンバー", to: "/link/members", disabled: false },
+  {
+    type: "item",
+    title: "タスク管理ツール",
+    to: "/link/todo-app",
+    disabled: false,
+  },
+  {
+    type: "item",
+    title: "メンバー",
+    to: "/link/members",
+    disabled: !todoAppConfigured.value,
+  },
   { type: "divider" },
   { type: "subheader", title: "設定" },
-  { type: "item", title: "利用設定", to: "/settings/general", disabled: false },
-  { type: "item", title: "通知設定", to: "/settings/notification", disabled: false },
+  {
+    type: "item",
+    title: "利用設定",
+    to: "/settings/general",
+    disabled: !todoAppConfigured.value || !usersConfigured.value,
+  },
+  {
+    type: "item",
+    title: "通知設定",
+    to: "/settings/notification",
+    disabled: !todoAppConfigured.value || !usersConfigured.value,
+  },
   { type: "divider" },
   { type: "subheader", title: "機能ごとのカスタマイズ" },
-  { type: "item", title: "タスクのシェア", to: "/features/todos", disabled: false },
-  { type: "item", title: "プロジェクトのシェア", to: "/features/projects", disabled: false },
+  {
+    type: "item",
+    title: "タスクのシェア",
+    to: "/features/todos",
+    disabled: !todoAppConfigured.value || !usersConfigured.value || !todosEnabled.value,
+  },
+  {
+    type: "item",
+    title: "プロジェクトのシェア",
+    to: "/features/projects",
+    disabled: !usersConfigured.value || !todoAppConfigured.value || !projectsEnabled.value,
+  },
   { type: "divider" },
-  { type: "item", title: "ログアウト", action: signOut, disabled: false },
+  {
+    type: "item",
+    title: "ログアウト",
+    action: signOut,
+    disabled: false,
+  },
 ]);
 
 watch(currentRoute, () => {
@@ -74,8 +114,8 @@ watch(connected, async (next) => {
         target.disabled = target.to !== "/link/todo-app";
       }
     });
-    if (!["/settings/connect/todo-app"].includes(path)) {
-      await navigateTo("/settings/connect/todo-app");
+    if (!["/link/todo-app"].includes(path)) {
+      await navigateTo("/link/todo-app");
     }
   } else {
     menus.value.forEach((v, idx) => {

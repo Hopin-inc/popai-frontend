@@ -1,4 +1,3 @@
-import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import { fetcher } from "~/apis/base-api";
 import { AccountInfo } from "~/types/auth";
 import { ApiResponse, SignUpInfo } from "~/types/common";
@@ -52,13 +51,4 @@ export const signUp = async (info: SignUpInfo) => {
   if (data.value && !error.value) {
     return data.value;
   }
-};
-
-export const reset = async (email: string) => {
-  const config = useRuntimeConfig();
-  const auth = getAuth();
-  await sendPasswordResetEmail(auth, email, {
-    url: `${ config.public.clientBaseUrl }/login`,
-    handleCodeInApp: false,
-  });
 };
