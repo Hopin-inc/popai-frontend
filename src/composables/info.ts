@@ -1,11 +1,13 @@
 import { ComputedRef, type Ref } from "vue";
 import { getTodoAppAccounts, getTodoAppBoards, getTodoApp } from "~/apis/todo-app";
 import { getChatToolAccounts, getChatToolChannels, getChatTool } from "~/apis/chat-tool";
-import { ChatToolInfo, TodoAppInfo } from "~/types/settings";
+import { ChatToolInfo, ConfigStatus, TodoAppInfo } from "~/types/settings";
 import { SelectItem } from "~/types/common";
 import { ReadonlyArrayRef, ReadonlyRef } from "~/types/utils";
+import { getConfigStatus } from "~/apis/config";
 
 interface UseInfo {
+  configStatus: ReadonlyRef<ConfigStatus>;
   implementedTodoApp: ReadonlyRef<TodoAppInfo | null>;
   implementedChatTool: ReadonlyRef<ChatToolInfo | null>;
   todoAppAccounts: ReadonlyArrayRef<SelectItem<string>>;
@@ -13,12 +15,29 @@ interface UseInfo {
   todoAppBoards: ReadonlyArrayRef<SelectItem<string>>;
   chatToolChannels: ReadonlyArrayRef<SelectItem<string>>;
   connected: ComputedRef<boolean>;
+  todoAppConfigured: ComputedRef<boolean>;
+  usersConfigured: ComputedRef<boolean>;
+  projectsEnabled: ComputedRef<boolean>;
+  todosEnabled: ComputedRef<boolean>;
   implementedTodoAppId: ComputedRef<number | null>;
   implementedChatToolId: ComputedRef<number | null>;
+  fetchConfigStatus: () => Promise<void>;
   fetchAll: () => Promise<void>;
 }
 
 export const useInfo = (): UseInfo => {
+  const configStatus = useState<ConfigStatus>("configStatus", () => ({
+    users: false,
+    todoApp: false,
+    projects: {
+      enabled: false,
+      isValid: false,
+    },
+    todos: {
+      enabled: false,
+      isValid: false,
+    },
+  }));
   const todoApp = useState<TodoAppInfo | null>("todoApp");
   const chatTool = useState<ChatToolInfo | null>("chatTool");
   const todoAppAccounts = useState<SelectItem<string>[]>("todoAppAccounts", () => []);
@@ -27,11 +46,20 @@ export const useInfo = (): UseInfo => {
   const chatToolChannels = useState<SelectItem<string>[]>("chatToolChannels", () => []);
 
   const connected = computed(() => todoAppConnected.value && chatToolConnected.value);
+  const todoAppConfigured = computed(() => configStatus.value.todoApp);
+  const usersConfigured = computed(() => configStatus.value.users);
+  const projectsEnabled = computed(() => configStatus.value.projects.enabled);
+  const todosEnabled = computed(() => configStatus.value.todos.enabled);
   const todoAppConnected = computed(() => !!todoApp.value);
   const chatToolConnected = computed(() => !!chatTool.value);
   const todoAppId = computed(() => todoApp.value?.todoAppId ?? null);
   const chatToolId = computed(() => chatTool.value?.chatToolId ?? null);
 
+  const fetchConfigStatus = (state: Ref<ConfigStatus>) => {
+    return async () => {
+      state.value = await getConfigStatus();
+    };
+  };
   const fetchTodoAppInfo = (state: Ref<TodoAppInfo | null>) => {
     return async () => {
       state.value = await getTodoApp();
@@ -87,12 +115,14 @@ export const useInfo = (): UseInfo => {
   };
   const fetchAll = async () => {
     await Promise.all([
+      fetchConfigStatus(configStatus)(),
       fetchTodoApps(),
       fetchChatTools(),
     ]);
   };
 
   return {
+    configStatus: readonly(configStatus),
     implementedTodoApp: readonly(todoApp),
     implementedChatTool: readonly(chatTool),
     todoAppAccounts: readonly(todoAppAccounts),
@@ -100,8 +130,13 @@ export const useInfo = (): UseInfo => {
     todoAppBoards: readonly(todoAppBoards),
     chatToolChannels: readonly(chatToolChannels),
     connected,
+    todoAppConfigured,
+    usersConfigured,
+    projectsEnabled,
+    todosEnabled,
     implementedTodoAppId: todoAppId,
     implementedChatToolId: chatToolId,
+    fetchConfigStatus: fetchConfigStatus(configStatus),
     fetchAll,
   };
 };

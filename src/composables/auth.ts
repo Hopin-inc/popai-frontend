@@ -1,9 +1,5 @@
 import type { Ref } from "vue";
-import {
-  getAuth,
-  OAuthProvider,
-  signInWithPopup,
-} from "@firebase/auth";
+import * as firebaseAuth from "@firebase/auth";
 import { Account } from "~/types/common";
 import { getLoggedInAccount, signIn, signOut } from "~/apis/auth";
 import { getMessageByAuthError } from "~/utils/messages";
@@ -45,16 +41,15 @@ export const useAuth = (): UseAuth => {
     return async (providerId: ProviderId, scopes: string[] = [], initial: boolean = false) => {
       const { startLoading, finishLoading } = useLoading();
       const chatToolId = providerId === "oidc.slack" ? ChatToolId.SLACK : null;
-      const provider = new OAuthProvider(providerId);
+      const provider = new firebaseAuth.OAuthProvider(providerId);
       scopes.forEach(scope => provider.addScope(scope));
-      const auth = getAuth();
-      await signInWithPopup(auth, provider)
+      const auth = firebaseAuth.getAuth();
+      startLoading();
+      await firebaseAuth.signInWithPopup(auth, provider)
         .then(async (credential) => {
-          startLoading();
           const { user } = credential;
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
-          finishLoading();
           if (account) {
             const { organization, name } = account;
             state.value = { organization, name };
@@ -73,13 +68,20 @@ export const useAuth = (): UseAuth => {
           if (!["auth/popup-closed-by-user", "auth/user-cancelled"].includes(error.code)) {
             alert(getMessageByAuthError(error.code));
           }
+        })
+        .finally(() => {
+          finishLoading();
         });
     };
   };
 
   const logout = (state: Ref<Account | null>) => {
     return async () => {
-      await signOut();
+      const auth = firebaseAuth.getAuth();
+      await Promise.all([
+        signOut(),
+        firebaseAuth.signOut(auth),
+      ]);
       state.value = null;
       await navigateTo("/login");
     };

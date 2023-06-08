@@ -72,7 +72,7 @@ useHead({
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
-const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts } = useInfo();
+const { implementedChatToolId, implementedTodoAppId, chatToolAccounts, todoAppAccounts, fetchConfigStatus } = useInfo();
 const isInit: Ref<boolean> = ref<boolean>(true);
 const configs: Ref<Config[]> = ref<Config[]>([]);
 const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
@@ -183,6 +183,7 @@ const onChatToolUserIdChanged = async (index: number, next: string | null) => {
   if (implementedChatToolId.value && id && next) {
     await updateChatToolUsers(implementedChatToolId.value, id, next);
   }
+  await fetchConfigStatus();
   finishLoading();
 };
 const onTodoAppUserIdChanged = async (index: number, next: string | null) => {
@@ -194,6 +195,7 @@ const onTodoAppUserIdChanged = async (index: number, next: string | null) => {
   if (implementedTodoAppId.value && id && next) {
     await updateTodoAppUser(implementedTodoAppId.value, id, next);
   }
+  await fetchConfigStatus();
   finishLoading();
 };
 
@@ -202,6 +204,7 @@ const updateUserName = async (index: number) => {
   if (user) {
     configs.value[index].user.id = user.id;
   }
+  await fetchConfigStatus();
 };
 const addRow = async () => {
   const index = configs.value.length;
@@ -212,7 +215,10 @@ const addRow = async () => {
     new: true,
     index,
   }));
-  await onUserNameChanged(index);
+  await Promise.all([
+    onUserNameChanged(index),
+    fetchConfigStatus(),
+  ]);
 };
 const deleteRow = async (index: number) => {
   const agreed = confirm(`「${ configs.value[index].user.name }」さんを削除しますか？`);
@@ -224,7 +230,10 @@ const deleteRow = async (index: number) => {
     if (deletedUser?.id) {
       startLoading();
       await deleteUser(deletedUser.id);
-      await reportingLineInit();
+      await Promise.all([
+        reportingLineInit(),
+        fetchConfigStatus(),
+      ]);
       finishLoading();
     }
   }

@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware((to, _from) => {
     }
     switch (to.path) {
       case "/":
-        return navigateTo("/settings/general");
+        return navigateTo("/link/todo-app");
       default:
     }
   }

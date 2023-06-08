@@ -1,5 +1,6 @@
 import { NitroFetchOptions } from "nitropack";
 import { FetchContext, FetchError } from "ofetch";
+import { getAuth, signOut } from "@firebase/auth";
 import { StatusCodes } from "~/utils/status-codes";
 import { toQueryString } from "~/utils/common";
 
@@ -11,6 +12,8 @@ const onResponseError = async ({ response }: FetchContext) => {
     const { setUser } = useAuth();
     const { fullPath, meta } = useRoute();
     setUser(null);
+    const auth = getAuth();
+    await signOut(auth);
     const redirectTo = meta.layout === "default" || meta.layout === undefined
       ? `/login?${ toQueryString({ redirect: fullPath }) }`
       : "/login";
