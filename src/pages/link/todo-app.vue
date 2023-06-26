@@ -158,7 +158,7 @@ CommonPage(title="タスク管理ツール")
         SubSection(title="データの初回同期")
           v-row
             v-col(cols="12")
-              p プロジェクトを選択/変更し、上記の設定が完了した後、1回だけ「初回同期」の実行が必要です。
+              p Backlogをご利用の場合は、「タスク管理ツール」と「メンバー」の設定を完了した後、一度だけ「初回同期」の実行が必要です。
             v-col(cols="12")
               v-btn(
                 @click.stop="fetchData"
