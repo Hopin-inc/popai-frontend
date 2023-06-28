@@ -27,7 +27,7 @@ export type SignUpInfo = {
 };
 
 export type Account = {
-  organization: string;
+  isRegistered: boolean;
   name: string;
 };
 

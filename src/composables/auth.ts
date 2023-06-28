@@ -10,7 +10,7 @@ type ProviderId = "oidc.slack";
 interface UseAuth {
   currentUser: ReadonlyRef<Account | null>;
   isLoggedIn: boolean;
-  organization: string | undefined;
+  isRegistered: boolean;
   name: string | undefined;
   fetchAuthState: () => Promise<void>;
   setUser: (user: Account | null) => void;
@@ -22,7 +22,7 @@ export const useAuth = (): UseAuth => {
   const currentUser = useState<Account | null>("currentUser", () => null);
 
   const isLoggedIn = !!currentUser.value;
-  const organization = currentUser.value?.organization;
+  const isRegistered = currentUser.value?.isRegistered ?? false;
   const name = currentUser.value?.name;
 
   const fetchAuthState = (state: Ref<Account | null>) => {
@@ -30,8 +30,8 @@ export const useAuth = (): UseAuth => {
       if (!state.value) {
         const account = await getLoggedInAccount();
         if (account) {
-          const { organization, name } = account;
-          state.value = { organization, name };
+          const { name, isRegistered } = account;
+          state.value = { name, isRegistered };
         }
       }
     };
@@ -50,9 +50,9 @@ export const useAuth = (): UseAuth => {
           const { user } = credential;
           const idToken = await user.getIdToken();
           const account = await signIn(idToken);
-          if (account) {
-            const { organization, name } = account;
-            state.value = { organization, name };
+          const { isRegistered, name } = account ?? {};
+          if (isRegistered === true) {
+            state.value = { isRegistered, name: name ?? "" };
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
               await navigateTo(redirect);
@@ -60,8 +60,10 @@ export const useAuth = (): UseAuth => {
               await navigateTo("/");
             }
             await useInfo().fetchAll();
-          } else if (initial && chatToolId) {
+          } else if (chatToolId && (initial || isRegistered === false)) {
             await navigateTo({ path: "/install", query: { chatToolId } });
+          } else {
+            alert("ログインに失敗しました。");
           }
         })
         .catch((error) => {
@@ -96,7 +98,7 @@ export const useAuth = (): UseAuth => {
   return {
     currentUser: readonly(currentUser),
     isLoggedIn,
-    organization,
+    isRegistered,
     name,
     fetchAuthState: fetchAuthState(currentUser),
     setUser: setUser(currentUser),

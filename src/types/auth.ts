@@ -1,4 +1,4 @@
 export type AccountInfo = {
-  organization: string;
+  isRegistered: boolean;
   name: string;
 };
