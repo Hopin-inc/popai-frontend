@@ -52,6 +52,9 @@ export const useAuth = (): UseAuth => {
           const account = await signIn(idToken);
           const { isRegistered, name } = account ?? {};
           if (isRegistered === true) {
+            if (!name) {
+              await navigateTo("create-account");
+            }
             state.value = { isRegistered, name: name ?? "" };
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
