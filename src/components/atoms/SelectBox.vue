@@ -1,5 +1,5 @@
 <template lang="pug">
-v-select(
+v-autocomplete(
   v-model="value"
   :items="props.items"
   :label="props.label"
