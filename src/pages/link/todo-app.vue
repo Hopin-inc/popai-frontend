@@ -268,7 +268,7 @@ useHead({
 });
 
 const { startLoading, finishLoading } = useLoading();
-const { implementedTodoApp, implementedTodoAppId, todoAppBoards, fetchConfigStatus } = useInfo();
+const { implementedTodoApp, implementedTodoAppId, todoAppBoards, fetchConfigStatus, configStatus } = useInfo();
 const config = useRuntimeConfig();
 
 const isInit: Ref<boolean> = ref<boolean>(true);
@@ -348,7 +348,13 @@ const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
       return [];
   }
 });
-const fetchDisabled = computed(() => !(implementedTodoAppId.value && boardId.value && projectRule.value));
+const fetchDisabled = computed(() => !(
+  implementedTodoAppId.value
+  && boardId.value
+  && projectRule.value
+  && configStatus.value.todoApp
+  && configStatus.value.users
+));
 
 // Get property data on boardId changed.
 watch(boardId, async (next) => {
@@ -438,6 +444,7 @@ watch(projectRule, async () => {
     isUpdating = true;
     startLoading();
     await updateBoardConfig(implementedTodoAppId.value, boardId.value, projectRule.value);
+    await fetchConfigStatus();
     finishLoading();
     isUpdating = false;
   }
@@ -505,6 +512,7 @@ const updatePropertyUsage = async (
     if (newPropUsage) {
       propConfig.id = newPropUsage.id;
     }
+    await fetchConfigStatus();
     finishLoading();
   }
 };
