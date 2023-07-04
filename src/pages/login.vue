@@ -24,8 +24,8 @@
     v-overlay(v-model="popup" contained persistent no-click-animation).d-flex.justify-center.align-center
       .d-flex.flex-column.align-center.pa-6
         v-progress-circular(indeterminate color="white" size="48").mb-4
-        p.text-white.font-weight-bold.text-center
-          | ポップアップを起動します。<br>
+        p.text-body-2.text-white.font-weight-bold.text-center
+          | 新しいウィンドウまたはタブでログイン画面を開いています。<br>
           | {{ isInitial ? "登録" : "ログイン" }}するSlackアカウントを選択し、アクセスを許可してください。
 </template>
 
