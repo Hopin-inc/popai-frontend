@@ -21,9 +21,16 @@
         a(@click.stop="signIn('oidc.slack', true)").slack-btn
           img(:src="ExternalServiceLogos.SLACK" height="20")
           span Slackで登録
+    v-overlay(v-model="popup" contained persistent no-click-animation).d-flex.justify-center.align-center
+      .d-flex.flex-column.align-center.pa-6
+        v-progress-circular(indeterminate color="white" size="48").mb-4
+        p.text-white.font-weight-bold.text-center
+          | ポップアップを起動します。<br>
+          | {{ isInitial ? "登録" : "ログイン" }}するSlackアカウントを選択し、アクセスを許可してください。
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
 import { ServiceLogos, ExternalServiceLogos } from "~/consts/images";
 
 type ProviderId = "oidc.slack";
@@ -37,9 +44,14 @@ useHead({
 
 const { login } = useAuth();
 const config = useRuntimeConfig();
+const popup: Ref<boolean> = ref<boolean>(false);
+const isInitial: Ref<boolean> = ref<boolean>(false);
 
 const signIn = async (providerId: ProviderId, initial: boolean = false) => {
+  isInitial.value = initial;
+  popup.value = true;
   await login(providerId, [], initial);
+  popup.value = false;
 };
 </script>
 
@@ -63,4 +75,7 @@ const signIn = async (providerId: ProviderId, initial: boolean = false) => {
 
 .slack-btn
   @extend .btn
+
+:deep(.v-overlay__scrim)
+  opacity: 50%
 </style>
