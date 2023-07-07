@@ -39,12 +39,10 @@ export const useAuth = (): UseAuth => {
 
   const login = (state: Ref<Account | null>) => {
     return async (providerId: ProviderId, scopes: string[] = [], initial: boolean = false) => {
-      const { startLoading, finishLoading } = useLoading();
       const chatToolId = providerId === "oidc.slack" ? ChatToolId.SLACK : null;
       const provider = new firebaseAuth.OAuthProvider(providerId);
       scopes.forEach(scope => provider.addScope(scope));
       const auth = firebaseAuth.getAuth();
-      startLoading();
       await firebaseAuth.signInWithPopup(auth, provider)
         .then(async (credential) => {
           const { user } = credential;
@@ -73,9 +71,6 @@ export const useAuth = (): UseAuth => {
           if (!["auth/popup-closed-by-user", "auth/user-cancelled"].includes(error.code)) {
             alert(getMessageByAuthError(error.code));
           }
-        })
-        .finally(() => {
-          finishLoading();
         });
     };
   };

@@ -63,7 +63,7 @@ const menus = computed(() => [
     type: "item",
     title: "メンバー",
     to: "/link/members",
-    disabled: !todoAppConfigured.value,
+    disabled: !connected.value,
   },
   { type: "divider" },
   { type: "subheader", title: "設定" },
