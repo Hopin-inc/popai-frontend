@@ -116,6 +116,19 @@ CommonPage(title="タスク管理ツール")
             v-col(cols="12")
               v-radio-group(v-model="projectRule" color="primary" hide-details)
                 v-radio(v-for="rule in projectRules" :key="rule" :value="rule.id" :label="rule.name").my-1.my-md-0
+        SubSection(title="データの初回同期")
+          v-row
+            v-col(cols="12")
+              p 「タスク管理ツール」と「メンバー」の設定を完了した後、一度だけ「初回同期」の実行が必要です。
+            v-col(cols="12")
+              v-btn(
+                @click.stop="fetchData"
+                :disabled="fetchDisabled"
+                :loading="fetching"
+                prepend-icon="mdi-update"
+                color="primary"
+                flat
+              ) データの初回同期を実行する
     v-col(cols="12" v-if="implementedTodoAppId === TodoAppId.BACKLOG")
       SectionCard(
         title="プロジェクトを設定する"
@@ -158,11 +171,12 @@ CommonPage(title="タスク管理ツール")
         SubSection(title="データの初回同期")
           v-row
             v-col(cols="12")
-              p Backlogをご利用の場合は、「タスク管理ツール」と「メンバー」の設定を完了した後、一度だけ「初回同期」の実行が必要です。
+              p 「タスク管理ツール」と「メンバー」の設定を完了した後、一度だけ「初回同期」の実行が必要です。
             v-col(cols="12")
               v-btn(
                 @click.stop="fetchData"
                 :disabled="fetchDisabled"
+                :loading="fetching"
                 prepend-icon="mdi-update"
                 color="primary"
                 flat
@@ -272,6 +286,7 @@ const { implementedTodoApp, implementedTodoAppId, todoAppBoards, fetchConfigStat
 const config = useRuntimeConfig();
 
 const isInit: Ref<boolean> = ref<boolean>(true);
+const fetching: Ref<boolean> = ref<boolean>(false);
 const backlogSetup: Ref<boolean> = ref<boolean>(false);
 const backlogSpaceId = reactive<BacklogSpaceId>({ id: "", domain: ".backlog.com" });
 const backlogDomains: SelectItem[] = [
@@ -567,9 +582,9 @@ const fetchConfigs = async () => {
 };
 const fetchData = async () => {
   if (implementedTodoAppId.value && boardId.value && projectRule.value) {
-    startLoading();
+    fetching.value = true;
     await fetchDataForBoard(implementedTodoAppId.value);
-    finishLoading();
+    fetching.value = false;
   }
 };
 const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: number) => {
