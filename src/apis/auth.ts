@@ -1,6 +1,6 @@
 import { fetcher } from "~/apis/base-api";
 import { AccountInfo } from "~/types/auth";
-import { ApiResponse, SignUpInfo } from "~/types/common";
+import { ApiResponse, SignUpInfo, EmailSignUpInfo } from "~/types/common";
 import { StatusCodes } from "~/utils/status-codes";
 
 export const getLoggedInAccount = async (): Promise<AccountInfo | void> => {
@@ -29,6 +29,20 @@ export const signIn = async (idToken: string): Promise<AccountInfo | void> => {
   }
 };
 
+export const signInWithEmail = async (idToken: string): Promise<AccountInfo | void> => {
+  const { data, error } = await useAsyncData<ApiResponse<AccountInfo>>(
+    "signInWithEmail",
+    fetcher("/auth/login/email", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${ idToken }` },
+    }));
+  if (data.value && !error.value) {
+    if (data.value.status === StatusCodes.OK) {
+      return data.value.data;
+    }
+  }
+};
+
 export const signOut = async () => {
   const { data, error } = await useAsyncData<ApiResponse<null>>(
     "signOut",
@@ -46,6 +60,20 @@ export const signUp = async (info: SignUpInfo) => {
     fetcher("/auth/signup", {
       method: "POST",
       body: { name },
+    }),
+  );
+  if (data.value && !error.value) {
+    return data.value;
+  }
+};
+
+export const signUpWithEmail = async (info: EmailSignUpInfo) => {
+  const { uid, company } = info;
+  const { data, error } = await useAsyncData<ApiResponse<null>>(
+    "signUpWithEmail",
+    fetcher("/auth/signup/email", {
+      method: "POST",
+      body: { uid, company },
     }),
   );
   if (data.value && !error.value) {

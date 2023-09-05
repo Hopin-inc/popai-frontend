@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import * as firebaseAuth from "@firebase/auth";
 import { Account } from "~/types/common";
-import { getLoggedInAccount, signIn, signOut } from "~/apis/auth";
+import { getLoggedInAccount, signIn, signInWithEmail, signOut } from "~/apis/auth";
 import { getMessageByAuthError } from "~/utils/messages";
 import { ChatToolId } from "~/consts/enum";
 import { ReadonlyRef } from "~/types/utils";
@@ -15,6 +15,7 @@ interface UseAuth {
   fetchAuthState: () => Promise<void>;
   setUser: (user: Account | null) => void;
   login: (providerId: ProviderId, scopes?: string[], initial?: boolean) => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -75,6 +76,35 @@ export const useAuth = (): UseAuth => {
     };
   };
 
+  const loginWithEmail = (state: Ref<Account | null>) => {
+    return async (email: string, password: string) => {
+      const auth = firebaseAuth.getAuth();
+      await firebaseAuth.signInWithEmailAndPassword(auth, email, password)
+        .then(async (credential) => {
+          const { user } = credential;
+          if (credential.user?.emailVerified) {
+            const idToken = await user.getIdToken();
+            const account = await signInWithEmail(idToken);
+            if (account) {
+              state.value = { isRegistered, name: name ?? "" };
+            }
+            const { redirect } = useRoute().query;
+            if (redirect && typeof redirect === "string") {
+              await navigateTo(redirect);
+            } else {
+              await navigateTo("/");
+            }
+            await useInfo().fetchAll();
+          } else {
+            alert("ログインに失敗しました。");
+          }
+        })
+        .catch(() => {
+          alert("ログインに失敗しました。");
+        });
+    };
+  };
+
   const logout = (state: Ref<Account | null>) => {
     return async () => {
       const auth = firebaseAuth.getAuth();
@@ -101,6 +131,7 @@ export const useAuth = (): UseAuth => {
     fetchAuthState: fetchAuthState(currentUser),
     setUser: setUser(currentUser),
     login: login(currentUser),
+    loginWithEmail: loginWithEmail(currentUser),
     logout: logout(currentUser),
   };
 };
