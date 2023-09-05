@@ -37,7 +37,7 @@
             v-btn(type="submit" color="primary" flat) ログイン
     v-row(justify="center").mb-2
       v-col(cols="12" sm="9").d-flex.align-center.justify-center
-        a(@click.stop="").mx-4.text-min.text-primary.text-link ログインできない方はこちら
+        a(@click.stop="forgotPasswordModal=true").mx-4.text-min.text-primary.text-link ログインできない方はこちら
     v-row(justify="center")
       v-col(cols="12" sm="9").d-flex.align-center
         span.flex-fill.border-b
@@ -57,11 +57,43 @@
       p.text-body-2.text-white.font-weight-bold.text-center
         | 新しいウィンドウまたはタブでログイン画面を開いています。<br>
         | ログインするSlackアカウントを選択し、アクセスを許可してください。
+
+BtnModalSet(
+  v-model="forgotPasswordModal"
+  title="パスワードを忘れた方"
+  :max-width="640"
+  closable
+)
+  template(#content)
+    v-row
+      v-col(cols="12")
+        p ご登録されたメールアドレスにパスワード再設定用のメールが送信されます。
+    v-row
+      v-col(cols="12")
+        v-text-field(
+            v-model="forgotPasswordEmail"
+            autocomplete="email"
+            type="email"
+            :rules="[Validations.required, Validations.email]"
+            label="メールアドレス"
+            variant="outlined"
+            color="primary"
+            autofocus
+            hide-details="auto"
+        )
+  template(#actions)
+    v-btn(
+      @click.stop="resetPassword()"
+      :disabled="forgotPasswordEmail === ''"
+      color="primary"
+      variant="flat"
+    ).px-4 パスワードをリセットする
 </template>
 
 <script setup lang="ts">
 import type { Ref } from "vue";
 import { VForm } from "vuetify/components";
+import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import Validations from "~/utils/validations";
 import { ServiceLogos, ExternalServiceLogos } from "~/consts/images";
 
@@ -87,6 +119,8 @@ const passType = computed(() => showPassword.value ? "text" : "password");
 const passAppendIcon = computed(() => showPassword.value ? "mdi-eye" : "mdi-eye-off");
 const form = ref<VForm>();
 const formData: LoginInfo = reactive<LoginInfo>({ email: "", password: "" });
+const forgotPasswordModal: Ref<boolean> = ref<boolean>(false);
+const forgotPasswordEmail: Ref<string> = ref<string>("");
 
 const submit = async () => {
   const validation = await form.value?.validate();
@@ -101,6 +135,28 @@ const signInWithSlack = async (providerId: ProviderId) => {
   popup.value = true;
   await login(providerId, [], false);
   popup.value = false;
+};
+
+const resetPassword = async () => {
+  const validation = await form.value?.validate();
+  if (Validations.email(forgotPasswordEmail.value) === true) {
+    startLoading();
+    const auth = getAuth();
+    let resultMessage = "";
+    await sendPasswordResetEmail(auth, forgotPasswordEmail.value)
+      .then(() => {
+        resultMessage = `${ forgotPasswordEmail.value }にパスワード再設定用のメールを送信しました。`;
+      })
+      .catch(() => {
+        resultMessage = "パスワード再設定用のメールの送信に失敗しました。";
+      });
+    finishLoading();
+    alert(resultMessage);
+    forgotPasswordModal.value = false;
+    forgotPasswordEmail.value = "";
+  } else {
+    alert("無効なメールアドレスです。");
+  }
 };
 </script>
 
