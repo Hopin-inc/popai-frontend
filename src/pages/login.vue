@@ -138,7 +138,6 @@ const signInWithSlack = async (providerId: ProviderId) => {
 };
 
 const resetPassword = async () => {
-  const validation = await form.value?.validate();
   if (Validations.email(forgotPasswordEmail.value) === true) {
     startLoading();
     const auth = getAuth();
