@@ -52,17 +52,23 @@ const signOut = async () => {
   finishLoading();
 };
 const menus = computed(() => [
-  { type: "subheader", title: "連携" },
+  { type: "subheader", title: "データ連携設定" },
+  {
+    type: "item",
+    title: "ツール連携",
+    to: "/link",
+    disabled: false,
+  },
   {
     type: "item",
     title: "タスク管理ツール",
-    to: "/link/todo-app",
+    to: "/todo-app",
     disabled: false,
   },
   {
     type: "item",
     title: "メンバー",
-    to: "/link/members",
+    to: "/members",
     disabled: !connected.value,
   },
   { type: "divider" },
@@ -111,11 +117,11 @@ watch(connected, async (next) => {
     menus.value.forEach((v, idx) => {
       const target = menus.value[idx];
       if (target.type === "item") {
-        target.disabled = target.to !== "/link/todo-app";
+        target.disabled = target.to !== "/link";
       }
     });
-    if (!["/link/todo-app"].includes(path)) {
-      await navigateTo("/link/todo-app");
+    if (!["/link"].includes(path)) {
+      await navigateTo("/link");
     }
   } else {
     menus.value.forEach((v, idx) => {

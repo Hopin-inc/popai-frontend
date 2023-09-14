@@ -236,6 +236,11 @@ import {
 } from "~/apis/todo-app";
 import Validations from "~/utils/validations";
 import { ExternalServiceLogos } from "~/consts/images";
+import type {
+  Property,
+  PropertyUsage,
+  BacklogSpaceId,
+} from "~/types/settings";
 
 type PropertyConfig = {
   id: number | null;
@@ -254,27 +259,10 @@ type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = Require
 } : {
   requireCheckbox: RequireCheckbox;
 };
-type Property = {
-  id: string;
-  name: string;
-  type: number;
-  availableOptions?: SelectItem[];
-};
+
 type SelectItem<I = string> = {
   id: I;
   name: string;
-};
-type PropertyUsage = {
-  id: number;
-  property: string;
-  usage: number;
-  type: number;
-  options?: string[];
-  isChecked?: boolean;
-};
-type BacklogSpaceId = {
-  id: string;
-  domain: ".backlog.com" | ".backlog.jp";
 };
 
 useHead({
@@ -364,11 +352,11 @@ const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
   }
 });
 const fetchDisabled = computed(() => !(
-  implementedTodoAppId.value
-  && boardId.value
-  && projectRule.value
-  && configStatus.value.todoApp
-  && configStatus.value.users
+  implementedTodoAppId.value &&
+  boardId.value &&
+  projectRule.value &&
+  configStatus.value.todoApp &&
+  configStatus.value.users
 ));
 
 // Get property data on boardId changed.

@@ -9,6 +9,8 @@ export namespace ExternalServiceLogos {
   export const SLACK = baseUri + "slack_logo.svg";
   export const NOTION = baseUri + "notion_logo.svg";
   export const BACKLOG = baseUri + "backlog_logo.png";
+  export const LINEWORKS = baseUri + "lineworks_logo.svg";
+  export const SPREADSHEET = baseUri + "spreadsheet_logo.svg";
 }
 
 export namespace Icons {

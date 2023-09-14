@@ -33,11 +33,12 @@ export const PropertyUsageType = {
 } as const;
 
 export const ChatToolId = {
-  LINE: 1,
+  LINEWORKS: 1,
   SLACK: 2,
 } as const;
 
 export const ChatToolName = {
+  [ChatToolId.LINEWORKS]: "LINE WORKS",
   [ChatToolId.SLACK]: "Slack",
 } as const;
 
@@ -46,11 +47,13 @@ export const TodoAppId = {
   // MICROSOFT: 2,
   NOTION: 3,
   BACKLOG: 4,
+  SPREADSHEET: 5,
 } as const;
 
 export const TodoAppName = {
   [TodoAppId.NOTION]: "Notion",
   [TodoAppId.BACKLOG]: "Backlog",
+  [TodoAppId.SPREADSHEET]: "Google Spreadsheet",
 } as const;
 
 export const ProjectRule = {

@@ -111,3 +111,28 @@ export type ConfigStatus = {
     isValid: boolean;
   };
 };
+
+export type SetupStatus =
+  "notSetup" | // 連携していない
+  "alreadySetup" | // 連携済み
+  "disabled"; // 他のツールで連携しているため無効
+
+export type BacklogSpaceId = {
+  id: string;
+  domain: ".backlog.com" | ".backlog.jp";
+};
+
+export type LineworksModalInfo = {
+  clientId: string;
+  clientSecret: string;
+  serverAccount: string;
+  secretKey: string;
+};
+
+export type ToolCardInfo = {
+  id: number
+  title: string;
+  iconSrc: string;
+  description: string;
+  setupStatus: SetupStatus;
+};
