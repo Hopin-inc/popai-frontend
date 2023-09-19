@@ -1,42 +1,18 @@
-# Nuxt 3 Minimal Starter
+# POPAI Frontend
+### 1. 開発環境をhttps化する
+下記手順を参考に自己証明書を準備する
+https://qiita.com/k_kind/items/b87777efa3d29dcc4467
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+プロジェクトルート直下に .misc というディレクトリを作成する。
 
-## Setup
+.misc 内に自己署名証明書を格納する。 (ファイル名は localhost.pem , localhost-key.pem )
 
-Make sure to install the dependencies:
+### 2. .envファイルをプロジェクトルート直下に配置する
 
-```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install
+### 3. ローカルサーバーを起動する
+```sh
+$ yarn install
 ```
-
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
+```sh
+$ yarn dev:https
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
