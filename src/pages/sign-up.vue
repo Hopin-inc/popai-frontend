@@ -160,6 +160,13 @@ const submit = async () => {
         } else {
           alert("アカウントを作成しました。");
         }
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          alert("すでに登録済みのメールアドレスです。");
+        } else {
+          alert("アカウントの作成に失敗しました。");
+        }
       });
     finishLoading();
     allowRouteLeave = true;
