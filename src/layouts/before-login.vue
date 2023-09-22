@@ -12,6 +12,6 @@ useHead({
 
 <style scoped lang="sass">
 .card-container
-  max-width: 540px
+  max-width: 640px
   margin: auto
 </style>

@@ -26,6 +26,11 @@ export type SignUpInfo = {
   agree: boolean;
 };
 
+export type EmailSignUpInfo = {
+  uid: string;
+  company: string;
+};
+
 export type Account = {
   isRegistered: boolean;
   name: string;
