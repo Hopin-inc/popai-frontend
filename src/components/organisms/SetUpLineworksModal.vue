@@ -9,8 +9,8 @@ BtnModalSet(
     v-row
       v-col(cols="12")
         p
-          a(href="https://google.com") こちら
-          span のヘルプページを参考に、
+          //a(href="https://google.com") こちら
+          //span のヘルプページを参考に、
           a(href="https://developers.worksmobile.com/jp/") LINE WORKS Developer Console
           span 上でアプリ設定を行い、連携に必要な下記の情報を取得してください。
     v-row
@@ -67,8 +67,6 @@ BtnModalSet(
 
 <script setup lang="ts">
 import type { LineworksModalInfo } from "~/types/settings";
-import type { SelectItem } from "~/types/common";
-import Validations from "~/utils/validations";
 
 const config = useRuntimeConfig();
 
