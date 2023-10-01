@@ -38,23 +38,11 @@ v-list(density="compact").pa-0.bg-transparent
 </template>
 
 <script setup lang="ts">
+import type { MenuItem } from "~/types/common";
+
 type Props = {
   menus: MenuItem[];
   rounded?: "xl" | "lg" | "md" | "sm" | "xs";
-};
-type MenuItem = {
-  type: "item";
-  title: string;
-  disabled: boolean;
-  icon?: string;
-  to?: string;
-  href?: string;
-  action?: (...args: any[]) => any;
-} | {
-  type: "divider";
-} | {
-  type: "subheader";
-  title: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {

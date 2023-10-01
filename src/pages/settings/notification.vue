@@ -59,12 +59,7 @@ import type { SelectItem } from "~/types/common";
 import { DAYS_OF_WEEK } from "~/consts";
 import { getCommonConfig, updateCommonConfig } from "~/apis/config";
 import { Icons } from "~/consts/images";
-
-type ConfigCommon = {
-  daysOfWeek: number[];
-  disabledOnHolidaysJp: boolean;
-  excludedDates: string[];
-};
+import type { ConfigCommon } from "~/types/settings";
 
 const { $dayjs } = useNuxtApp();
 const { startLoading, finishLoading } = useLoading();

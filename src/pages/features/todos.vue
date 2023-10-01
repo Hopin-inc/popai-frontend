@@ -101,34 +101,8 @@ import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import { ExternalServiceLogos, Icons } from "~/consts/images";
 import { AskType, AskMode } from "~/consts/enum";
-
-type SelectItem = {
-  id: number | string;
-  name: string;
-};
-type Timing = {
-  time: string;
-  type: number;
-  mode: number;
-};
-type ConfigProspect = {
-  type: number;
-  enabled: boolean;
-  chatToolId: number;
-  channel: string;
-  from: number;
-  to: number;
-  fromDaysBefore: number;
-  beginOfWeek: number;
-  frequency: number;
-  frequencyDaysBefore: number[];
-  timings: ConfigProspectTiming[];
-};
-type ConfigProspectTiming = {
-  time: string;
-  type: number;
-  mode: number;
-};
+import type { SelectItem } from "~/types/common";
+import type { ConfigProspect, ConfigProspectTiming } from "~/types/settings";
 
 const TYPE = AskType.TODOS;
 
@@ -145,7 +119,7 @@ const fromDaysBefore: Ref<number | null> = ref<number | null>(0);
 const beginOfWeek: Ref<number | null> = ref<number | null>(1);
 const frequency: Ref<number | null> = ref<number | null>(null);
 const frequencyDaysBefore: Ref<number[]> = ref<number[]>([]);
-const timings: Ref<Timing[]> = ref<Timing[]>([]);
+const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 const timingsMessage: Ref<string | null> = ref<string | null>(null);
 
 const days: SelectItem[] = DAYS_OF_WEEK;
@@ -250,7 +224,7 @@ const addRow = () => {
 const deleteRow = (index: number) => {
   timings.value.splice(index, 1);
 };
-const times: SelectItem[] = TIME_LIST;
+const times: SelectItem<string>[] = TIME_LIST;
 const validationNoDuplicate = (value: string) => {
   return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : false;
 };

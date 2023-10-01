@@ -236,6 +236,8 @@ import {
 } from "~/apis/todo-app";
 import Validations from "~/utils/validations";
 import { ExternalServiceLogos } from "~/consts/images";
+import type { SelectItem } from "~/types/common";
+import type { Property, PropertyUsage } from "~/types/settings";
 
 type PropertyConfig = {
   id: number | null;
@@ -244,7 +246,7 @@ type PropertyConfig = {
 type PropertyConfigOptions<RequireOptions extends boolean = boolean> = RequireOptions extends true ? {
   requireOptions: RequireOptions;
   options: string[];
-  get availableOptions(): SelectItem[];
+  get availableOptions(): SelectItem<string>[];
 } : {
   requireOptions: RequireOptions;
 };
@@ -253,24 +255,6 @@ type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = Require
   isChecked: boolean;
 } : {
   requireCheckbox: RequireCheckbox;
-};
-type Property = {
-  id: string;
-  name: string;
-  type: number;
-  availableOptions?: SelectItem[];
-};
-type SelectItem<I = string> = {
-  id: I;
-  name: string;
-};
-type PropertyUsage = {
-  id: number;
-  property: string;
-  usage: number;
-  type: number;
-  options?: string[];
-  isChecked?: boolean;
 };
 type BacklogSpaceId = {
   id: string;
@@ -289,7 +273,7 @@ const isInit: Ref<boolean> = ref<boolean>(true);
 const fetching: Ref<boolean> = ref<boolean>(false);
 const backlogSetup: Ref<boolean> = ref<boolean>(false);
 const backlogSpaceId = reactive<BacklogSpaceId>({ id: "", domain: ".backlog.com" });
-const backlogDomains: SelectItem[] = [
+const backlogDomains: SelectItem<string>[] = [
   { id: ".backlog.com", name: ".backlog.com" },
   { id: ".backlog.jp", name: ".backlog.jp" },
 ];
@@ -364,11 +348,11 @@ const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
   }
 });
 const fetchDisabled = computed(() => !(
-  implementedTodoAppId.value
-  && boardId.value
-  && projectRule.value
-  && configStatus.value.todoApp
-  && configStatus.value.users
+  implementedTodoAppId.value &&
+  boardId.value &&
+  projectRule.value &&
+  configStatus.value.todoApp &&
+  configStatus.value.users
 ));
 
 // Get property data on boardId changed.

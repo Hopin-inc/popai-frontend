@@ -46,11 +46,8 @@ import { updateTodoAppUser } from "~/apis/todo-app";
 import { deleteUser, getUserConfigs, getUserReportingLines, updateUser, updateUserReportingLines } from "~/apis/users";
 import { ChatToolName, TodoAppName } from "~/consts/enum";
 import { Icons } from "~/consts/images";
+import type { User } from "~/types/settings";
 
-type SelectItem = {
-  id: number | string;
-  name: string;
-};
 type Config = {
   user: Omit<User, "id"> & Partial<Pick<User, "id">>;
   chatToolUserId: string | null;
@@ -61,10 +58,6 @@ type Config = {
 type ReportingLine = {
   user: User;
   superiorUsers: string[];
-};
-type User = {
-  id: string;
-  name: string;
 };
 
 useHead({

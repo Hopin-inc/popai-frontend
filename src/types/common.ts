@@ -27,8 +27,11 @@ export type SignUpInfo = {
 };
 
 export type EmailSignUpInfo = {
-  uid: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
   company: string;
+  agree: boolean;
 };
 
 export type Account = {

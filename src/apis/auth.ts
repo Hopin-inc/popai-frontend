@@ -1,6 +1,6 @@
 import { fetcher } from "~/apis/base-api";
 import { AccountInfo } from "~/types/auth";
-import { ApiResponse, SignUpInfo, EmailSignUpInfo } from "~/types/common";
+import { ApiResponse, SignUpInfo } from "~/types/common";
 import { StatusCodes } from "~/utils/status-codes";
 
 export const getLoggedInAccount = async (): Promise<AccountInfo | void> => {
@@ -67,8 +67,7 @@ export const signUp = async (info: SignUpInfo) => {
   }
 };
 
-export const signUpWithEmail = async (info: EmailSignUpInfo) => {
-  const { uid, company } = info;
+export const signUpWithEmail = async (uid: string, company: string) => {
   const { data, error } = await useAsyncData<ApiResponse<null>>(
     "signUpWithEmail",
     fetcher("/auth/signup/email", {

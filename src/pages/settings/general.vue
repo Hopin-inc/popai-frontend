@@ -37,11 +37,7 @@ import { getFeatures, updateProspectConfig } from "~/apis/config";
 import { Icons } from "~/consts/images";
 import FeatureCard from "~/components/molecules/FeatureCard.vue";
 import { AskType } from "~/consts/enum";
-
-type ConfigFeatures = {
-  projects: boolean;
-  todos: boolean;
-};
+import type { ConfigFeatures } from "~/types/settings";
 
 const { startLoading, finishLoading } = useLoading();
 const { fetchConfigStatus } = useInfo();

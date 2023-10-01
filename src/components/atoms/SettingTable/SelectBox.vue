@@ -14,10 +14,8 @@ v-autocomplete(
 </template>
 
 <script setup lang="ts">
-type SelectItem = {
-  id: number | string | null;
-  name: string;
-};
+import type { SelectItem } from "~/types/common";
+
 type Props = {
   modelValue: number | string | null;
   items: SelectItem[];

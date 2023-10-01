@@ -22,10 +22,7 @@ v-autocomplete(
 </template>
 
 <script setup lang="ts">
-type SelectItem<IdType = number> = {
-  id: IdType;
-  name: string;
-}
+import type { SelectItem } from "~/types/common";
 
 type Props = {
   modelValue: number[];
@@ -45,6 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
   items: () => [],
   itemValue: "id",
   itemTitle: "name",
+  label: "",
   density: "comfortable",
   readonly: false,
 });

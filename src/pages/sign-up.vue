@@ -95,16 +95,9 @@ import { signUpWithEmail } from "~/apis/auth";
 import { URL_TERMS_OF_USE, URL_PRIVACY_POLICY } from "~/consts/links";
 import { DialogMessages } from "~/utils/messages";
 import { ExternalServiceLogos } from "~/consts/images";
+import type { EmailSignUpInfo } from "~/types/common";
 
 type ProviderId = "oidc.slack";
-
-type SignUpInfo = {
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  company: string;
-  agree: boolean;
-}
 
 definePageMeta({
   layout: "before-login",
@@ -116,7 +109,7 @@ useHead({
 const { login } = useAuth();
 const { startLoading, finishLoading } = useLoading();
 const form = ref<VForm>();
-const formData = reactive<SignUpInfo>({
+const formData = reactive<EmailSignUpInfo>({
   company: "",
   email: "",
   password: "",
@@ -153,7 +146,7 @@ const submit = async () => {
     await createUserWithEmailAndPassword(auth, formData.email, formData.password)
       .then(async (credential) => {
         const { user } = credential;
-        await signUpWithEmail({ uid: user.uid, company: formData.company });
+        await signUpWithEmail(user.uid, formData.company);
         if (!user.emailVerified) {
           await sendEmailVerification(user);
           alert(DialogMessages.VERIFICATION_EMAIL_SENT);

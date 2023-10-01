@@ -38,11 +38,7 @@ import Validations from "~/utils/validations";
 import { signUp } from "~/apis/auth";
 import { URL_TERMS_OF_USE, URL_PRIVACY_POLICY } from "~/consts/links";
 import { ServiceLogos } from "~/consts/images";
-
-type SignUpInfo = {
-  name: string;
-  agree: boolean;
-}
+import type { SignUpInfo } from "~/types/common";
 
 definePageMeta({
   layout: "before-login",
