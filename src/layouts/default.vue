@@ -1,23 +1,27 @@
 <template lang="pug">
-//- v-navigation-drawer(v-if="!isPc" v-model="menuOpened" location="end" :temporary="!isPc")
-//-   .d-flex.justify-end
-//-     v-btn(@click.stop="menuOpened = false" icon="mdi-close" flat).ma-2
-//-   SideMenu(:menus="menus")
-v-main.fill-height
-  v-container.pa-0.fill-height
-    v-app-bar(v-if="!isPc" flat)
+v-navigation-drawer(v-if="!isPc" v-model="menuOpened" location="end" :temporary="!isPc")
+  .d-flex.justify-end
+    v-btn(@click.stop="menuOpened = false" icon="mdi-close" flat).ma-2
+  SideMenu(:menus="menus")
+v-main
+  v-container.pa-0
+    v-app-bar(v-if="!isPc && isSetupDone" flat)
       template(#prepend)
         NuxtLink(to="/").d-flex.align-center.px-2
           img(:src="ServiceLogos.LOGO_WITH_NAME" width="144")
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
-    v-row.flex-wrap.flex-md-nowrap.fill-height.ma-0
-      //- v-col(cols="12" md="auto" v-if="isPc").px-4.py-6.select-menu.bg-white.scroll-y
-      //-   NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
-      //-     img(:src="ServiceLogos.LOGO_WITH_NAME" width="160")
-      //-   //- SideMenu(v-if="isPc" :menus="menus" rounded="lg")
+
+    v-row
+      v-col(cols="12" v-if="!isSetupDone").pa-0.bg-white
+        SettingStepper
+    v-row
+      v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
+        NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
+          img(:src="ServiceLogos.LOGO_WITH_NAME" width="160")
+        SideMenu(:menus="menus" rounded="lg")
       v-col(cols="12" md="auto").pa-8.flex-fill.scroll-y
-        .mx-auto.content
+        .content
           slot
 </template>
 
@@ -45,6 +49,9 @@ const { currentRoute } = useRouter();
 const menu = ref<string[]>([]);
 const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
+
+// TODO 可変にする
+const isSetupDone = ref<boolean>(false);
 
 const signOut = async () => {
   startLoading();
