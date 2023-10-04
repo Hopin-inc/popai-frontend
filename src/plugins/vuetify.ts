@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       themes: {
         light: {
           colors: {
-            primary: "#00A356",
+            primary: "#1976D2",
             secondary: "#00331A",
             accent: "#1ABD65",
             error: "#DB3435",

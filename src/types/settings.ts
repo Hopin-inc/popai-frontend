@@ -111,3 +111,17 @@ export type ConfigStatus = {
     isValid: boolean;
   };
 };
+
+export type FeatureCheckBoxData = {
+  title: string;
+  description: string;
+  checked: boolean;
+  imgSrc: string;
+};
+
+export type LinkToolBtnData = {
+  toolName: string;
+  enabled: boolean;
+  selected: boolean;
+  iconSrc: string;
+};

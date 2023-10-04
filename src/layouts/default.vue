@@ -8,20 +8,18 @@ v-main
     v-app-bar(v-if="!isPc && isSetupDone" flat)
       template(#prepend)
         NuxtLink(to="/").d-flex.align-center.px-2
-          img(:src="ServiceLogos.LOGO_WITH_NAME" width="144")
+          img(:src="ServiceLogos.POPAI_WITH_NAME" width="144")
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
 
-    v-row
-      v-col(cols="12" v-if="!isSetupDone").pa-0.bg-white
-        SettingStepper
+    SettingStepper(v-if="!isSetupDone")
     v-row
       v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
-          img(:src="ServiceLogos.LOGO_WITH_NAME" width="160")
+          img(:src="ServiceLogos.POPAI_WITH_NAME" width="160")
         SideMenu(:menus="menus" rounded="lg")
-      v-col(cols="12" md="auto").pa-8.flex-fill.scroll-y
-        .content
+      v-col(cols="12" md="auto").pa-8.flex-fill
+        .content.mx-auto
           slot
 </template>
 
@@ -149,7 +147,7 @@ watch(connected, async (next) => {
   max-height: 100vh
   overflow-y: scroll
 .content
-  max-width: 1080px
+  max-width: 880px
 :deep(.v-list-group)
   --parent-padding: 0
 </style>

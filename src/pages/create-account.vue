@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-start.w-100
-  img(:src="ServiceLogos.LOGO" height="48").mb-6.mx-auto
+  img(:src="ServiceLogos.POPAI" height="48").mb-6.mx-auto
   v-card(flat).pa-6.w-100.rounded-lg
     v-form(ref="form" @submit.prevent="submit")
       v-row
