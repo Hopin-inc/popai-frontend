@@ -2,8 +2,8 @@
 .d-flex.align-center
   img(v-if="props.iconSrc" :src="props.iconSrc" width="48").mr-2
   div
-    h3.font-weight-bold {{ title }}
-    span.text-caption {{ description }}
+    h2.font-weight-bold.mb-1 {{ title }}
+    span {{ description }}
 </template>
 
 <script setup lang="ts">

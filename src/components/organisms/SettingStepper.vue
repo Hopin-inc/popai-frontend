@@ -1,5 +1,5 @@
 <template lang="pug">
-div.base.d-flex.justify-center.align-center.bg-white
+.base.d-flex.justify-center.align-center.bg-white
   h1 ステッパー
 </template>
 

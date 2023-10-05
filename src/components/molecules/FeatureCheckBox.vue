@@ -6,7 +6,7 @@ v-card(
   @click.stop="checked = !checked"
   width="428"
 ).pa-8
-  div.d-flex.align-center.mb-2
+  .d-flex.align-center.mb-2
     v-icon(v-if="checked" size="large").mr-1 mdi-checkbox-outline
     v-icon(v-else size="large").mr-1 mdi-checkbox-blank-outline
     h3 {{ props.title }}

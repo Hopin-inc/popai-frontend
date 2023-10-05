@@ -1,5 +1,6 @@
 import { SetOptional } from "type-fest";
 import { SelectItem } from "~/types/common";
+import { SettingExpansionPanel } from "~~/.nuxt/components";
 
 export type UserConfig = {
   user: SetOptional<User, "id">;
@@ -124,4 +125,13 @@ export type LinkToolBtnData = {
   enabled: boolean;
   selected: boolean;
   iconSrc: string;
+};
+
+export type SettingExpansionPanelData = {
+  step: number;
+  title: string;
+  description: string;
+  iconSrc: string;
+  hasNextButton: boolean;
+  hasBackButton: boolean;
 };

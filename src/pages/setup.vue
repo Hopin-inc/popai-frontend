@@ -1,12 +1,12 @@
 <template lang="pug">
 v-row
   v-col(cols="12")
-    IconicTitle(
+    SetupTitle(
       title="1. タスク管理ツールを選ぶ",
       description="タスクの情報を自動で取得します。",
     )
 v-row
-  template(v-for="todoApp in todoApps")
+  template(v-for="todoApp in todoApps" :key="todoApp.toolName")
     LinkToolBtn(
       :toolName="todoApp.toolName"
       :enabled="todoApp.enabled"
@@ -16,12 +16,12 @@ v-row
     ).mr-4
 v-row.mt-10
   v-col(cols="12")
-    IconicTitle(
+    SetupTitle(
       title="2. チャットツールを選ぶ",
       description="社員や全体へのメッセージを送信します。",
     )
 v-row
-  template(v-for="chatTool in chatTools")
+  template(v-for="chatTool in chatTools" :key="chatTool.toolName")
     LinkToolBtn(
       :toolName="chatTool.toolName"
       :enabled="chatTool.enabled"
@@ -31,12 +31,12 @@ v-row
     ).mr-4
 v-row.mt-10
   v-col(cols="12")
-    IconicTitle(
+    SetupTitle(
       title="3. POPAIに依頼したいことを選ぶ",
       description="チームの自律性を育むために、、、TODO",
     )
 v-row
-  template(v-for="feature in features")
+  template(v-for="feature in features" :key="feature.title")
     FeatureCheckBox(
       :title="feature.title",
       :description="feature.description",
@@ -109,33 +109,28 @@ const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
   },
 ]);
 
-const installTool = async (toolName: string) => {
-  await alert(`TODO:${ toolName }のインストール処理`);
+const installTool = (toolName: string) => {
   switch (toolName) {
     case TodoAppName[TodoAppId.SPREADSHEET]:
     case TodoAppName[TodoAppId.NOTION]:
     case TodoAppName[TodoAppId.BACKLOG]:
-      // TODO APIを叩いて、インストール処理を行う
-
       updateLinkToolBtnState(todoApps.value, toolName);
       break;
     case ChatToolName[ChatToolId.SLACK]:
     case ChatToolName[ChatToolId.LINEWORKS]:
-      // TODO APIを叩いて、インストール処理を行う
-
       updateLinkToolBtnState(chatTools.value, toolName);
       break;
   }
 };
 
 const updateLinkToolBtnState = (tools: LinkToolBtnData[], toolName: string) => {
-  // インストールしたToolをselectedにする
+  // 選択したToolをselectedにする
   const selectedTool = tools.find(tool => tool.toolName === toolName);
   if (selectedTool) {
     selectedTool.selected = true;
     selectedTool.enabled = true;
   }
-  // インストールしたTool以外は、disabledにする
+  // 選択したTool以外は、disabledにする
   tools
     .filter(tool => tool.toolName !== toolName)
     .forEach((disabledTool) => {
