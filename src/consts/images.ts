@@ -24,8 +24,10 @@ export namespace Icons {
   export const WAVING_HANDS = baseUri + "waving_hands.svg";
 }
 
-export namespace FeatureImages {
-  const baseUri = "/images/features/";
-  export const REMIND = baseUri + "remind.png";
-  export const SHARE = baseUri + "share.png";
+export namespace CaptureImages {
+  const baseUri = "/images/captures/";
+  export const FEATURE_REMIND = baseUri + "feature_remind.png";
+  export const FEATURE_SHARE = baseUri + "feature_share.png";
+  export const REMIND_PURPOSE_RECONFIGURE = baseUri + "remind_purpose_reconfigure.png";
+  export const REMIND_PURPOSE_UPDATE = baseUri + "remind_purpose_update.png";
 }

@@ -147,7 +147,7 @@ watch(connected, async (next) => {
   max-height: 100vh
   overflow-y: scroll
 .content
-  max-width: 880px
+  max-width: 960px
 :deep(.v-list-group)
   --parent-padding: 0
 </style>

@@ -7,7 +7,7 @@ v-autocomplete(
   :readonly="props.readonly"
   :rules="props.rules"
   variant="outlined"
-  density="compact"
+  density="comfortable"
   color="primary"
   hide-details
 )

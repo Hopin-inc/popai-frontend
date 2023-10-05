@@ -110,7 +110,7 @@ SettingExpansionPanel(
       v-col(cols="5")
         SelectBox(
         )
-      v-col(cols="2")
+      v-col(cols="2").px-0
         v-btn(
           flat
           prepend-icon="mdi-close"

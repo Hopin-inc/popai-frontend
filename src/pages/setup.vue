@@ -51,7 +51,7 @@ v-row.my-10
 </template>
 
 <script setup lang="ts">
-import { ExternalServiceLogos, FeatureImages } from "~/consts/images";
+import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum";
 import type { LinkToolBtnData, FeatureCheckBoxData } from "~/types/settings";
 
@@ -99,13 +99,13 @@ const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
     title: "遅延したタスクにリマインド",
     description: "期日を過ぎても完了していないタスクを\nPOPAIがやさしくリマインド。",
     checked: false,
-    imgSrc: FeatureImages.REMIND,
+    imgSrc: CaptureImages.FEATURE_REMIND,
   },
   {
     title: "遅延しそうなタスクをシェア",
     description: "社員は簡単な質問に答えるだけ。\nPOPAIが聞いてきた進捗を紹介します！",
     checked: false,
-    imgSrc: FeatureImages.SHARE,
+    imgSrc: CaptureImages.FEATURE_SHARE,
   },
 ]);
 
