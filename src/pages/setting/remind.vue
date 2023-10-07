@@ -123,7 +123,8 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   },
 ]);
 
-onMounted(async () => {
+onBeforeMount(() => {
+  addRow();
 });
 
 const addRow = () => {

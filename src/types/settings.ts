@@ -122,7 +122,6 @@ export type FeatureCheckBoxData = {
 
 export type LinkToolBtnData = {
   toolName: string;
-  enabled: boolean;
   selected: boolean;
   iconSrc: string;
 };
@@ -134,4 +133,11 @@ export type SettingExpansionPanelData = {
   iconSrc: string;
   hasNextButton: boolean;
   hasBackButton: boolean;
+};
+
+export type RadioCardData = {
+  captionBeforeTitle: string;
+  title: string;
+  description: string;
+  selected: boolean;
 };

@@ -8,10 +8,7 @@ v-row
 v-row
   template(v-for="todoApp in todoApps" :key="todoApp.toolName")
     LinkToolBtn(
-      :toolName="todoApp.toolName"
-      :enabled="todoApp.enabled"
-      :selected="todoApp.selected"
-      :iconSrc="todoApp.iconSrc"
+      :data="todoApp"
       @click-card="installTool"
     ).mr-4
 v-row.mt-10
@@ -23,10 +20,7 @@ v-row.mt-10
 v-row
   template(v-for="chatTool in chatTools" :key="chatTool.toolName")
     LinkToolBtn(
-      :toolName="chatTool.toolName"
-      :enabled="chatTool.enabled"
-      :selected="chatTool.selected"
-      :iconSrc="chatTool.iconSrc"
+      :data="chatTool"
       @click-card="installTool"
     ).mr-4
 v-row.mt-10
@@ -63,19 +57,16 @@ const { startLoading, finishLoading, loading } = useLoading();
 const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
     toolName: TodoAppName[TodoAppId.SPREADSHEET],
-    enabled: true,
     selected: false,
     iconSrc: ExternalServiceLogos.SPREADSHEET,
   },
   {
     toolName: TodoAppName[TodoAppId.NOTION],
-    enabled: true,
     selected: false,
     iconSrc: ExternalServiceLogos.NOTION,
   },
   {
     toolName: TodoAppName[TodoAppId.BACKLOG],
-    enabled: true,
     selected: false,
     iconSrc: ExternalServiceLogos.BACKLOG,
   },
@@ -83,13 +74,11 @@ const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
 const chatTools: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
     toolName: ChatToolName[ChatToolId.SLACK],
-    enabled: true,
     selected: false,
     iconSrc: ExternalServiceLogos.SLACK,
   },
   {
     toolName: ChatToolName[ChatToolId.LINEWORKS],
-    enabled: true,
     selected: false,
     iconSrc: ExternalServiceLogos.LINEWORKS,
   },
@@ -128,14 +117,12 @@ const updateLinkToolBtnState = (tools: LinkToolBtnData[], toolName: string) => {
   const selectedTool = tools.find(tool => tool.toolName === toolName);
   if (selectedTool) {
     selectedTool.selected = true;
-    selectedTool.enabled = true;
   }
   // 選択したTool以外は、disabledにする
   tools
     .filter(tool => tool.toolName !== toolName)
     .forEach((disabledTool) => {
       disabledTool.selected = false;
-      disabledTool.enabled = false;
     });
 };
 

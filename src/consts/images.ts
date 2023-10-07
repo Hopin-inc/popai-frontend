@@ -22,6 +22,8 @@ export namespace Icons {
   export const FLAG = baseUri + "flag.svg";
   export const PEOPLE = baseUri + "person_2.svg";
   export const WAVING_HANDS = baseUri + "waving_hands.svg";
+  export const CRACKER = baseUri + "cracker.png";
+
 }
 
 export namespace CaptureImages {

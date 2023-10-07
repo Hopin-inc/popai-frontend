@@ -95,7 +95,7 @@ SettingExpansionPanel(
           color="primary"
           variant="outlined"
           prepend-icon="mdi-plus"
-        ) 社員を自動で追加
+        ) 追加する
     v-row
       v-col(cols="5").d-flex.align-center.pb-0
         img(:src="chatToolIconSrc" width="32").mr-2

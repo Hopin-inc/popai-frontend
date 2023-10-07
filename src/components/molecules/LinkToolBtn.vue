@@ -1,27 +1,23 @@
 <template lang="pug">
 v-card(
-  :class="{'card-disabled': !props.enabled, 'selected': props.selected}"
+  :class="{'selected': data.selected}"
   flat
   rounded="s"
   @click.stop="onClick"
   height="64"
 ).d-flex.align-center.py-4.px-6
-  img(:src="props.iconSrc" width="24").mr-2
-  span.text-h6 {{ props.toolName }}
+  img(:src="props.data.iconSrc" width="24").mr-2
+  span.text-h6 {{ props.data.toolName }}
 </template>
 
 <script setup lang="ts">
+import type { LinkToolBtnData } from "~/types/settings";
+
 type Props = {
-  toolName: string;
-  enabled: boolean;
-  selected: boolean
-  iconSrc: string;
+  data: LinkToolBtnData;
 };
 const props = withDefaults(defineProps<Props>(), {
-  toolName: "",
-  enabled: true,
-  selected: false,
-  iconSrc: "",
+  data: () => ({} as LinkToolBtnData),
 });
 
 type Emits = {
@@ -30,14 +26,11 @@ type Emits = {
 const emits = defineEmits<Emits>();
 
 const onClick = () => {
-  emits("click-card", props.toolName);
+  emits("click-card", props.data.toolName);
 };
 </script>
 
 <style scoped lang="sass">
-.card-disabled
-  background-color: gray
-  opacity: 0.4
 .selected
   box-shadow: 0 0 0 2px rgb(var(--v-theme-primary)) inset
 </style>
