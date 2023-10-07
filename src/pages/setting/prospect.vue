@@ -7,7 +7,7 @@ v-row
     SetupInfo(
       :todoAppIconSrc="todoAppIconSrc"
       :chatToolIconSrc="chatToolIconSrc"
-      :features="features"
+      :features="setupFeatures"
     )
     v-btn(
       color="primary"
@@ -78,13 +78,16 @@ useHead({
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
+const {
+  setCurrentStep,
+  setupFeatures,
+} = useSetup();
 
 // TODO 前の画面から持ってくるようにする(composables?)
 const todoAppName = TodoAppName[TodoAppId.SPREADSHEET];
 const chatToolName = ChatToolName[ChatToolId.LINEWORKS];
 const todoAppIconSrc = ExternalServiceLogos.SPREADSHEET;
 const chatToolIconSrc = ExternalServiceLogos.LINEWORKS;
-const features = ["遅延のリマインド", "進捗のシェア"];
 
 const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
@@ -138,6 +141,7 @@ const radioCardData: Ref<RadioCardData[]> = ref<RadioCardData[]>([
 ]);
 
 onBeforeMount(() => {
+  setCurrentStep(3);
   addRow();
 });
 

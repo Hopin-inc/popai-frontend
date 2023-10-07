@@ -12,7 +12,11 @@ v-main
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
 
-    SettingStepper(v-if="!isSetupDone")
+    SettingStepper(
+      v-if="!isSetupDone"
+      :currentStep="currentStep"
+      :data="stepperItems"
+    )
     v-row
       v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
@@ -27,6 +31,7 @@ v-main
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import { ServiceLogos } from "~/consts/images";
+import type { SettingStepperData } from "~/types/settings";
 
 useHead({
   titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
@@ -41,6 +46,9 @@ const {
   todoAppConfigured,
   usersConfigured,
 } = useInfo();
+const {
+  currentStep,
+} = useSetup();
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
 
@@ -56,6 +64,26 @@ const signOut = async () => {
   await logout();
   finishLoading();
 };
+
+const stepperItems: Ref<SettingStepperData[]> = ref<SettingStepperData[]>([
+  {
+    step: 1,
+    title: "機能を選ぶ",
+  },
+  {
+    step: 2,
+    title: "ツールを連携する",
+  },
+  {
+    step: 3,
+    title: "機能を設定する",
+  },
+  {
+    step: 4,
+    title: "利用を開始",
+  },
+]);
+
 const menus = computed(() => [
   { type: "subheader", title: "連携" },
   {

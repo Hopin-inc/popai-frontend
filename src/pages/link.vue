@@ -133,13 +133,17 @@ useHead({
   title: "ツールを連携する",
 });
 const { startLoading, finishLoading, loading } = useLoading();
+const {
+  setCurrentStep,
+  setupFeatures,
+} = useSetup();
 
 // TODO 前の画面から持ってくるようにする(composables?)
 const todoAppName = TodoAppName[TodoAppId.SPREADSHEET];
 const chatToolName = ChatToolName[ChatToolId.LINEWORKS];
 const todoAppIconSrc = ExternalServiceLogos.SPREADSHEET;
 const chatToolIconSrc = ExternalServiceLogos.LINEWORKS;
-const features = ["遅延のリマインド", "進捗のシェア"];
+const features = setupFeatures.value;
 
 const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
   {
@@ -184,7 +188,8 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   },
 ]);
 
-onMounted(async () => {
+onBeforeMount(() => {
+  setCurrentStep(2);
 });
 
 const nextStep = async () => {

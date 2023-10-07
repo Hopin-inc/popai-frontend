@@ -12,10 +12,12 @@
 </template>
 
 <script setup lang="ts">
+import type { Feature } from "~/types/settings";
+
 type Props = {
   todoAppIconSrc: string;
   chatToolIconSrc: string;
-  features: string[];
+  features: Feature[];
 };
 const props = withDefaults(defineProps<Props>(), {
   todoAppIconSrc: "",

@@ -32,10 +32,8 @@ v-row.mt-10
 v-row
   template(v-for="feature in features" :key="feature.title")
     FeatureCheckBox(
-      :title="feature.title",
-      :description="feature.description",
-      :checked="feature.checked",
-      :imgSrc="feature.imgSrc",
+      :data="feature"
+      @click-card="onClickFeatureCard"
     ).mr-4
 v-row.my-10
   v-btn(
@@ -47,12 +45,20 @@ v-row.my-10
 <script setup lang="ts">
 import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum";
-import type { LinkToolBtnData, FeatureCheckBoxData } from "~/types/settings";
+import type { LinkToolBtnData, Feature, FeatureCheckBoxData } from "~/types/settings";
 
 useHead({
   title: "機能を選ぶ",
 });
 const { startLoading, finishLoading, loading } = useLoading();
+const {
+  setCurrentStep,
+  setSetupTodoAppId,
+  setSetupChatToolId,
+  setupFeatures,
+  addSetupFeature,
+  deleteSetupFeature,
+} = useSetup();
 
 const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
@@ -83,20 +89,36 @@ const chatTools: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
     iconSrc: ExternalServiceLogos.LINEWORKS,
   },
 ]);
+
 const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
   {
     title: "遅延したタスクにリマインド",
     description: "期日を過ぎても完了していないタスクを\nPOPAIがやさしくリマインド。",
     checked: false,
     imgSrc: CaptureImages.FEATURE_REMIND,
+    feature: "遅延のリマインド",
   },
   {
     title: "遅延しそうなタスクをシェア",
     description: "社員は簡単な質問に答えるだけ。\nPOPAIが聞いてきた進捗を紹介します！",
     checked: false,
     imgSrc: CaptureImages.FEATURE_SHARE,
+    feature: "進捗のシェア",
   },
 ]);
+
+const onClickFeatureCard = (feature: Feature) => {
+  features.value.forEach((f) => {
+    if (f.feature === feature) {
+      f.checked = !f.checked;
+      if (f.checked) {
+        addSetupFeature(feature);
+      } else {
+        deleteSetupFeature(feature);
+      }
+    }
+  });
+};
 
 const installTool = (toolName: string) => {
   switch (toolName) {
@@ -125,6 +147,17 @@ const updateLinkToolBtnState = (tools: LinkToolBtnData[], toolName: string) => {
       disabledTool.selected = false;
     });
 };
+
+onBeforeMount(() => {
+  setCurrentStep(1);
+  features.value.forEach((feature) => {
+    if (setupFeatures.value.find(f => f === feature.feature)) {
+      feature.checked = true;
+    } else {
+      feature.checked = false;
+    }
+  });
+});
 
 const nextStep = async () => {
   await navigateTo("/link");

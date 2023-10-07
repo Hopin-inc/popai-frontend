@@ -14,8 +14,12 @@ useHead({
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
+const {
+  setCurrentStep,
+} = useSetup();
 
-onMounted(async () => {
+onBeforeMount(() => {
+  setCurrentStep(4);
 });
 
 </script>

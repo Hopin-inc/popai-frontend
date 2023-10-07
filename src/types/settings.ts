@@ -113,11 +113,17 @@ export type ConfigStatus = {
   };
 };
 
+export type Feature =
+  | "遅延のリマインド"
+  | "進捗のシェア"
+  | "";
+
 export type FeatureCheckBoxData = {
   title: string;
   description: string;
   checked: boolean;
   imgSrc: string;
+  feature: Feature;
 };
 
 export type LinkToolBtnData = {
@@ -140,4 +146,9 @@ export type RadioCardData = {
   title: string;
   description: string;
   selected: boolean;
+};
+
+export type SettingStepperData = {
+  step: number;
+  title: string;
 };
