@@ -5,22 +5,40 @@ v-card(
   @click.stop="onClick"
 ).px-8.py-6.mb-4
   .d-flex.align-center
-    v-icon.mr-4(v-if="props.data.selected" size="large").mr-1 mdi-radiobox-marked
-    v-icon.mr-4(v-else size="large").mr-1 mdi-radiobox-blank
+    v-icon(
+      v-if="props.data.selected"
+      size="x-large"
+      color="primary"
+    ).mr-6 mdi-radiobox-marked
+    v-icon(
+      v-else size="x-large"
+    ).mr-6 mdi-radiobox-blank
     div
       p.text-subtitle-2 {{ props.data.captionBeforeTitle }}
-      h2.mb-2 {{ props.data.title }}
+      div.d-flex.align-center.mb-2
+        h2 {{ props.data.title }}
+        template(
+          v-if="props.data.title==='○日前に聞く'"
+          v-for="day in days" :key="day.day"
+        ).d-flex.align-center
+          v-chip(
+              v-if="day.selected"
+              variant="elevated"
+              color="primary"
+          ).ml-2 {{ day.day }}
       p.text-subtitle-2(v-html="props.data.description")
 </template>
 
 <script setup lang="ts">
-import type { RadioCardData } from "~/types/settings";
+import type { RadioCardData, DayToConfirmProgress } from "~/types/settings";
 
 type Props = {
   data: RadioCardData;
+  days?: DayToConfirmProgress[];
 };
 const props = withDefaults(defineProps<Props>(), {
   data: () => ({} as RadioCardData),
+  days: () => ([] as DayToConfirmProgress[]),
 });
 
 type Emits = {

@@ -150,7 +150,26 @@ export type RadioCardData = {
   selected: boolean;
 };
 
+export type RadioImageCardData = {
+  captionBeforeTitle: string;
+  title: string;
+  description: string;
+  selected: boolean;
+  imgSrc: string;
+};
+
 export type SettingStepperData = {
   step: number;
   title: string;
+};
+
+export type DayToConfirmProgress = {
+  day: string;
+  selected: boolean;
+};
+
+export type AccountRow = {
+  index: number;
+  todoAppUserId: string;
+  chatToolUserId: string;
 };

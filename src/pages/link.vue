@@ -47,7 +47,7 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-card(
-    v-if="setupTodoAppName === TodoAppName[TodoAppId.SPREADSHEET]"
+    v-if="setupTodoAppId === TodoAppId.SPREADSHEET"
     flat
   ).px-8.py-6
     h4.mb-2 基本情報
@@ -83,6 +83,54 @@ SettingExpansionPanel(
             span.mx-2 に
             SelectBox(
             )
+  v-card(
+    v-if="setupTodoAppId === TodoAppId.NOTION"
+    flat
+  ).px-8.py-6
+    h4.mb-2 基本情報
+    v-row
+      v-col(cols="12" sm="6" md="4")
+        FormPart(title="タスク名" required)
+          SelectBox(
+          )
+      v-col(cols="12" sm="6" md="4")
+        FormPart(title="担当者" required)
+          SelectBox(
+          )
+      v-col(cols="12" sm="6" md="4")
+        FormPart(title="期日" required)
+          SelectBox(
+          )
+    h4.mb-2.mt-8 進捗情報
+    v-row
+      v-col(cols="12")
+        FormPart(title="完了を示す列と条件" required)
+          .d-flex.align-center.flex-wrap
+            SelectBox(
+            )
+            span.mx-2 に
+            SelectBox(
+            )
+    h4.mb-2.mt-8 関連情報
+    v-row
+      v-col(cols="4")
+        FormPart(title="親タスク")
+          .d-flex.align-center.flex-wrap
+            SelectBox(
+            )
+  v-card(
+    v-if="setupTodoAppId === TodoAppId.BACKLOG"
+    flat
+  ).px-8.py-6
+    v-row
+      v-col(cols="12" sm="6")
+        FormPart(title="完了を示す状態" required)
+          SelectBox(
+          )
+      v-col(cols="12" sm="6")
+        FormPart(title="保留を示す状態")
+          SelectBox(
+          )
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 4)"
@@ -108,30 +156,36 @@ SettingExpansionPanel(
         .d-flex.align-center
           v-icon(size="small").mr-2 mdi-information
           span.mr-2.text-caption 同じメールアドレスのアカウントを自動で紐付けています
-        v-btn(
-          color="primary"
-          variant="outlined"
-          prepend-icon="mdi-plus"
-        ) 追加する
-    v-row
+    v-row.mb-2
       v-col(cols="5").d-flex.align-center.pb-0
         img(:src="setupChatToolIconSrc" width="32").mr-2
         span.mr-2 {{ setupChatToolName }}
       v-col(cols="5").d-flex.align-center.pb-0
         img(:src="setupTodoAppIconSrc" width="32").mr-2
         span.mr-2 {{ setupTodoAppName }}
-    v-row.d-flex.align-center
-      v-col(cols="5")
+    v-row(
+      v-for="(account, index) in accountTable"
+    ).d-flex.align-center
+      v-col(cols="5").py-0
         SelectBox(
         )
-      v-col(cols="5")
+      v-col(cols="5").py-0
         SelectBox(
         )
       v-col(cols="2").px-0
         v-btn(
+          @click.stop="deleteRow(index)"
           flat
           prepend-icon="mdi-close"
         ) 削除
+    v-row
+      v-col.py-1
+        v-btn(
+          @click.stop="addRow"
+          color="primary"
+          variant="text"
+          prepend-icon="mdi-plus"
+        ) 追加する
 
 v-row.my-1.ml-10
   v-col(cols="12")
@@ -144,13 +198,14 @@ v-row.my-1.ml-10
 <script setup lang="ts">
 import { ExternalServiceLogos } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum";
-import type { SettingExpansionPanelData } from "~/types/settings";
+import type { SettingExpansionPanelData, AccountRow } from "~/types/settings";
 
 useHead({
   title: "ツールを連携する",
 });
 const { startLoading, finishLoading, loading } = useLoading();
 const {
+  setupTodoAppId,
   setupTodoAppName,
   setupTodoAppIconSrc,
   setupChatToolName,
@@ -158,6 +213,70 @@ const {
   setCurrentStep,
   setupFeatures,
 } = useSetup();
+
+const accountTable: Ref<AccountRow[]> = ref<AccountRow[]>([
+  {
+    index: 0,
+    todoAppUserId: "",
+    chatToolUserId: "",
+  },
+]);
+
+const captionStep2 = computed((): {
+  title: string;
+  description: string;
+} => {
+  switch (setupTodoAppId.value) {
+    case TodoAppId.SPREADSHEET:
+      return {
+        title: "2. シートを選ぶ",
+        description: "タスク情報を取得するシートを1つ選択してください。",
+      };
+    case TodoAppId.NOTION:
+      return {
+        title: "2. データベースを選ぶ",
+        description: "タスク情報を取得するデータベースを1つ選択してください。",
+      };
+    case TodoAppId.BACKLOG:
+      return {
+        title: "2. プロジェクトを選ぶ",
+        description: "タスク情報を取得するプロジェクトを1つ選択してください。",
+      };
+    default:
+      return {
+        title: "",
+        description: "",
+      };
+  }
+});
+
+const captionStep3 = computed((): {
+  title: string;
+  description: string;
+} => {
+  switch (setupTodoAppId.value) {
+    case TodoAppId.SPREADSHEET:
+      return {
+        title: "3. 列と条件を選ぶ",
+        description: `タスク情報を取得するために、${ setupTodoAppName.value }の列と条件を選んでください。`,
+      };
+    case TodoAppId.NOTION:
+      return {
+        title: "3. プロパティを選ぶ",
+        description: `タスクのステータスを取得するために、対応する${ setupTodoAppName.value }のプロパティを選択してください`,
+      };
+    case TodoAppId.BACKLOG:
+      return {
+        title: "3. 状態を選ぶ",
+        description: `タスクのステータスを取得するために、ステータスに対応する${ setupTodoAppName.value }の状態を紐付けてください。`,
+      };
+    default:
+      return {
+        title: "",
+        description: "",
+      };
+  }
+});
 
 const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
   {
@@ -171,8 +290,8 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   },
   {
     step: 2,
-    title: "2. シートを選ぶ",
-    description: "タスク情報を取得するシートを1つ選択してください。",
+    title: captionStep2.value.title,
+    description: captionStep2.value.description,
     iconSrc: setupTodoAppIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
@@ -180,8 +299,8 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   },
   {
     step: 3,
-    title: "3. 列と条件を選ぶ",
-    description: `タスク情報を取得するために、${ setupTodoAppName.value }の列と条件を選んでください。`,
+    title: captionStep3.value.title,
+    description: captionStep3.value.description,
     iconSrc: setupTodoAppIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
@@ -206,6 +325,25 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     isOpen: false,
   },
 ]);
+
+const addRow = () => {
+  const index = accountTable.value.length;
+  accountTable.value.push(
+    {
+      index,
+      chatToolUserId: "",
+      todoAppUserId: "",
+    },
+  );
+  // await Promise.all([
+  //   onUserNameChanged(index),
+  //   fetchConfigStatus(),
+  // ]);
+};
+
+const deleteRow = (index: number) => {
+  accountTable.value.splice(index, 1);
+};
 
 onBeforeMount(() => {
   setCurrentStep(2);
