@@ -1,6 +1,6 @@
 <template lang="pug">
 v-card(
-  :class="{'checked': checked}"
+  :class="{'checked': props.data.checked}"
   flat
   rounded="s"
   @click.stop="onClick"
@@ -8,7 +8,7 @@ v-card(
 ).pa-8
   .d-flex.align-center.mb-2
     v-icon(
-      v-if="checked"
+      v-if="props.data.checked"
       size="large"
       color="primary"
     ).mr-1 mdi-checkbox-marked
@@ -33,7 +33,7 @@ type Emits = {
 };
 const emits = defineEmits<Emits>();
 
-const checked = computed(() => (props.data.checked));
+// const checked = computed(() => (props.data.checked)); TODO なくても動く？
 
 const onClick = () => {
   emits("click-card", props.data.feature);

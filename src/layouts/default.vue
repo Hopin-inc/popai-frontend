@@ -16,6 +16,7 @@ v-main
       v-if="!isSetupDone"
       :currentStep="currentStep"
       :data="stepperItems"
+      @click-step="chagePage"
     )
     v-row
       v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
@@ -48,6 +49,7 @@ const {
 } = useInfo();
 const {
   currentStep,
+  setCurrentStep,
 } = useSetup();
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
@@ -134,6 +136,24 @@ const menus = computed(() => [
     disabled: false,
   },
 ]);
+
+const chagePage = (step: number) => {
+  setCurrentStep(step);
+  switch (step) {
+    case 1:
+      navigateTo("/setup");
+      break;
+    case 2:
+      navigateTo("/link");
+      break;
+    case 3:
+      navigateTo("/setting/remind");
+      break;
+    case 4:
+      navigateTo("/completion");
+      break;
+  }
+};
 
 watch(currentRoute, () => {
   menu.value = [];

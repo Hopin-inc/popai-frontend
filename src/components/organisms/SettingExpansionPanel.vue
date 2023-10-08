@@ -11,13 +11,13 @@ v-row.mb-3.mt-8
       v-btn(
         size="large"
         variant="text"
-        @click.stop="togglePanel"
+        @click.stop='emits("click-toggle-panel", props.data.step)'
       )
         v-icon(
           size="large"
           :icon="panelIcon"
         )
-v-row(:class="{'panel-hidden': panelHidden}")
+v-row(:class="{'panel-hidden': !isOpen}")
   v-col(cols="12").d-flex.align-center
     v-divider(
       v-if="props.data.hasNextButton"
@@ -32,11 +32,13 @@ v-row(:class="{'panel-hidden': panelHidden}")
         v-btn(
           v-if="props.data.hasNextButton"
           color="primary"
+          @click.stop='emits("click-next", props.data.step)'
         ).mt-4 次へ進む
         v-btn(
           v-if="props.data.hasBackButton"
           color="primary"
           variant="text"
+          @click.stop='emits("click-prev", props.data.step)'
         ).mt-4 前に戻る
 </template>
 
@@ -49,12 +51,16 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => ({} as SettingExpansionPanelData),
 });
 
-const panelHidden = ref<boolean>(false);
-const panelIcon = computed(() => (panelHidden.value ? "mdi-chevron-down" : "mdi-chevron-up"));
-
-const togglePanel = () => {
-  panelHidden.value = !panelHidden.value;
+type Emits = {
+  (e: "click-next", step: number): void
+  (e: "click-prev", step: number): void
+  (e: "click-toggle-panel", id: number): void
 };
+const emits = defineEmits<Emits>();
+
+const isOpen = computed(() => (props.data.isOpen));
+const panelIcon = computed(() => (isOpen ? "mdi-chevron-down" : "mdi-chevron-up"));
+
 </script>
 
 <style scoped lang="sass">

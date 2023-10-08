@@ -9,7 +9,7 @@ v-row
   template(v-for="todoApp in todoApps" :key="todoApp.toolName")
     LinkToolBtn(
       :data="todoApp"
-      @click-card="installTool"
+      @click-card="onClickToolCard"
     ).mr-4
 v-row.mt-10
   v-col(cols="12")
@@ -21,7 +21,7 @@ v-row
   template(v-for="chatTool in chatTools" :key="chatTool.toolName")
     LinkToolBtn(
       :data="chatTool"
-      @click-card="installTool"
+      @click-card="onClickToolCard"
     ).mr-4
 v-row.mt-10
   v-col(cols="12")
@@ -38,7 +38,7 @@ v-row
 v-row.my-10
   v-btn(
     color="primary"
-    @click="nextStep"
+    @click="nextPage"
   ) ツール連携に進む
 </template>
 
@@ -53,7 +53,9 @@ useHead({
 const { startLoading, finishLoading, loading } = useLoading();
 const {
   setCurrentStep,
+  setupTodoAppId,
   setSetupTodoAppId,
+  setupChatToolId,
   setSetupChatToolId,
   setupFeatures,
   addSetupFeature,
@@ -62,16 +64,19 @@ const {
 
 const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
+    id: TodoAppId.SPREADSHEET,
     toolName: TodoAppName[TodoAppId.SPREADSHEET],
     selected: false,
     iconSrc: ExternalServiceLogos.SPREADSHEET,
   },
   {
+    id: TodoAppId.NOTION,
     toolName: TodoAppName[TodoAppId.NOTION],
     selected: false,
     iconSrc: ExternalServiceLogos.NOTION,
   },
   {
+    id: TodoAppId.BACKLOG,
     toolName: TodoAppName[TodoAppId.BACKLOG],
     selected: false,
     iconSrc: ExternalServiceLogos.BACKLOG,
@@ -79,11 +84,13 @@ const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
 ]);
 const chatTools: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
+    id: ChatToolId.SLACK,
     toolName: ChatToolName[ChatToolId.SLACK],
     selected: false,
     iconSrc: ExternalServiceLogos.SLACK,
   },
   {
+    id: ChatToolId.LINEWORKS,
     toolName: ChatToolName[ChatToolId.LINEWORKS],
     selected: false,
     iconSrc: ExternalServiceLogos.LINEWORKS,
@@ -120,15 +127,17 @@ const onClickFeatureCard = (feature: Feature) => {
   });
 };
 
-const installTool = (toolName: string) => {
+const onClickToolCard = (id: number, toolName: string) => {
   switch (toolName) {
     case TodoAppName[TodoAppId.SPREADSHEET]:
     case TodoAppName[TodoAppId.NOTION]:
     case TodoAppName[TodoAppId.BACKLOG]:
+      setSetupTodoAppId(id);
       updateLinkToolBtnState(todoApps.value, toolName);
       break;
     case ChatToolName[ChatToolId.SLACK]:
     case ChatToolName[ChatToolId.LINEWORKS]:
+      setSetupChatToolId(id);
       updateLinkToolBtnState(chatTools.value, toolName);
       break;
   }
@@ -150,6 +159,12 @@ const updateLinkToolBtnState = (tools: LinkToolBtnData[], toolName: string) => {
 
 onBeforeMount(() => {
   setCurrentStep(1);
+
+  const todo = todoApps.value.find(t => t.id === setupTodoAppId.value);
+  if (todo) { todo.selected = true; }
+  const chat = chatTools.value.find(t => t.id === setupChatToolId.value);
+  if (chat) { chat.selected = true; }
+
   features.value.forEach((feature) => {
     if (setupFeatures.value.find(f => f === feature.feature)) {
       feature.checked = true;
@@ -159,7 +174,7 @@ onBeforeMount(() => {
   });
 });
 
-const nextStep = async () => {
+const nextPage = async () => {
   await navigateTo("/link");
 };
 </script>

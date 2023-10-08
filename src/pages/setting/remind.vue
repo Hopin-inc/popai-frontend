@@ -5,14 +5,16 @@ v-row
 v-row
   v-col(cols="12").d-flex.justify-space-between
     SetupInfo(
-      :todoAppIconSrc="todoAppIconSrc"
-      :chatToolIconSrc="chatToolIconSrc"
+      :todoAppIconSrc="setupTodoAppIconSrc"
+      :chatToolIconSrc="setupChatToolIconSrc"
       :features="setupFeatures"
     )
-    v-btn(
-      color="primary"
-      variant="outlined"
-    ) 再設定
+    v-icon(
+      size="large"
+      icon="mdi-cog"
+      color="grey"
+      @click.stop='navigateTo("/setup");'
+    )
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 1)"
@@ -69,7 +71,7 @@ v-row.my-1.ml-10
   v-col(cols="12")
     v-btn(
       color="primary"
-      @click="nextStep"
+      @click="nextPage"
     ) 次の機能設定に進む
 </template>
 
@@ -86,15 +88,11 @@ useHead({
 
 const { startLoading, finishLoading, loading } = useLoading();
 const {
+  setupTodoAppIconSrc,
+  setupChatToolIconSrc,
   setCurrentStep,
   setupFeatures,
 } = useSetup();
-
-// TODO 前の画面から持ってくるようにする(composables?)
-const todoAppName = TodoAppName[TodoAppId.SPREADSHEET];
-const chatToolName = ChatToolName[ChatToolId.LINEWORKS];
-const todoAppIconSrc = ExternalServiceLogos.SPREADSHEET;
-const chatToolIconSrc = ExternalServiceLogos.LINEWORKS;
 
 const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
@@ -104,25 +102,28 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     step: 1,
     title: "1. リマインドする目的を選ぶ",
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: true,
     hasBackButton: false,
+    isOpen: true,
   },
   {
     step: 2,
     title: "2. リマインドする時刻を設定する",
     description: "期日を過ぎた翌日の何時にリマインドするかを選んでください。",
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
+    isOpen: false,
   },
   {
     step: 3,
     title: "3. 遅延タスクを共有するグループを選ぶ",
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: false,
     hasBackButton: false,
+    isOpen: false,
   },
 ]);
 
@@ -143,7 +144,7 @@ const validationNoDuplicate = (value: string) => {
   return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : false;
 };
 
-const nextStep = async () => {
+const nextPage = async () => {
   await navigateTo("/setting/prospect");
 };
 

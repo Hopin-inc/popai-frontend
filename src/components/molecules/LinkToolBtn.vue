@@ -21,12 +21,12 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 type Emits = {
-  (e: "click-card", toolName: string): void
+  (e: "click-card", id: number, toolName: string): void
 };
 const emits = defineEmits<Emits>();
 
 const onClick = () => {
-  emits("click-card", props.data.toolName);
+  emits("click-card", props.data.id, props.data.toolName);
 };
 </script>
 

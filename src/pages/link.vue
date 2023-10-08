@@ -5,17 +5,22 @@ v-row
 v-row
   v-col(cols="12").d-flex.justify-space-between
     SetupInfo(
-      :todoAppIconSrc="todoAppIconSrc"
-      :chatToolIconSrc="chatToolIconSrc"
-      :features="features"
+      :todoAppIconSrc="setupTodoAppIconSrc"
+      :chatToolIconSrc="setupChatToolIconSrc"
+      :features="setupFeatures"
     )
-    v-btn(
-      color="primary"
-      variant="outlined"
-    ) 再設定
+    v-icon(
+      size="large"
+      icon="mdi-cog"
+      color="grey"
+      @click.stop='navigateTo("/setup");'
+    )
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 1)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
     v-btn(
@@ -25,6 +30,9 @@ SettingExpansionPanel(
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 2)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
     v-row
@@ -34,9 +42,12 @@ SettingExpansionPanel(
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 3)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
 )
   v-card(
-    v-if="todoAppName === TodoAppName[TodoAppId.SPREADSHEET]"
+    v-if="setupTodoAppName === TodoAppName[TodoAppId.SPREADSHEET]"
     flat
   ).px-8.py-6
     h4.mb-2 基本情報
@@ -75,6 +86,9 @@ SettingExpansionPanel(
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 4)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
     v-btn(
@@ -84,6 +98,9 @@ SettingExpansionPanel(
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 5)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
     v-row
@@ -98,11 +115,11 @@ SettingExpansionPanel(
         ) 追加する
     v-row
       v-col(cols="5").d-flex.align-center.pb-0
-        img(:src="chatToolIconSrc" width="32").mr-2
-        span.mr-2 {{ chatToolName }}
+        img(:src="setupChatToolIconSrc" width="32").mr-2
+        span.mr-2 {{ setupChatToolName }}
       v-col(cols="5").d-flex.align-center.pb-0
-        img(:src="todoAppIconSrc" width="32").mr-2
-        span.mr-2 {{ todoAppName }}
+        img(:src="setupTodoAppIconSrc" width="32").mr-2
+        span.mr-2 {{ setupTodoAppName }}
     v-row.d-flex.align-center
       v-col(cols="5")
         SelectBox(
@@ -120,7 +137,7 @@ v-row.my-1.ml-10
   v-col(cols="12")
     v-btn(
       color="primary"
-      @click="nextStep"
+      @click="nextPage"
     ) 機能設定に進む
 </template>
 
@@ -134,57 +151,59 @@ useHead({
 });
 const { startLoading, finishLoading, loading } = useLoading();
 const {
+  setupTodoAppName,
+  setupTodoAppIconSrc,
+  setupChatToolName,
+  setupChatToolIconSrc,
   setCurrentStep,
   setupFeatures,
 } = useSetup();
 
-// TODO 前の画面から持ってくるようにする(composables?)
-const todoAppName = TodoAppName[TodoAppId.SPREADSHEET];
-const chatToolName = ChatToolName[ChatToolId.LINEWORKS];
-const todoAppIconSrc = ExternalServiceLogos.SPREADSHEET;
-const chatToolIconSrc = ExternalServiceLogos.LINEWORKS;
-const features = setupFeatures.value;
-
 const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
   {
     step: 1,
-    title: "1. Google SpreadsheetとPOPAIを連携する",
+    title: `1. ${ setupTodoAppName.value }とPOPAIを連携する`,
     description: "簡潔な概要", // TODO
-    iconSrc: todoAppIconSrc,
+    iconSrc: setupTodoAppIconSrc.value,
     hasNextButton: true,
     hasBackButton: false,
+    isOpen: true,
   },
   {
     step: 2,
     title: "2. シートを選ぶ",
     description: "タスク情報を取得するシートを1つ選択してください。",
-    iconSrc: todoAppIconSrc,
+    iconSrc: setupTodoAppIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
+    isOpen: false,
   },
   {
     step: 3,
     title: "3. 列と条件を選ぶ",
-    description: "タスク情報を取得するために、Google Spreadsheetの列と条件を選んでください。",
-    iconSrc: todoAppIconSrc,
+    description: `タスク情報を取得するために、${ setupTodoAppName.value }の列と条件を選んでください。`,
+    iconSrc: setupTodoAppIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
+    isOpen: false,
   },
   {
     step: 4,
-    title: "4. LINE WORKSとPOPAIを連携する",
+    title: `4. ${ setupChatToolName.value }とPOPAIを連携する`,
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
+    isOpen: false,
   },
   {
     step: 5,
     title: "5. 社員ごとにアカウントを紐付ける",
     description: "ダイレクトメッセージを送信するために、タスクの担当者とチャットツールのアカウントを紐付けてください。",
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: false,
     hasBackButton: false,
+    isOpen: false,
   },
 ]);
 
@@ -192,7 +211,26 @@ onBeforeMount(() => {
   setCurrentStep(2);
 });
 
-const nextStep = async () => {
+const nextStep = (step: number) => {
+  const currentPanel = settingExpansionPanelData.value.find(panel => panel.step === step);
+  if (currentPanel) { currentPanel.isOpen = false; }
+  const nextPanel = settingExpansionPanelData.value.find(panel => panel.step === step + 1);
+  if (nextPanel) { nextPanel.isOpen = true; }
+};
+
+const prevStep = (step: number) => {
+  const currentPanel = settingExpansionPanelData.value.find(panel => panel.step === step);
+  if (currentPanel) { currentPanel.isOpen = false; }
+  const prevPanel = settingExpansionPanelData.value.find(panel => panel.step === step - 1);
+  if (prevPanel) { prevPanel.isOpen = true; }
+};
+
+const togglePanel = (step: number) => {
+  const currentPanel = settingExpansionPanelData.value.find(panel => panel.step === step);
+  if (currentPanel) { currentPanel.isOpen = !currentPanel.isOpen; }
+};
+
+const nextPage = async () => {
   await navigateTo("/setting/remind");
 };
 </script>

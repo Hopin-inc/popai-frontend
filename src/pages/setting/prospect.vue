@@ -5,14 +5,16 @@ v-row
 v-row
   v-col(cols="12").d-flex.justify-space-between
     SetupInfo(
-      :todoAppIconSrc="todoAppIconSrc"
-      :chatToolIconSrc="chatToolIconSrc"
+      :todoAppIconSrc="setupTodoAppIconSrc"
+      :chatToolIconSrc="setupChatToolIconSrc"
       :features="setupFeatures"
     )
-    v-btn(
-      color="primary"
-      variant="outlined"
-    ) 再設定
+    v-icon(
+      size="large"
+      icon="mdi-cog"
+      color="grey"
+      @click.stop='navigateTo("/setup");'
+    )
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 1)"
@@ -62,7 +64,7 @@ v-row.my-1.ml-9
   v-col(cols="12")
     v-btn(
       color="primary"
-      @click="nextStep"
+      @click="nextPage"
     ) 利用を開始する
 </template>
 
@@ -79,15 +81,11 @@ useHead({
 
 const { startLoading, finishLoading, loading } = useLoading();
 const {
+  setupTodoAppIconSrc,
+  setupChatToolIconSrc,
   setCurrentStep,
   setupFeatures,
 } = useSetup();
-
-// TODO 前の画面から持ってくるようにする(composables?)
-const todoAppName = TodoAppName[TodoAppId.SPREADSHEET];
-const chatToolName = ChatToolName[ChatToolId.LINEWORKS];
-const todoAppIconSrc = ExternalServiceLogos.SPREADSHEET;
-const chatToolIconSrc = ExternalServiceLogos.LINEWORKS;
 
 const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
@@ -97,25 +95,28 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     step: 1,
     title: "1. 進捗をヒアリングする条件を選ぶ",
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: true,
     hasBackButton: false,
+    isOpen: true,
   },
   {
     step: 2,
     title: "2. 進捗をヒアリングする時刻を選ぶ",
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: true,
     hasBackButton: true,
+    isOpen: false,
   },
   {
     step: 3,
     title: "3. 遅延しそうなタスクを共有するグループを選ぶ",
     description: "簡潔な概要", // TODO
-    iconSrc: chatToolIconSrc,
+    iconSrc: setupChatToolIconSrc.value,
     hasNextButton: false,
     hasBackButton: false,
+    isOpen: false,
   },
 ]);
 
@@ -163,7 +164,7 @@ const selectRadioCard = (title: string) => {
   });
 };
 
-const nextStep = async () => {
+const nextPage = async () => {
   await navigateTo("/completion");
 };
 

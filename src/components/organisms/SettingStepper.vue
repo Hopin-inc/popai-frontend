@@ -26,7 +26,7 @@
 import type { SettingStepperData } from "~/types/settings";
 
 type Props = {
-  currentStep: number;
+  currentStep?: number;
   data: SettingStepperData[];
 };
 const props = withDefaults(defineProps<Props>(), {

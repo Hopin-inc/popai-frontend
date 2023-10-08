@@ -58,35 +58,6 @@ export const TodoAppName = {
   [TodoAppId.SPREADSHEET]: "Google Spreadsheet",
 } as const;
 
-// TODO  既存のものを使い続ける？
-export const Tools = {
-  SLACK: {
-    ID: ChatToolId.SLACK,
-    NAME: ChatToolName[ChatToolId.SLACK],
-    LOGO: ExternalServiceLogos.SLACK,
-  },
-  LINEWORKS: {
-    ID: ChatToolId.LINEWORKS,
-    NAME: ChatToolName[ChatToolId.LINEWORKS],
-    LOGO: ExternalServiceLogos.LINEWORKS,
-  },
-  NOTION: {
-    ID: TodoAppId.NOTION,
-    NAME: TodoAppName[TodoAppId.NOTION],
-    LOGO: ExternalServiceLogos.NOTION,
-  },
-  BACKLOG: {
-    ID: TodoAppId.BACKLOG,
-    NAME: TodoAppName[TodoAppId.BACKLOG],
-    LOGO: ExternalServiceLogos.BACKLOG,
-  },
-  SPREADSHEET: {
-    ID: TodoAppId.SPREADSHEET,
-    NAME: TodoAppName[TodoAppId.SPREADSHEET],
-    LOGO: ExternalServiceLogos.SPREADSHEET,
-  },
-} as const;
-
 export const ProjectRule = {
   PARENT_TODO: 1,
   CHILD_TODO: 2,
