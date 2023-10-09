@@ -44,6 +44,25 @@ export type PropertyUsage = {
   isChecked?: boolean;
 };
 
+export type PropertyConfig = {
+  id: number | null;
+  property: string | null;
+} & PropertyConfigOptions & PropertyConfigCheckbox;
+type PropertyConfigOptions<RequireOptions extends boolean = boolean> = RequireOptions extends true ? {
+  requireOptions: RequireOptions;
+  options: string[];
+  get availableOptions(): SelectItem<string>[];
+} : {
+  requireOptions: RequireOptions;
+};
+
+export type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = RequireCheckbox extends true ? {
+  requireCheckbox: RequireCheckbox;
+  isChecked: boolean;
+} : {
+  requireCheckbox: RequireCheckbox;
+};
+
 export type ConfigCommon = {
   daysOfWeek: number[];
   disabledOnHolidaysJp: boolean;
@@ -172,4 +191,22 @@ export type AccountRow = {
   index: number;
   todoAppUserId: string;
   chatToolUserId: string;
+};
+
+export type BacklogSpaceId = {
+  id: string;
+  domain: string;
+};
+
+export type MemberConfig = {
+  user: Omit<User, "id"> & Partial<Pick<User, "id">>;
+  chatToolUserId: string | null;
+  todoAppUserId: string | null;
+  new: boolean;
+  index: number;
+};
+
+export type ReportingLine = {
+  user: User;
+  superiorUsers: string[];
 };
