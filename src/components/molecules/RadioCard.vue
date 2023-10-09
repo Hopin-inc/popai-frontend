@@ -42,12 +42,12 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 type Emits = {
-  (e: "click-card", title: string): void
+  (e: "click-card", frequencyType: number): void
 };
 const emits = defineEmits<Emits>();
 
 const onClick = () => {
-  emits("click-card", props.data.title);
+  emits("click-card", props.data.frequencyType);
 };
 </script>
 

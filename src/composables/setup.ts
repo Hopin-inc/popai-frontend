@@ -25,8 +25,9 @@ interface UseSetup {
 
 export const useSetup = (): UseSetup => {
   const currentStep = useState<number | null>("currentStep", () => null);
-  const setupTodoAppId = useState<number>("setupTodoAppId");
-  const setupChatToolId = useState<number>("setupChatToolId");
+  // TODO デフォルトを未選択に戻す
+  const setupTodoAppId = useState<number>("setupTodoAppId", () => 3);
+  const setupChatToolId = useState<number>("setupChatToolId", () => 2);
   const setupFeatures = useState<Feature[]>("setupFeatures", () => []);
 
   const setupTodoAppName = computed(() => {

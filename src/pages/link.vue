@@ -941,7 +941,6 @@ const addRow = async () => {
     onUserNameChanged(index),
     fetchConfigStatus(),
   ]);
-  console.table(memberConfigs.value);
 };
 const deleteRow = async (index: number) => {
   const [{ user: deletedUser }] = memberConfigs.value.splice(index, 1);

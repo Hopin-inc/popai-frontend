@@ -167,6 +167,7 @@ export type RadioCardData = {
   title: string;
   description: string;
   selected: boolean;
+  frequencyType: number;
 };
 
 export type RadioImageCardData = {

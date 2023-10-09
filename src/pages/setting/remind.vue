@@ -40,27 +40,28 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
-    v-row(v-for="(timing, index) in timings" :key="timing").d-flex.align-center
-      v-col(cols="4").py-0
-        SettingTableSelectBox(
-          v-model="timing.time"
-          :items="times"
-          :rules="[validationNoDuplicate]"
-        )
-      v-col(cols="2").px-0
-        v-btn(
-          flat
-          prepend-icon="mdi-close"
-          @click.stop="deleteRow(index)"
-        ) 削除
-    v-row
-      v-col(cols="2").py-1
-        v-btn(
-          @click.stop="addRow"
-          prepend-icon="mdi-plus"
-          variant="text"
-          color="primary"
-        ) 追加する
+    v-form(ref="prospectTimingForm")
+      v-row(v-for="(timing, index) in timings" :key="timing").d-flex.align-center
+        v-col(cols="4").py-0
+          SettingTableSelectBox(
+            v-model="timing.time"
+            :items="times"
+            :rules="[validationNoDuplicate]"
+          )
+        v-col(cols="2").px-0
+          v-btn(
+            flat
+            prepend-icon="mdi-close"
+            @click.stop="deleteRow(index)"
+          ) 削除
+      v-row
+        v-col(cols="2").py-1
+          v-btn(
+            @click.stop="addRow"
+            prepend-icon="mdi-plus"
+            variant="text"
+            color="primary"
+          ) 追加する
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 3)"
@@ -72,6 +73,9 @@ SettingExpansionPanel(
     v-row
       v-col(cols="4")
         SelectBox(
+          v-model="channel"
+          :items="chatToolChannels"
+          label="チャンネルを選択"
         )
 
 v-row.my-1.ml-10
@@ -110,15 +114,17 @@ BtnModalSet(
 </template>
 
 <script setup lang="ts">
+import { VForm } from "vuetify/components";
 import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName, AskType, AskMode } from "~/consts/enum";
+import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
+import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import type {
   SettingExpansionPanelData,
   ConfigProspect,
   ConfigProspectTiming,
   RadioImageCardData,
 } from "~/types/settings";
-import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
 import type { SelectItem } from "~/types/common";
 
 useHead({
@@ -126,6 +132,7 @@ useHead({
 });
 
 const { startLoading, finishLoading, loading } = useLoading();
+const { implementedChatToolId, chatToolChannels } = useInfo();
 const {
   setupTodoAppIconSrc,
   setupChatToolIconSrc,
@@ -136,6 +143,19 @@ const {
 const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 const showUpdateColumnModal: Ref<boolean> = ref<boolean>(false);
+
+// TODO ----------------todos.vue からコピペしてきたやつ----------------
+const prospectTimingForm = ref<VForm>();
+const isInit: Ref<boolean> = ref<boolean>(true);
+const enabled: Ref<boolean> = ref<boolean>(false);
+const channel: Ref<string | null> = ref<string | null>(null);
+const from: Ref<number | null> = ref<number | null>(null);
+const to: Ref<number | null> = ref<number | null>(null);
+const fromDaysBefore: Ref<number | null> = ref<number | null>(0);
+const beginOfWeek: Ref<number | null> = ref<number | null>(1);
+const timingsMessage: Ref<string | null> = ref<string | null>(null);
+// TODO ----------------todos.vue からコピペしてきたやつ----------------
+// TODO ----------------ここまで----------------
 
 const radioImageCardData: Ref<RadioImageCardData[]> = ref<RadioImageCardData[]>([
   {
@@ -186,7 +206,6 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
 
 onBeforeMount(() => {
   setCurrentStep(3);
-  addRow();
 });
 
 const selectRadioImageCard = (title: string) => {
@@ -199,21 +218,91 @@ const selectRadioImageCard = (title: string) => {
   });
 };
 
+// TODO ----------------todos.vue からコピペしてきたやつ----------------
+
+watch(enabled, async (next) => {
+  await update({ enabled: next });
+});
+watch(channel, async (next) => {
+  if (next) {
+    await update({ chatToolId: implementedChatToolId.value ?? undefined, channel: next });
+  }
+});
+watch(to, async (next) => {
+  if (next) {
+    await update({ to: next });
+  }
+});
+watch(() => [from, fromDaysBefore, beginOfWeek], async () => {
+  if (from.value) {
+    await update({
+      from: from.value,
+      fromDaysBefore: fromDaysBefore.value ?? 0,
+      beginOfWeek: beginOfWeek.value ?? 1,
+    });
+  }
+}, { deep: true });
+watch(() => [...timings.value], async (next) => {
+  const validation = await prospectTimingForm.value?.validate();
+  if (validation?.valid) {
+    timingsMessage.value = null;
+    await update({ timings: next });
+  } else {
+    const errors = validation?.errors ?? [];
+    const errorMessages = [...new Set(errors.map(e => e.errorMessages.join(", ")))];
+    timingsMessage.value = errorMessages.join(", ");
+  }
+}, { deep: true });
+const update = async (config: Partial<Omit<ConfigProspect, "type">>) => {
+  if (!isInit.value) {
+    startLoading();
+    await updateProspectConfig({ ...config, type: AskType.TODOS });
+    finishLoading();
+  }
+};
+
+onMounted(async () => {
+  await init();
+});
+watch(chatToolChannels, async () => {
+  await init();
+}, { deep: true });
+const init = async () => {
+  if (chatToolChannels.value.length) {
+    startLoading();
+    await fetchConfig();
+    isInit.value = false;
+    finishLoading();
+  }
+};
+const fetchConfig = async () => {
+  const config = await getProspectConfig(AskType.TODOS);
+  if (config) {
+    enabled.value = config.enabled;
+    channel.value = config.channel;
+    from.value = config.from;
+    to.value = config.to;
+    fromDaysBefore.value = config.fromDaysBefore ?? 0;
+    beginOfWeek.value = config.beginOfWeek ?? 1;
+    timings.value = config.timings?.map(timing => reactive(timing)) ?? [];
+  }
+};
+
 const addRow = () => {
   timings.value.push({
     time: "09:00:00",
-    type: AskType.PROJECTS,
+    type: AskType.TODOS,
     mode: AskMode.UNDEFINED,
   });
 };
-
 const deleteRow = (index: number) => {
   timings.value.splice(index, 1);
 };
-
 const validationNoDuplicate = (value: string) => {
-  return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : false;
+  return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : true;
 };
+// TODO ----------------todos.vue からコピペしてきたやつ----------------
+// TODO ----------------ここまで----------------
 
 const nextStep = (step: number) => {
   const currentPanel = settingExpansionPanelData.value.find(panel => panel.step === step);
