@@ -10,12 +10,12 @@ const onResponse = () => {};
 const onResponseError = async ({ response }: FetchContext) => {
   if (response?.status === StatusCodes.UNAUTHORIZED) {
     const { setUser } = useAuth();
-    const { fullPath, meta } = useRoute();
+    const { meta } = useRoute();
     setUser(null);
     const auth = getAuth();
     await signOut(auth);
     const redirectTo = meta.layout === "default" || meta.layout === undefined
-      ? `/login?${ toQueryString({ redirect: fullPath }) }`
+      ? `/login?${ toQueryString({ redirect: "/setup" }) }`
       : "/login";
     await useRouter().push(redirectTo);
   }
