@@ -33,8 +33,9 @@ export const PropertyUsageType = {
 } as const;
 
 export const ChatToolId = {
-  LINEWORKS: 1,
+  LINE: 1,
   SLACK: 2,
+  LINEWORKS: 3,
 } as const;
 
 export const ChatToolName = {
