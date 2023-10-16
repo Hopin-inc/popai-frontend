@@ -3,21 +3,28 @@ v-navigation-drawer(v-if="!isPc" v-model="menuOpened" location="end" :temporary=
   .d-flex.justify-end
     v-btn(@click.stop="menuOpened = false" icon="mdi-close" flat).ma-2
   SideMenu(:menus="menus")
-v-main.fill-height
-  v-container.pa-0.fill-height
-    v-app-bar(v-if="!isPc" flat)
+v-main
+  v-container.pa-0
+    v-app-bar(v-if="!isPc && isSetupDone" flat)
       template(#prepend)
         NuxtLink(to="/").d-flex.align-center.px-2
-          img(:src="ServiceLogos.LOGO_WITH_NAME" width="144")
+          img(:src="ServiceLogos.POPAI_WITH_NAME" width="144")
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
-    v-row.flex-wrap.flex-md-nowrap.fill-height.ma-0
-      v-col(cols="12" md="auto" v-if="isPc").px-4.py-6.select-menu.bg-white.scroll-y
+
+    SettingStepper(
+      v-if="!isSetupDone"
+      :currentStep="currentStep"
+      :data="stepperItems"
+      @click-step="chagePage"
+    )
+    v-row
+      v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
-          img(:src="ServiceLogos.LOGO_WITH_NAME" width="160")
-        SideMenu(v-if="isPc" :menus="menus" rounded="lg")
-      v-col(cols="12" md="auto").pa-8.flex-fill.scroll-y
-        .mx-auto.content
+          img(:src="ServiceLogos.POPAI_WITH_NAME" width="160")
+        SideMenu(:menus="menus" rounded="lg")
+      v-col(cols="12" md="auto").pa-8.flex-fill
+        .content.mx-auto
           slot
 </template>
 
@@ -25,6 +32,7 @@ v-main.fill-height
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import { ServiceLogos } from "~/consts/images";
+import type { SettingStepperData } from "~/types/settings";
 
 useHead({
   titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
@@ -39,6 +47,10 @@ const {
   todoAppConfigured,
   usersConfigured,
 } = useInfo();
+const {
+  currentStep,
+  setCurrentStep,
+} = useSetup();
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
 
@@ -46,11 +58,34 @@ const menu = ref<string[]>([]);
 const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
 
+// TODO 可変にする
+const isSetupDone = ref<boolean>(false);
+
 const signOut = async () => {
   startLoading();
   await logout();
   finishLoading();
 };
+
+const stepperItems: Ref<SettingStepperData[]> = ref<SettingStepperData[]>([
+  {
+    step: 1,
+    title: "機能を選ぶ",
+  },
+  {
+    step: 2,
+    title: "ツールを連携する",
+  },
+  {
+    step: 3,
+    title: "機能を設定する",
+  },
+  {
+    step: 4,
+    title: "利用を開始",
+  },
+]);
+
 const menus = computed(() => [
   { type: "subheader", title: "連携" },
   {
@@ -102,6 +137,24 @@ const menus = computed(() => [
   },
 ]);
 
+const chagePage = (step: number) => {
+  setCurrentStep(step);
+  switch (step) {
+    case 1:
+      navigateTo("/setup");
+      break;
+    case 2:
+      navigateTo("/link");
+      break;
+    case 3:
+      navigateTo("/setting/remind");
+      break;
+    case 4:
+      navigateTo("/completion");
+      break;
+  }
+};
+
 watch(currentRoute, () => {
   menu.value = [];
 });
@@ -111,11 +164,11 @@ watch(connected, async (next) => {
     menus.value.forEach((v, idx) => {
       const target = menus.value[idx];
       if (target.type === "item") {
-        target.disabled = target.to !== "/link/todo-app";
+        target.disabled = target.to !== "/setup";
       }
     });
-    if (!["/link/todo-app"].includes(path)) {
-      await navigateTo("/link/todo-app");
+    if (!["/setup"].includes(path)) {
+      await navigateTo("/setup");
     }
   } else {
     menus.value.forEach((v, idx) => {
@@ -142,7 +195,7 @@ watch(connected, async (next) => {
   max-height: 100vh
   overflow-y: scroll
 .content
-  max-width: 1080px
+  max-width: 960px
 :deep(.v-list-group)
   --parent-padding: 0
 </style>

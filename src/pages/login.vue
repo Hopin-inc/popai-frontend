@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-center.w-100
-  img(:src="ServiceLogos.LOGO_WITH_NAME" height="48").mb-6
+  img(:src="ServiceLogos.POPAI_WITH_NAME" height="48").mb-6
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle ログイン
     v-form(ref="form" @submit.prevent="submit")

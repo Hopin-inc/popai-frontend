@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-center.w-100
-  img(src="/images/logo_name.svg" height="48").mb-6.mx-auto
+  img(src="/images/logos/popai_with_name.svg" height="48").mb-6.mx-auto
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle 新規登録
     v-form(ref="form" @submit.prevent="submit")

@@ -1,5 +1,6 @@
 import { SetOptional } from "type-fest";
 import { SelectItem } from "~/types/common";
+import { SettingExpansionPanel } from "~~/.nuxt/components";
 
 export type UserConfig = {
   user: SetOptional<User, "id">;
@@ -41,6 +42,25 @@ export type PropertyUsage = {
   type: number;
   options?: string[];
   isChecked?: boolean;
+};
+
+export type PropertyConfig = {
+  id: number | null;
+  property: string | null;
+} & PropertyConfigOptions & PropertyConfigCheckbox;
+type PropertyConfigOptions<RequireOptions extends boolean = boolean> = RequireOptions extends true ? {
+  requireOptions: RequireOptions;
+  options: string[];
+  get availableOptions(): SelectItem<string>[];
+} : {
+  requireOptions: RequireOptions;
+};
+
+export type PropertyConfigCheckbox<RequireCheckbox extends boolean = boolean> = RequireCheckbox extends true ? {
+  requireCheckbox: RequireCheckbox;
+  isChecked: boolean;
+} : {
+  requireCheckbox: RequireCheckbox;
 };
 
 export type ConfigCommon = {
@@ -110,4 +130,85 @@ export type ConfigStatus = {
     enabled: boolean;
     isValid: boolean;
   };
+};
+
+export type Feature =
+  | "遅延のリマインド"
+  | "進捗のシェア"
+  | "";
+
+export type FeatureCheckBoxData = {
+  title: string;
+  description: string;
+  checked: boolean;
+  imgSrc: string;
+  feature: Feature;
+};
+
+export type LinkToolBtnData = {
+  id: number;
+  toolName: string;
+  selected: boolean;
+  iconSrc: string;
+};
+
+export type SettingExpansionPanelData = {
+  step: number;
+  title: string;
+  description: string;
+  iconSrc: string;
+  hasNextButton: boolean;
+  hasBackButton: boolean;
+  isOpen: boolean;
+  isDone: boolean;
+};
+
+export type RadioCardData = {
+  captionBeforeTitle: string;
+  title: string;
+  description: string;
+  selected: boolean;
+  frequencyType: number;
+};
+
+export type RadioImageCardData = {
+  captionBeforeTitle: string;
+  title: string;
+  description: string;
+  selected: boolean;
+  imgSrc: string;
+};
+
+export type SettingStepperData = {
+  step: number;
+  title: string;
+};
+
+export type DayToConfirmProgress = {
+  day: string;
+  selected: boolean;
+};
+
+export type AccountRow = {
+  index: number;
+  todoAppUserId: string;
+  chatToolUserId: string;
+};
+
+export type BacklogSpaceId = {
+  id: string;
+  domain: string;
+};
+
+export type MemberConfig = {
+  user: Omit<User, "id"> & Partial<Pick<User, "id">>;
+  chatToolUserId: string | null;
+  todoAppUserId: string | null;
+  new: boolean;
+  index: number;
+};
+
+export type ReportingLine = {
+  user: User;
+  superiorUsers: string[];
 };

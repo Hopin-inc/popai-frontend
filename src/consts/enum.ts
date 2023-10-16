@@ -1,3 +1,4 @@
+import { ExternalServiceLogos } from "./images";
 export const NotionPropertyType = {
   TITLE: 1,
   NUMBER: 2,
@@ -40,6 +41,7 @@ export const ChatToolId = {
 
 export const ChatToolName = {
   [ChatToolId.SLACK]: "Slack",
+  [ChatToolId.LINEWORKS]: "LINE WORKS",
 } as const;
 
 export const TodoAppId = {
@@ -47,11 +49,13 @@ export const TodoAppId = {
   // MICROSOFT: 2,
   NOTION: 3,
   BACKLOG: 4,
+  SPREADSHEET: 5,
 } as const;
 
 export const TodoAppName = {
   [TodoAppId.NOTION]: "Notion",
   [TodoAppId.BACKLOG]: "Backlog",
+  [TodoAppId.SPREADSHEET]: "Google Spreadsheet",
 } as const;
 
 export const ProjectRule = {

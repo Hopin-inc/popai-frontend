@@ -16,7 +16,7 @@ v-dialog(
       :width="props.btnWidth"
       flat
     ) {{ props.btnText }}
-  v-card
+  v-card.py-6.px-4
     v-card-title(v-if="props.title").d-flex.justify-space-between.align-center.px-6.py-4.card-title-height
       p {{ props.title }}
       v-btn(v-if="props.closable" @click.stop="value = false" icon="mdi-close" variant="text" size="small").mr-n4
