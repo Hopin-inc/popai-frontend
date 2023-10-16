@@ -1,6 +1,5 @@
 import { SetOptional } from "type-fest";
 import { SelectItem } from "~/types/common";
-import { SettingExpansionPanel } from "~~/.nuxt/components";
 
 export type UserConfig = {
   user: SetOptional<User, "id">;
@@ -211,4 +210,11 @@ export type MemberConfig = {
 export type ReportingLine = {
   user: User;
   superiorUsers: string[];
+};
+
+export type InstallLineworksInfo = {
+  client_id: string;
+  client_secret: string;
+  service_account: string;
+  secret_key: string;
 };

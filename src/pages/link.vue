@@ -250,39 +250,16 @@ v-row.my-1.ml-10
       :disabled="!canGoToNextPage"
     ) 機能設定に進む
 
-BtnModalSet(
+SetUpBacklogModal(
   v-model="showBacklogModal"
-  title="Backlogを設定する"
-  :max-width="640"
-  closable
-  persistent
 )
-  template(#content)
-    v-row
-      v-col(cols="12")
-        p BacklogのスペースIDを入力してください。
-    v-row
-      v-col(cols="12")
-        .d-flex.align-center.set-gap
-          span https://
-          v-text-field(
-            v-model="backlogSpaceId.id"
-            :rules="[Validations.required]"
-            placeholder="スペースIDを入力"
-            variant="outlined"
-            density="comfortable"
-            hide-details="auto"
-          ).flex-fill
-          SelectBox(v-model="backlogSpaceId.domain" :items="backlogDomains")
-  template(#actions)
-    v-btn(
-      @click.stop="installTodoApp"
-      :disabled="backlogSpaceId.id === ''"
-      append-icon="mdi-arrow-right"
-      color="primary"
-      variant="flat"
-    ).px-4 連携を開始する
-
+SetUpLineworksModal(
+  v-model="showLineworksModal"
+  @installed="showBotSecretModal = true;"
+)
+InputBotSecretModal(
+  v-model="showBotSecretModal"
+)
 </template>
 
 <script setup lang="ts">
@@ -362,11 +339,8 @@ const {
 const runtimeConfig = useRuntimeConfig();
 
 const showBacklogModal: Ref<boolean> = ref<boolean>(false);
-const backlogSpaceId = reactive<BacklogSpaceId>({ id: "", domain: ".backlog.com" });
-const backlogDomains: SelectItem<string>[] = [
-  { id: ".backlog.com", name: ".backlog.com" },
-  { id: ".backlog.jp", name: ".backlog.jp" },
-];
+const showLineworksModal: Ref<boolean> = ref<boolean>(false);
+const showBotSecretModal: Ref<boolean> = ref<boolean>(false);
 const boardId: Ref<string | null> = ref<string | null>(null);
 
 const memberConfigs: Ref<MemberConfig[]> = ref<MemberConfig[]>([]);
@@ -1028,16 +1002,7 @@ const installTodoApp = async () => {
       );
       break;
     case TodoAppId.BACKLOG:
-      if (showBacklogModal.value) {
-        showBacklogModal.value = false;
-      } else {
-        showBacklogModal.value = true;
-        return;
-      }
-      await navigateTo(
-        `${ runtimeConfig.public.apiBaseUrl }/backlog/install?host=${ backlogSpaceId.id }${ backlogSpaceId.domain }`,
-        { external: true },
-      );
+      showBacklogModal.value = !showBacklogModal.value;
       break;
   }
 };
@@ -1051,8 +1016,7 @@ const installChatTool = async () => {
       );
       break;
     case ChatToolId.LINEWORKS:
-      // TODO API未実装
-      alert("GET /lineworks/install");
+      showLineworksModal.value = !showLineworksModal.value;
       break;
   }
 };
@@ -1080,3 +1044,8 @@ const nextPage = async () => {
   await navigateTo("/setting/remind");
 };
 </script>
+
+<style scoped lang="sass">
+.set-gap
+  gap: 12px
+</style>
