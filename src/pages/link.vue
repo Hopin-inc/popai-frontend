@@ -27,7 +27,8 @@ SettingExpansionPanel(
       color="primary"
       variant="outlined"
       @click.stop="installTodoApp"
-    ) 連携する
+      :disabled="implementedTodoAppId !== null"
+    ) {{ implementedTodoAppId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 2)"
@@ -191,7 +192,8 @@ SettingExpansionPanel(
       @click.stop="installChatTool"
       color="primary"
       variant="outlined"
-    ) 連携する
+      :disabled="implementedChatToolId !== null"
+    ) {{ implementedChatToolId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
   :data="settingExpansionPanelData.find((data) => data.step === 5)"
@@ -245,6 +247,7 @@ v-row.my-1.ml-10
     v-btn(
       color="primary"
       @click="nextPage"
+      :disabled="!canGoToNextPage"
     ) 機能設定に進む
 
 BtnModalSet(
@@ -366,6 +369,51 @@ const backlogDomains: SelectItem<string>[] = [
 ];
 const boardId: Ref<string | null> = ref<string | null>(null);
 
+const memberConfigs: Ref<MemberConfig[]> = ref<MemberConfig[]>([]);
+const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
+const users = computed(() => reportingLines.value.map(config => config.user));
+
+const isInit: Ref<boolean> = ref<boolean>(true);
+const fetching: Ref<boolean> = ref<boolean>(false);
+let isUpdating: boolean = false;
+const properties: Ref<Property[]> = ref<Property[]>([]);
+const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
+const name: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const assignee: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const deadline: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const parent: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
+const isDone: Ref<PropertyConfig> = ref<PropertyConfig>({
+  ...propInitVal,
+  requireOptions: true,
+  options: [],
+  get availableOptions () {
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+      case TodoAppId.BACKLOG:
+        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
+      default:
+        return [];
+    }
+  },
+});
+const isClosed: Ref<PropertyConfig> = ref<PropertyConfig>({
+  ...propInitVal,
+  requireOptions: true,
+  options: [],
+  get availableOptions () {
+    switch (implementedTodoAppId.value) {
+      case TodoAppId.NOTION:
+        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
+      case TodoAppId.BACKLOG:
+        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
+      default:
+        return [];
+    }
+  },
+});
+const projectRule: Ref<number | null> = ref<number | null>(null);
+
 const captionStep2 = computed((): {
   title: string;
   description: string;
@@ -422,6 +470,10 @@ const captionStep3 = computed((): {
   }
 });
 
+const canGoToNextPage = computed(() => {
+  return (memberConfigs.value.length > 0);
+});
+
 const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
   {
     step: 1,
@@ -431,6 +483,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: false,
     isOpen: true,
+    isDone: false,
   },
   {
     step: 2,
@@ -440,6 +493,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
+    isDone: false,
   },
   {
     step: 3,
@@ -449,6 +503,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
+    isDone: false,
   },
   {
     step: 4,
@@ -458,6 +513,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
+    isDone: false,
   },
   {
     step: 5,
@@ -467,57 +523,9 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: false,
     hasBackButton: false,
     isOpen: false,
+    isDone: false,
   },
 ]);
-
-// TODO ----------------members.vue からコピペしてきたやつ----------------
-const memberConfigs: Ref<MemberConfig[]> = ref<MemberConfig[]>([]);
-const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
-const users = computed(() => reportingLines.value.map(config => config.user));
-// TODO ----------------members.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
-
-// TODO ----------------todo-app.vue からコピペしてきたやつ----------------
-const isInit: Ref<boolean> = ref<boolean>(true);
-const fetching: Ref<boolean> = ref<boolean>(false);
-let isUpdating: boolean = false;
-const properties: Ref<Property[]> = ref<Property[]>([]);
-const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
-const name: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
-const assignee: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
-const deadline: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
-const parent: Ref<PropertyConfig> = ref<PropertyConfig>({ ...propInitVal });
-const isDone: Ref<PropertyConfig> = ref<PropertyConfig>({
-  ...propInitVal,
-  requireOptions: true,
-  options: [],
-  get availableOptions () {
-    switch (implementedTodoAppId.value) {
-      case TodoAppId.NOTION:
-        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
-      case TodoAppId.BACKLOG:
-        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
-      default:
-        return [];
-    }
-  },
-});
-const isClosed: Ref<PropertyConfig> = ref<PropertyConfig>({
-  ...propInitVal,
-  requireOptions: true,
-  options: [],
-  get availableOptions () {
-    switch (implementedTodoAppId.value) {
-      case TodoAppId.NOTION:
-        return properties.value.find(p => p.id === this.property)?.availableOptions ?? [];
-      case TodoAppId.BACKLOG:
-        return properties.value.length ? (properties.value[0].availableOptions ?? []) : [];
-      default:
-        return [];
-    }
-  },
-});
-const projectRule: Ref<number | null> = ref<number | null>(null);
 
 const propertiesForName = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_NAME.includes(p.type);
@@ -557,6 +565,37 @@ const fetchDisabled = computed(() => !(
   configStatus.value.users
 ));
 
+const isDoneTodoAppSetting = computed(() => {
+  switch (implementedTodoAppId.value) {
+    case TodoAppId.SPREADSHEET:
+    case TodoAppId.NOTION:
+      if (
+        name.value.property &&
+        assignee.value.property &&
+        deadline.value.property &&
+        isDone.value.property &&
+        (isDone.value.requireOptions && isDone.value.options.length > 0)
+      ) {
+        return true;
+      }
+      break;
+    case TodoAppId.BACKLOG:
+      if (isDone.value.requireOptions && isDone.value.options.length > 0) {
+        return true;
+      }
+      break;
+  }
+  return false;
+});
+
+watch(isDoneTodoAppSetting, () => {
+  settingExpansionPanelData.value.find(panel => panel.step === 3)!.isDone = isDoneTodoAppSetting.value;
+});
+
+watch(canGoToNextPage, () => {
+  settingExpansionPanelData.value.find(panel => panel.step === 5)!.isDone = canGoToNextPage.value;
+});
+
 watch(boardId, async (next) => {
   if (!isUpdating && implementedTodoAppId.value && next) {
     startLoading();
@@ -565,6 +604,9 @@ watch(boardId, async (next) => {
     await init();
     isUpdating = false;
     finishLoading();
+  }
+  if (boardId !== null) {
+    settingExpansionPanelData.value.find(panel => panel.step === 2)!.isDone = true;
   }
 });
 
@@ -720,6 +762,14 @@ onMounted(async () => {
 });
 watch(implementedTodoAppId, async () => {
   await init();
+  if (implementedTodoAppId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
+  }
+});
+watch(implementedChatToolId, () => {
+  if (implementedChatToolId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 4)!.isDone = true;
+  }
 });
 watch(todoAppBoards, async () => {
   await init();
@@ -730,7 +780,6 @@ const init = async () => {
     isInit.value = false;
     await Promise.all([
       reportingLineInit(),
-      fetchUserConfigs(),
     ]);
   }
   if (implementedTodoAppId.value && todoAppBoards.value.length) {
@@ -741,6 +790,7 @@ const init = async () => {
       fetchProperties(),
       fetchConfigs(),
       fetchConfigStatus(),
+      fetchUserConfigs(),
     ]);
     isUpdating = false;
   }
@@ -809,10 +859,7 @@ const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageTyp
     propConfig.requireOptions = true;
   }
 };
-// TODO ----------------todo-app.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
 
-// TODO ----------------members.vue からコピペしてきたやつ----------------
 watch(() => [implementedChatToolId.value, implementedTodoAppId.value], async () => {
   await init();
 });
@@ -963,35 +1010,6 @@ const onSuperiorUsersChanged = async (subordinateUserId: string, superiorUserIds
   await updateUserReportingLines(subordinateUserId, superiorUserIds);
   finishLoading();
 };
-// TODO ----------------members.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
-
-// const accountTable: Ref<AccountRow[]> = ref<AccountRow[]>([
-//   {
-//     index: 0,
-//     todoAppUserId: "",
-//     chatToolUserId: "",
-//   },
-// ]);
-
-// const addRow = () => {
-//   const index = accountTable.value.length;
-//   accountTable.value.push(
-//     {
-//       index,
-//       chatToolUserId: "",
-//       todoAppUserId: "",
-//     },
-//   );
-//   // await Promise.all([
-//   //   onUserNameChanged(index),
-//   //   fetchConfigStatus(),
-//   // ]);
-// };
-
-// const deleteRow = (index: number) => {
-//   accountTable.value.splice(index, 1);
-// };
 
 onBeforeMount(() => {
   setCurrentStep(2);

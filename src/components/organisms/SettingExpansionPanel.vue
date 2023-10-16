@@ -7,7 +7,11 @@ v-row.mb-3.mt-8
       :iconSrc="props.data.iconSrc"
     )
     .d-flex.align-center
-      v-icon(color="green" size="large").mx-2 mdi-check-circle
+      v-icon(
+        color="green"
+        size="large"
+        :icon="isDone ? 'mdi-check-circle' : ''"
+      ).mx-2
       v-btn(
         size="large"
         variant="text"
@@ -32,6 +36,7 @@ v-row(:class="{'panel-hidden': !isOpen}")
         v-btn(
           v-if="props.data.hasNextButton"
           color="primary"
+          :disabled="!isDone"
           @click.stop='emits("click-next", props.data.step)'
         ).mt-4 次へ進む
         v-btn(
@@ -59,7 +64,8 @@ type Emits = {
 const emits = defineEmits<Emits>();
 
 const isOpen = computed(() => (props.data.isOpen));
-const panelIcon = computed(() => (isOpen ? "mdi-chevron-down" : "mdi-chevron-up"));
+const panelIcon = computed(() => (isOpen.value ? "mdi-chevron-up" : "mdi-chevron-down"));
+const isDone = computed(() => (props.data.isDone));
 
 </script>
 

@@ -144,7 +144,6 @@ const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 const showUpdateColumnModal: Ref<boolean> = ref<boolean>(false);
 
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
 const prospectTimingForm = ref<VForm>();
 const isInit: Ref<boolean> = ref<boolean>(true);
 const enabled: Ref<boolean> = ref<boolean>(false);
@@ -154,8 +153,6 @@ const to: Ref<number | null> = ref<number | null>(null);
 const fromDaysBefore: Ref<number | null> = ref<number | null>(0);
 const beginOfWeek: Ref<number | null> = ref<number | null>(1);
 const timingsMessage: Ref<string | null> = ref<string | null>(null);
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
 
 const radioImageCardData: Ref<RadioImageCardData[]> = ref<RadioImageCardData[]>([
   {
@@ -183,6 +180,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: false,
     isOpen: true,
+    isDone: false,
   },
   {
     step: 2,
@@ -192,6 +190,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
+    isDone: false,
   },
   {
     step: 3,
@@ -201,6 +200,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: false,
     hasBackButton: false,
     isOpen: false,
+    isDone: false,
   },
 ]);
 
@@ -217,8 +217,6 @@ const selectRadioImageCard = (title: string) => {
     radioImageCard.selected = radioImageCard.title === title;
   });
 };
-
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
 
 watch(enabled, async (next) => {
   await update({ enabled: next });
@@ -301,8 +299,6 @@ const deleteRow = (index: number) => {
 const validationNoDuplicate = (value: string) => {
   return timings.value.filter(t => t.time === value).length > 1 ? "同じ時刻を複数設定することはできません。" : true;
 };
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
 
 const nextStep = (step: number) => {
   const currentPanel = settingExpansionPanelData.value.find(panel => panel.step === step);

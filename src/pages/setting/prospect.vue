@@ -141,7 +141,6 @@ const {
 const times: SelectItem<string>[] = TIME_LIST;
 const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
 const prospectTimingForm = ref<VForm>();
 const isInit: Ref<boolean> = ref<boolean>(true);
 const enabled: Ref<boolean> = ref<boolean>(false);
@@ -153,8 +152,6 @@ const beginOfWeek: Ref<number | null> = ref<number | null>(1);
 const timingsMessage: Ref<string | null> = ref<string | null>(null);
 const frequency: Ref<number | null> = ref<number | null>(null);
 const frequencyDaysBefore: Ref<number[]> = ref<number[]>([]);
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
 
 const showSetDaysModal: Ref<boolean> = ref<boolean>(false);
 const daysToConfirmProgress: Ref<DayToConfirmProgress[]> = ref<DayToConfirmProgress[]>([
@@ -189,6 +186,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: false,
     isOpen: true,
+    isDone: false,
   },
   {
     step: 2,
@@ -198,6 +196,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
+    isDone: false,
   },
   {
     step: 3,
@@ -207,6 +206,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: false,
     hasBackButton: false,
     isOpen: false,
+    isDone: false,
   },
 ]);
 
@@ -238,7 +238,6 @@ onBeforeMount(() => {
   setCurrentStep(3);
 });
 
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
 watch(enabled, async (next) => {
   await update({ enabled: next });
 });
@@ -346,8 +345,6 @@ watch(() => [...frequencyDaysBefore.value], async () => {
     });
   }
 }, { deep: true });
-// TODO ----------------todos.vue からコピペしてきたやつ----------------
-// TODO ----------------ここまで----------------
 
 const selectRadioCard = (frequencyType: number) => {
   if (frequencyType === 3) {

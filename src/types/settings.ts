@@ -160,6 +160,7 @@ export type SettingExpansionPanelData = {
   hasNextButton: boolean;
   hasBackButton: boolean;
   isOpen: boolean;
+  isDone: boolean;
 };
 
 export type RadioCardData = {
