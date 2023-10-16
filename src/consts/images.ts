@@ -5,7 +5,7 @@ export namespace ServiceLogos {
 }
 
 export namespace ExternalServiceLogos {
-  const baseUri = "/images/logos//";
+  const baseUri = "/images/logos/";
   export const SLACK = baseUri + "slack.svg";
   export const NOTION = baseUri + "notion.svg";
   export const BACKLOG = baseUri + "backlog.png";
