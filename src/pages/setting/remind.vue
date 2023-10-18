@@ -4,11 +4,7 @@ v-row
     h2 機能を設定する (1/2)
 v-row
   v-col(cols="12").d-flex.justify-space-between
-    SetupInfo(
-      :todoAppIconSrc="setupTodoAppIconSrc"
-      :chatToolIconSrc="setupChatToolIconSrc"
-      :features="setupFeatures"
-    )
+    SetupInfo()
     v-icon(
       size="large"
       icon="mdi-cog"
@@ -118,6 +114,7 @@ import { VForm } from "vuetify/components";
 import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName, AskType, AskMode } from "~/consts/enum";
 import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
+import { SetupFeatureId } from "~/consts/setup";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import type {
   SettingExpansionPanelData,
@@ -180,7 +177,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: false,
     isOpen: true,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
   {
     step: 2,
@@ -190,7 +187,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
   {
     step: 3,
@@ -200,12 +197,14 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: false,
     hasBackButton: false,
     isOpen: false,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
 ]);
 
-onBeforeMount(() => {
-  setCurrentStep(3);
+onBeforeMount(async () => {
+  startLoading();
+  await setCurrentStep(3);
+  finishLoading();
 });
 
 const selectRadioImageCard = (title: string) => {
@@ -320,7 +319,11 @@ const togglePanel = (step: number) => {
 };
 
 const nextPage = async () => {
-  await navigateTo("/setting/prospect");
+  if (setupFeatures.value.includes(SetupFeatureId.PROSPECT)) {
+    await navigateTo("/setting/prospect");
+  } else {
+    await navigateTo("/compleaion");
+  }
 };
 
 </script>

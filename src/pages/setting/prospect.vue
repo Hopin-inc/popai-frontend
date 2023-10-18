@@ -4,11 +4,7 @@ v-row
     h2 機能を設定する (2/2)
 v-row
   v-col(cols="12").d-flex.justify-space-between
-    SetupInfo(
-      :todoAppIconSrc="setupTodoAppIconSrc"
-      :chatToolIconSrc="setupChatToolIconSrc"
-      :features="setupFeatures"
-    )
+    SetupInfo()
     v-icon(
       size="large"
       icon="mdi-cog"
@@ -135,7 +131,6 @@ const {
   setupTodoAppIconSrc,
   setupChatToolIconSrc,
   setCurrentStep,
-  setupFeatures,
 } = useSetup();
 
 const times: SelectItem<string>[] = TIME_LIST;
@@ -186,7 +181,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: false,
     isOpen: true,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
   {
     step: 2,
@@ -196,7 +191,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: true,
     hasBackButton: true,
     isOpen: false,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
   {
     step: 3,
@@ -206,7 +201,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
     hasNextButton: false,
     hasBackButton: false,
     isOpen: false,
-    isDone: false,
+    isDone: true, // TODO falseに戻す
   },
 ]);
 
@@ -234,8 +229,10 @@ const radioCardData: Ref<RadioCardData[]> = ref<RadioCardData[]>([
   },
 ]);
 
-onBeforeMount(() => {
-  setCurrentStep(3);
+onBeforeMount(async () => {
+  startLoading();
+  await setCurrentStep(3);
+  finishLoading();
 });
 
 watch(enabled, async (next) => {

@@ -45,13 +45,17 @@ v-row.my-10
 <script setup lang="ts">
 import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
 import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum";
-import type { LinkToolBtnData, Feature, FeatureCheckBoxData } from "~/types/settings";
+import { SetupFeatureId } from "~/consts/setup";
+import type { LinkToolBtnData } from "~/types/settings";
+import type { FeatureCheckBoxData, ISetupFeatureId } from "~/types/setup";
+import { getSetupConfig } from "~/apis/config";
 
 useHead({
   title: "機能を選ぶ",
 });
 const { startLoading, finishLoading, loading } = useLoading();
 const {
+  currentStep,
   setCurrentStep,
   setupTodoAppId,
   setSetupTodoAppId,
@@ -103,18 +107,18 @@ const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
     description: "期日を過ぎても完了していないタスクを\nPOPAIがやさしくリマインド。",
     checked: false,
     imgSrc: CaptureImages.FEATURE_REMIND,
-    feature: "遅延のリマインド",
+    feature: SetupFeatureId.REMIND,
   },
   {
     title: "遅延しそうなタスクをシェア",
     description: "社員は簡単な質問に答えるだけ。\nPOPAIが聞いてきた進捗を紹介します！",
     checked: false,
     imgSrc: CaptureImages.FEATURE_SHARE,
-    feature: "進捗のシェア",
+    feature: SetupFeatureId.PROSPECT,
   },
 ]);
 
-const onClickFeatureCard = (feature: Feature) => {
+const onClickFeatureCard = (feature: ISetupFeatureId) => {
   features.value.forEach((f) => {
     if (f.feature === feature) {
       f.checked = !f.checked;
@@ -157,9 +161,13 @@ const updateLinkToolBtnState = (tools: LinkToolBtnData[], toolName: string) => {
     });
 };
 
-onBeforeMount(() => {
-  setCurrentStep(1);
+onMounted(async () => {
+  startLoading();
+  await setCurrentStep(1);
+  finishLoading();
+});
 
+onBeforeMount(() => {
   const todo = todoApps.value.find(t => t.id === setupTodoAppId.value);
   if (todo) { todo.selected = true; }
   const chat = chatTools.value.find(t => t.id === setupChatToolId.value);

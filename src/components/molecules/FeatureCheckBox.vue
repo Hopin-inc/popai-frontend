@@ -19,7 +19,7 @@ v-card(
 </template>
 
 <script setup lang="ts">
-import type { Feature, FeatureCheckBoxData } from "~/types/settings";
+import type { ISetupFeatureId, FeatureCheckBoxData } from "~/types/setup";
 
 type Props = {
   data: FeatureCheckBoxData;
@@ -29,11 +29,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 type Emits = {
-  (e: "click-card", feature: Feature): void
+  (e: "click-card", feature: ISetupFeatureId): void
 };
 const emits = defineEmits<Emits>();
-
-// const checked = computed(() => (props.data.checked)); TODO なくても動く？
 
 const onClick = () => {
   emits("click-card", props.data.feature);

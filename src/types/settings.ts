@@ -1,5 +1,6 @@
 import { SetOptional } from "type-fest";
 import { SelectItem } from "~/types/common";
+import { SetupFeatureId } from "~/consts/setup";
 
 export type UserConfig = {
   user: SetOptional<User, "id">;
@@ -129,19 +130,6 @@ export type ConfigStatus = {
     enabled: boolean;
     isValid: boolean;
   };
-};
-
-export type Feature =
-  | "遅延のリマインド"
-  | "進捗のシェア"
-  | "";
-
-export type FeatureCheckBoxData = {
-  title: string;
-  description: string;
-  checked: boolean;
-  imgSrc: string;
-  feature: Feature;
 };
 
 export type LinkToolBtnData = {

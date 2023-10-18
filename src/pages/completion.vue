@@ -18,8 +18,8 @@ const {
   setCurrentStep,
 } = useSetup();
 
-onBeforeMount(() => {
-  setCurrentStep(4);
+onBeforeMount(async () => {
+  await setCurrentStep(4);
 });
 
 </script>

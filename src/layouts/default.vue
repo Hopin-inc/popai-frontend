@@ -137,8 +137,8 @@ const menus = computed(() => [
   },
 ]);
 
-const chagePage = (step: number) => {
-  setCurrentStep(step);
+const chagePage = async (step: number) => {
+  await setCurrentStep(step);
   switch (step) {
     case 1:
       navigateTo("/setup");
