@@ -7,6 +7,7 @@ import {
   ConfigProspect,
   ConfigStatus,
 } from "~/types/settings";
+import { ConfigSetup } from "~/types/setup";
 import { fetcher } from "~/apis/base-api";
 
 export const getConfigStatus = async (): Promise<ConfigStatus> => {
@@ -126,6 +127,28 @@ export const updateProspectConfig = async (config: Partial<ConfigProspect>): Pro
   );
   if (data.value && !error.value) {
     return data.value.data;
+  }
+  return null;
+};
+
+export const getSetupConfig = async (): Promise<ConfigSetup | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<ConfigSetup | null>>(
+    "getConfigSetup",
+    fetcher("/config/setup", { method: "GET" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return null;
+};
+
+export const updateSetupConfig = async (config: ConfigSetup): Promise<any> => {
+  const { data, error } = await useAsyncData<ApiResponse<any>>(
+    "updateSetupConfig",
+    fetcher("/config/setup", { body: config, method: "PATCH" }),
+  );
+  if (data.value && !error.value) {
+    return data.value;
   }
   return null;
 };

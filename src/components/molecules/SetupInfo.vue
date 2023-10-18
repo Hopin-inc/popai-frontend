@@ -1,27 +1,21 @@
 <template lang="pug">
 .d-flex.align-center
   span.mr-2 連携ツール：
-  img(:src="props.todoAppIconSrc" width="32").mr-2
-  img(:src="props.chatToolIconSrc" width="32").mr-10
+  img(:src="setupTodoAppIconSrc" width="32").mr-2
+  img(:src="setupChatToolIconSrc" width="32").mr-10
   span.mr-2 利用機能：
-  template(v-for="feature in props.features" :key="feature")
+  template(v-for="featureId in setupFeatures" :key="featureId")
     v-chip(
       variant="outlined"
       color="primary"
-    ).mr-2 {{ feature }}
+    ).mr-2 {{ SetupFeatureName[featureId] }}
 </template>
 
 <script setup lang="ts">
-import type { Feature } from "~/types/settings";
-
-type Props = {
-  todoAppIconSrc: string;
-  chatToolIconSrc: string;
-  features: Feature[];
-};
-const props = withDefaults(defineProps<Props>(), {
-  todoAppIconSrc: "",
-  chatToolIconSrc: "",
-  features: () => [],
-});
+import { SetupFeatureName } from "~/consts/setup";
+const {
+  setupTodoAppIconSrc,
+  setupChatToolIconSrc,
+  setupFeatures,
+} = useSetup();
 </script>

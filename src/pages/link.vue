@@ -4,11 +4,7 @@ v-row
     h2 お使いのツールとPOPAIを連携する
 v-row
   v-col(cols="12").d-flex.justify-space-between
-    SetupInfo(
-      :todoAppIconSrc="setupTodoAppIconSrc"
-      :chatToolIconSrc="setupChatToolIconSrc"
-      :features="setupFeatures"
-    )
+    SetupInfo()
     v-icon(
       size="large"
       icon="mdi-cog"
@@ -282,6 +278,7 @@ import {
   ProjectRule,
   PropertyUsageType,
 } from "~/consts/enum";
+import { SetupFeatureId } from "~/consts/setup";
 import {
   fetchDataForBoard,
   getBoardConfig,
@@ -985,8 +982,10 @@ const onSuperiorUsersChanged = async (subordinateUserId: string, superiorUserIds
   finishLoading();
 };
 
-onBeforeMount(() => {
-  setCurrentStep(2);
+onBeforeMount(async () => {
+  startLoading();
+  await setCurrentStep(2);
+  finishLoading();
 });
 
 const installTodoApp = async () => {
@@ -1041,7 +1040,15 @@ const togglePanel = (step: number) => {
 };
 
 const nextPage = async () => {
-  await navigateTo("/setting/remind");
+  if (setupFeatures.value.includes(SetupFeatureId.REMIND)) {
+    await navigateTo("/setting/remind");
+  } else if (setupFeatures.value.includes(SetupFeatureId.PROSPECT)) {
+    await navigateTo("/setting/prospect");
+  } else {
+    // 本来通りえないケース
+    alert("「機能を選ぶ」画面でPOPAIに依頼したい機能を選択してください。");
+    await navigateTo("/setup");
+  }
 };
 </script>
 
