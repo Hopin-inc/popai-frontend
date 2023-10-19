@@ -118,16 +118,16 @@ const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
 
 const onClickFeatureCard = async (feature: ISetupFeatureId) => {
   startLoading();
-  await features.value.forEach((f) => {
+  for (const f of features.value) {
     if (f.feature === feature) {
       f.checked = !f.checked;
       if (f.checked) {
-        addSetupFeature(feature);
+        await addSetupFeature(feature);
       } else {
-        deleteSetupFeature(feature);
+        await deleteSetupFeature(feature);
       }
     }
-  });
+  }
   finishLoading();
 };
 
