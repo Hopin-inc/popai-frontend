@@ -5,25 +5,23 @@ import { ChatToolId, ChatToolName, TodoAppId, TodoAppName } from "~/consts/enum"
 import { ExternalServiceLogos } from "~/consts/images";
 import { getSetupConfig, updateSetupConfig } from "~/apis/config";
 
-const { startLoading, finishLoading } = useLoading();
-
 interface UseSetup {
   currentStep: ReadonlyRef<number | null>;
-  setCurrentStep: (step: number | null) => void;
+  setCurrentStep: (step: number | null) => Promise<void>;
 
   setupTodoAppId: ReadonlyRef<number | null>;
   setupTodoAppName: ComputedRef<string>;
   setupTodoAppIconSrc: ComputedRef<string>;
-  setSetupTodoAppId: (todoAppId: number) => void;
+  setSetupTodoAppId: (todoAppId: number) => Promise<void>;
 
   setupChatToolId: ReadonlyRef<number | null>;
   setupChatToolName: ComputedRef<string>;
   setupChatToolIconSrc: ComputedRef<string>;
-  setSetupChatToolId: (todoAppId: number) => void;
+  setSetupChatToolId: (todoAppId: number) => Promise<void>;
 
   setupFeatures: Ref<ISetupFeatureId[]>;
-  addSetupFeature: (feature: ISetupFeatureId) => void;
-  deleteSetupFeature: (feature: ISetupFeatureId) => void;
+  addSetupFeature: (feature: ISetupFeatureId) => Promise<void>;
+  deleteSetupFeature: (feature: ISetupFeatureId) => Promise<void>;
 
   fetchConfigSetup: () => Promise<void>;
 }
@@ -35,7 +33,6 @@ export const useSetup = (): UseSetup => {
   const setupFeatures = useState<ISetupFeatureId[]>("setupFeatures", () => []);
 
   const fetchConfigSetup = async () => {
-    startLoading();
     const data = await getSetupConfig();
     if (data) {
       currentStep.value = data.currentStep;
@@ -43,13 +40,10 @@ export const useSetup = (): UseSetup => {
       setupChatToolId.value = data.setupChatToolId;
       setupFeatures.value = data.setupFeatures;
     }
-    finishLoading();
   };
 
   const updateConfigSetup = async (configSetup: Partial<ConfigSetup>) => {
-    startLoading();
     await updateSetupConfig(configSetup);
-    finishLoading();
   };
 
   const setupTodoAppName = computed(() => {

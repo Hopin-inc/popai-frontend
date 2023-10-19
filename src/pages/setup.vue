@@ -116,8 +116,9 @@ const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
   },
 ]);
 
-const onClickFeatureCard = (feature: ISetupFeatureId) => {
-  features.value.forEach((f) => {
+const onClickFeatureCard = async (feature: ISetupFeatureId) => {
+  startLoading();
+  await features.value.forEach((f) => {
     if (f.feature === feature) {
       f.checked = !f.checked;
       if (f.checked) {
@@ -127,20 +128,25 @@ const onClickFeatureCard = (feature: ISetupFeatureId) => {
       }
     }
   });
+  finishLoading();
 };
 
-const onClickToolCard = (id: number, toolName: string) => {
+const onClickToolCard = async (id: number, toolName: string) => {
   switch (toolName) {
     case TodoAppName[TodoAppId.SPREADSHEET]:
     case TodoAppName[TodoAppId.NOTION]:
     case TodoAppName[TodoAppId.BACKLOG]:
-      setSetupTodoAppId(id);
       updateLinkToolBtnState(todoApps.value, toolName);
+      startLoading();
+      await setSetupTodoAppId(id);
+      finishLoading();
       break;
     case ChatToolName[ChatToolId.SLACK]:
     case ChatToolName[ChatToolId.LINEWORKS]:
-      setSetupChatToolId(id);
       updateLinkToolBtnState(chatTools.value, toolName);
+      startLoading();
+      await setSetupChatToolId(id);
+      finishLoading();
       break;
   }
 };

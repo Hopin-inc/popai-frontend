@@ -49,7 +49,6 @@ const {
 } = useInfo();
 const {
   currentStep,
-  setCurrentStep,
 } = useSetup();
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
@@ -137,8 +136,7 @@ const menus = computed(() => [
   },
 ]);
 
-const chagePage = async (step: number) => {
-  await setCurrentStep(step);
+const chagePage = (step: number) => {
   switch (step) {
     case 1:
       navigateTo("/setup");
