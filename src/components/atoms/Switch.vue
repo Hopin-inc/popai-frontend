@@ -5,7 +5,7 @@ v-switch(
   color="primary"
   hide-details
 ).no-stretch.ml-3
-  template(#label v-if="!props.label")
+  template(v-if="!props.label" #label)
     slot
 </template>
 

@@ -3,8 +3,8 @@ v-card(
   :class="{'selected': data.selected}"
   flat
   rounded="s"
-  @click.stop="onClick"
   height="64"
+  @click.stop="onClick"
 ).d-flex.align-center.py-4.px-6
   img(:src="props.data.iconSrc" width="24").mr-2
   span.text-h6 {{ props.data.toolName }}

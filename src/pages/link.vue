@@ -9,7 +9,7 @@ v-row
       size="large"
       icon="mdi-cog"
       color="grey"
-      @click.stop='navigateTo("/setup");'
+      @click.stop="navigateTo('/setup');"
     )
 
 SettingExpansionPanel(
@@ -22,8 +22,8 @@ SettingExpansionPanel(
     v-btn(
       color="primary"
       variant="outlined"
-      @click.stop="installTodoApp"
       :disabled="implementedTodoAppId !== null"
+      @click.stop="installTodoApp"
     ) {{ implementedTodoAppId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
@@ -185,10 +185,10 @@ SettingExpansionPanel(
 )
   v-card(flat).px-8.py-6
     v-btn(
-      @click.stop="installChatTool"
       color="primary"
       variant="outlined"
       :disabled="implementedChatToolId !== null"
+      @click.stop="installChatTool"
     ) {{ implementedChatToolId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
@@ -211,7 +211,8 @@ SettingExpansionPanel(
         img(:src="setupTodoAppIconSrc" width="32").mr-2
         span.mr-2 {{ setupTodoAppName }}
     v-row(
-      v-for="(memberConfig, index) in memberConfigs" :key="memberConfig"
+      v-for="(memberConfig, index) in memberConfigs"
+:key="memberConfig"
     ).d-flex.align-center
       v-col(cols="5").py-0
         SelectBox(
@@ -225,25 +226,25 @@ SettingExpansionPanel(
         )
       v-col(cols="2").px-0
         v-btn(
-          @click.stop="deleteRow(index)"
           flat
           prepend-icon="mdi-close"
+          @click.stop="deleteRow(index)"
         ) 削除
     v-row
       v-col.py-1
         v-btn(
-          @click.stop="addRow"
           color="primary"
           variant="text"
           prepend-icon="mdi-plus"
+          @click.stop="addRow"
         ) 追加する
 
 v-row.my-1.ml-10
   v-col(cols="12")
     v-btn(
       color="primary"
-      @click="nextPage"
       :disabled="!canGoToNextPage"
+      @click="nextPage"
     ) 機能設定に進む
 
 SetUpBacklogModal(

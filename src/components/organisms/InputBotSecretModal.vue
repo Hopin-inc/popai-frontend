@@ -26,14 +26,14 @@ BtnModalSet(
           )
   template(#actions)
     v-btn(
-      @click.stop="completeSetup"
       :disabled="botSecret === ''"
       color="primary"
       variant="flat"
+      @click.stop="completeSetup"
     ).px-4 連携を完了する
     v-btn(
-      @click.stop="enableModal = false"
       color="primary"
+      @click.stop="enableModal = false"
     ).px-4 キャンセル
 </template>
 

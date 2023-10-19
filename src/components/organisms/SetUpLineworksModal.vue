@@ -53,14 +53,14 @@ BtnModalSet(
           )
   template(#actions)
     v-btn(
-      @click.stop="onClickNext"
       :disabled="validateForm"
       color="primary"
       variant="flat"
+      @click.stop="onClickNext"
     ).px-4 次へ
     v-btn(
-      @click.stop="enableModal = false"
       color="primary"
+      @click.stop="enableModal = false"
     ).px-4 キャンセル
 </template>
 

@@ -1,7 +1,7 @@
 <template lang="pug">
 v-navigation-drawer(v-if="!isPc" v-model="menuOpened" location="end" :temporary="!isPc")
   .d-flex.justify-end
-    v-btn(@click.stop="menuOpened = false" icon="mdi-close" flat).ma-2
+    v-btn(icon="mdi-close" flat @click.stop="menuOpened = false").ma-2
   SideMenu(:menus="menus")
 v-main
   v-container.pa-0
@@ -14,12 +14,12 @@ v-main
 
     SettingStepper(
       v-if="!isSetupDone"
-      :currentStep="currentStep"
+      :current-step="currentStep"
       :data="stepperItems"
       @click-step="chagePage"
     )
     v-row
-      v-col(cols="12" md="auto" v-if="isPc && isSetupDone").px-4.py-6.select-menu.bg-white.scroll-y
+      v-col(v-if="isPc && isSetupDone" cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
           img(:src="ServiceLogos.POPAI_WITH_NAME" width="160")
         SideMenu(:menus="menus" rounded="lg")

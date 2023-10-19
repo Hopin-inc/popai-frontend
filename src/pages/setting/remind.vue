@@ -9,7 +9,7 @@ v-row
       size="large"
       icon="mdi-cog"
       color="grey"
-      @click.stop='navigateTo("/setup");'
+      @click.stop="navigateTo('/setup')"
     )
 
 SettingExpansionPanel(
@@ -20,8 +20,10 @@ SettingExpansionPanel(
 )
   v-row
     v-col(
-      cols="12" sm="6"
       v-for="radioImageCard in radioImageCardData"
+      :key="radioImageCard.title"
+      cols="12"
+      sm="6"
     )
       RadioImageCard(
         :key="radioImageCard.title"
@@ -53,10 +55,10 @@ SettingExpansionPanel(
       v-row
         v-col(cols="2").py-1
           v-btn(
-            @click.stop="addRow"
             prepend-icon="mdi-plus"
             variant="text"
             color="primary"
+            @click.stop="addRow"
           ) 追加する
 
 SettingExpansionPanel(
@@ -103,9 +105,9 @@ BtnModalSet(
         span.text-subtitle-2 TODO ツールチップ
   template(#actions)
     v-btn(
-      @click.stop="showUpdateColumnModal = false"
       color="primary"
       variant="flat"
+      @click.stop="showUpdateColumnModal = false"
     ).px-4 完了
 </template>
 

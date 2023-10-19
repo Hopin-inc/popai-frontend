@@ -11,15 +11,17 @@ v-card(
       color="primary"
     ).mr-6 mdi-radiobox-marked
     v-icon(
-      v-else size="x-large"
+      v-else
+size="x-large"
     ).mr-6 mdi-radiobox-blank
     div
       p.text-subtitle-2 {{ props.data.captionBeforeTitle }}
       div.d-flex.align-center.mb-2
         h2 {{ props.data.title }}
         template(
+          v-for="day in days"
           v-if="props.data.title==='○日前に聞く'"
-          v-for="day in days" :key="day.day"
+:key="day.day"
         ).d-flex.align-center
           v-chip(
               v-if="day.selected"

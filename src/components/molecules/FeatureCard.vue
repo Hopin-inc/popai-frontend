@@ -8,12 +8,12 @@ v-card(flat rounded="xl").pa-8.pt-6.h-100
       slot(name="description")
     .d-flex.align-center
       v-btn(
-        @click.stop="onSwitched"
         :prepend-icon="props.enabled ? 'mdi-check' : 'mdi-plus'"
         :variant="props.enabled ? 'outlined' : undefined"
         color="primary"
         size="large"
         flat
+        @click.stop="onSwitched"
       ).flex-fill {{ props.enabled ? "追加済み" : "チャンネルに追加" }}
       v-btn(
         v-if="props.enabled"

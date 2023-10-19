@@ -4,7 +4,7 @@ v-dialog(
   :max-width="props.maxWidth"
   :persistent="props.persistent"
 )
-  template(#activator="{ props: dialogProps }" v-if="props.btnText")
+  template(v-if="props.btnText" #activator="{ props: dialogProps }")
     v-btn(
       v-bind="dialogProps"
       :variant="props.variant"
@@ -19,7 +19,7 @@ v-dialog(
   v-card.py-6.px-4
     v-card-title(v-if="props.title").d-flex.justify-space-between.align-center.px-6.py-4.card-title-height
       p {{ props.title }}
-      v-btn(v-if="props.closable" @click.stop="value = false" icon="mdi-close" variant="text" size="small").mr-n4
+      v-btn(v-if="props.closable" icon="mdi-close" variant="text" size="small" @click.stop="value = false").mr-n4
     v-card-text.px-6.py-4.overflow-y-auto
       slot(name="content")
     v-card-actions.px-6.py-4

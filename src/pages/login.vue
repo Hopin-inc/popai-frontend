@@ -27,10 +27,10 @@
             label="パスワード"
             prepend-icon="mdi-lock"
             :append-inner-icon="passAppendIcon"
-            @click:append-inner="showPassword = !showPassword"
             variant="outlined"
             color="primary"
             hide-details="auto"
+            @click:append-inner="showPassword = !showPassword"
           )
         v-col(cols="12" md="10")
           .d-flex.flex-column.align-center
@@ -83,10 +83,10 @@ BtnModalSet(
         )
   template(#actions)
     v-btn(
-      @click.stop="resetPassword()"
       :disabled="forgotPasswordEmail === ''"
       color="primary"
       variant="flat"
+      @click.stop="resetPassword()"
     ).px-4 パスワードをリセットする
 </template>
 

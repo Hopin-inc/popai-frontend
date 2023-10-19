@@ -14,7 +14,8 @@ v-card(
         color="primary"
     ).pl-2.pb-8 mdi-radiobox-marked
     v-icon(
-      v-else size="x-large"
+      v-else
+size="x-large"
     ).pl-2.pb-8 mdi-radiobox-blank
   p.text-subtitle-2.mb-4 {{ props.data.description }}
   img(:src="props.data.imgSrc")

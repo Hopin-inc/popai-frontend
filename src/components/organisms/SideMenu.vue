@@ -29,9 +29,9 @@ v-list(density="compact").pa-0.bg-transparent
         :append-icon="item.disabled ? 'mdi-lock' : undefined"
         :disabled="item.disabled"
         :title="item.title"
-        @click.stop="item.action"
         active-color="primary"
         :rounded="props.rounded"
+        @click.stop="item.action"
       )
     v-list-subheader(v-else-if="item.type === 'subheader'" :title="item.title" sticky)
     v-divider.my-2(v-else-if="item.type === 'divider'")

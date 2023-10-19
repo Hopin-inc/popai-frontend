@@ -3,8 +3,8 @@ v-card(
   :class="{'checked': props.data.checked}"
   flat
   rounded="s"
-  @click.stop="onClick"
   width="428"
+  @click.stop="onClick"
 ).pa-8
   .d-flex.align-center.mb-2
     v-icon(
