@@ -5,6 +5,8 @@ import { ChatToolId, ChatToolName, TodoAppId, TodoAppName } from "~/consts/enum"
 import { ExternalServiceLogos } from "~/consts/images";
 import { getSetupConfig, updateSetupConfig } from "~/apis/config";
 
+const { startLoading, finishLoading } = useLoading();
+
 interface UseSetup {
   currentStep: ReadonlyRef<number | null>;
   setCurrentStep: (step: number | null) => void;
@@ -33,6 +35,7 @@ export const useSetup = (): UseSetup => {
   const setupFeatures = useState<ISetupFeatureId[]>("setupFeatures", () => []);
 
   const fetchConfigSetup = async () => {
+    startLoading();
     const data = await getSetupConfig();
     if (data) {
       currentStep.value = data.currentStep;
@@ -40,10 +43,13 @@ export const useSetup = (): UseSetup => {
       setupChatToolId.value = data.setupChatToolId;
       setupFeatures.value = data.setupFeatures;
     }
+    finishLoading();
   };
 
   const updateConfigSetup = async (configSetup: Partial<ConfigSetup>) => {
+    startLoading();
     await updateSetupConfig(configSetup);
+    finishLoading();
   };
 
   const setupTodoAppName = computed(() => {

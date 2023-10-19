@@ -577,7 +577,7 @@ watch(boardId, async (next) => {
     isUpdating = false;
     finishLoading();
   }
-  if (boardId !== null) {
+  if (boardId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 2)!.isDone = true;
   }
 });
@@ -730,6 +730,12 @@ const updatePropertyUsage = async (
 };
 
 onMounted(async () => {
+  if (implementedTodoAppId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
+  }
+  if (implementedChatToolId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 4)!.isDone = true;
+  }
   await init();
 });
 watch(implementedTodoAppId, async () => {

@@ -38,7 +38,7 @@ useHead({
   titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
 });
 
-const { name, logout } = useAuth();
+const { logout } = useAuth();
 const { startLoading, finishLoading } = useLoading();
 const {
   connected,
