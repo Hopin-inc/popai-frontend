@@ -3,7 +3,7 @@ v-row
   v-col(cols="12")
     SetupTitle(
       title="1. タスク管理ツールを選ぶ",
-      description="タスクの情報を自動で取得します。",
+      description="タスクの情報を自動で取得します。\n※Google Spreadsheetは今後対応予定です。",
     )
 v-row
   template(v-for="todoApp in todoApps" :key="todoApp.toolName")
@@ -48,14 +48,12 @@ import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum"
 import { SetupFeatureId } from "~/consts/setup";
 import type { LinkToolBtnData } from "~/types/settings";
 import type { FeatureCheckBoxData, ISetupFeatureId } from "~/types/setup";
-import { getSetupConfig } from "~/apis/config";
 
 useHead({
   title: "機能を選ぶ",
 });
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const {
-  currentStep,
   setCurrentStep,
   setupTodoAppId,
   setSetupTodoAppId,
@@ -68,12 +66,6 @@ const {
 
 const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
   {
-    id: TodoAppId.SPREADSHEET,
-    toolName: TodoAppName[TodoAppId.SPREADSHEET],
-    selected: false,
-    iconSrc: ExternalServiceLogos.SPREADSHEET,
-  },
-  {
     id: TodoAppId.NOTION,
     toolName: TodoAppName[TodoAppId.NOTION],
     selected: false,
@@ -84,6 +76,12 @@ const todoApps: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
     toolName: TodoAppName[TodoAppId.BACKLOG],
     selected: false,
     iconSrc: ExternalServiceLogos.BACKLOG,
+  },
+  {
+    id: TodoAppId.SPREADSHEET,
+    toolName: TodoAppName[TodoAppId.SPREADSHEET],
+    selected: false,
+    iconSrc: ExternalServiceLogos.SPREADSHEET,
   },
 ]);
 const chatTools: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([

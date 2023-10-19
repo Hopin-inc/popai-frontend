@@ -3,7 +3,7 @@
   img(v-if="props.iconSrc" :src="props.iconSrc" width="48").mr-2
   div
     h2.font-weight-bold.mb-1 {{ title }}
-    span {{ description }}
+    span.line-break {{ description }}
 </template>
 
 <script setup lang="ts">
@@ -18,3 +18,8 @@ const props = withDefaults(defineProps<Props>(), {
   iconSrc: undefined,
 });
 </script>
+
+<style scoped lang="sass">
+.line-break
+  white-space: pre-wrap
+</style>
