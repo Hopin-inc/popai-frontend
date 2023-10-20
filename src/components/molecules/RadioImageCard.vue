@@ -1,6 +1,8 @@
 <template lang="pug">
 v-card(
+  :ripple="!data.selected"
   :class="{'selected': data.selected}"
+  :disabled="props.data.title === 'データの更新を促す'"
   flat
   @click.stop="onClick"
 ).px-8.py-6

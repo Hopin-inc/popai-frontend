@@ -1,5 +1,6 @@
 <template lang="pug">
 v-card(
+  :ripple="!data.selected"
   :class="{'selected': data.selected}"
   :disabled="props.data.toolName === TodoAppName[TodoAppId.SPREADSHEET]"
   flat

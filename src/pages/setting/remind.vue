@@ -19,6 +19,9 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-row
+    v-col().pb-0
+      p ※チャットツールでデータの更新を促す機能は今後対応予定です。
+  v-row
     v-col(
       v-for="radioImageCard in radioImageCardData"
       :key="radioImageCard.title"
@@ -26,7 +29,6 @@ SettingExpansionPanel(
       sm="6"
     )
       RadioImageCard(
-        :key="radioImageCard.title"
         :data="radioImageCard"
         @click-card="selectRadioImageCard"
       )
@@ -113,9 +115,9 @@ BtnModalSet(
 
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
-import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
-import { ChatToolId, TodoAppId, ChatToolName, TodoAppName, AskType, AskMode } from "~/consts/enum";
-import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
+import { CaptureImages } from "~/consts/images";
+import { AskType, AskMode } from "~/consts/enum";
+import { TIME_LIST } from "~/consts";
 import { SetupFeatureId } from "~/consts/setup";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import type {
@@ -130,10 +132,9 @@ useHead({
   title: "機能を設定する (1/2)",
 });
 
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 const {
-  setupTodoAppIconSrc,
   setupChatToolIconSrc,
   setCurrentStep,
   setupFeatures,
@@ -158,7 +159,7 @@ const radioImageCardData: Ref<RadioImageCardData[]> = ref<RadioImageCardData[]>(
     captionBeforeTitle: "タスク管理ツールでの",
     title: "期日の再設定を促す",
     description: "遅延したタスクだけでなく、他タスクの状況も踏まえた丁寧な検討を経て、期日を再設定できます。",
-    selected: false,
+    selected: true,
     imgSrc: CaptureImages.REMIND_PURPOSE_RECONFIGURE,
   },
   {
