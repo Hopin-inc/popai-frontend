@@ -66,11 +66,7 @@ BtnModalSet(
 
 <script setup lang="ts">
 import type { InstallLineworksInfo } from "~/types/settings";
-import type { SelectItem } from "~/types/common";
 import { installLineworks } from "~/apis/line-works";
-import Validations from "~/utils/validations";
-
-const config = useRuntimeConfig();
 
 type Props = {
   modelValue: boolean;
@@ -113,8 +109,8 @@ const validateForm = computed((): boolean => {
   );
 });
 
-const onClickNext = () => {
-  if (installLineworks(installLineworksInfo) === null) {
+const onClickNext = async () => {
+  if (await installLineworks(installLineworksInfo) === null) {
     alert("LINE WORKSとの連携に失敗しました。");
     return;
   }

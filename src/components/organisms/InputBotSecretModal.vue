@@ -76,8 +76,8 @@ watch(enableModal, () => {
   botSecret.value = "";
 });
 
-const completeSetup = () => {
-  if (updateLineworksInstall(botId.value, botSecret.value) === null) {
+const completeSetup = async () => {
+  if (await updateLineworksInstall(botId.value, botSecret.value) === null) {
     alert("LINE WORKSとの連携に失敗しました。");
   }
   enableModal.value = false;

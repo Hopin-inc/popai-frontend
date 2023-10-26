@@ -260,8 +260,6 @@ InputBotSecretModal(
 </template>
 
 <script setup lang="ts">
-import { ExternalServiceLogos } from "~/consts/images";
-import Validations from "~/utils/validations";
 import {
   NOTION_PROPERTY_TYPES_WITH_LABELS,
   NOTION_PROPERTY_TYPES_FOR_NAME,
@@ -274,14 +272,10 @@ import {
 import {
   ChatToolId,
   TodoAppId,
-  ChatToolName,
-  TodoAppName,
-  ProjectRule,
   PropertyUsageType,
 } from "~/consts/enum";
 import { SetupFeatureId } from "~/consts/setup";
 import {
-  fetchDataForBoard,
   getBoardConfig,
   getTodoAppProperties,
   getTodoAppPropertyUsages,
@@ -297,15 +291,11 @@ import {
   updateUserReportingLines,
 } from "~/apis/users";
 import { updateChatToolUsers } from "~/apis/chat-tool";
-import type { SelectItem } from "~/types/common";
 import type {
   SettingExpansionPanelData,
-  AccountRow,
-  BacklogSpaceId,
   Property,
   PropertyConfig,
   PropertyUsage,
-  PropertyConfigCheckbox,
   MemberConfig,
   ReportingLine,
 } from "~/types/settings";
@@ -313,16 +303,14 @@ import type {
 useHead({
   title: "ツールを連携する",
 });
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const {
-  implementedTodoApp,
   implementedTodoAppId,
   implementedChatToolId,
   todoAppBoards,
   todoAppAccounts,
   chatToolAccounts,
   fetchConfigStatus,
-  configStatus,
 } = useInfo();
 const {
   setupTodoAppId,
@@ -343,10 +331,8 @@ const boardId: Ref<string | null> = ref<string | null>(null);
 
 const memberConfigs: Ref<MemberConfig[]> = ref<MemberConfig[]>([]);
 const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
-const users = computed(() => reportingLines.value.map(config => config.user));
 
 const isInit: Ref<boolean> = ref<boolean>(true);
-const fetching: Ref<boolean> = ref<boolean>(false);
 let isUpdating: boolean = false;
 const properties: Ref<Property[]> = ref<Property[]>([]);
 const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
@@ -514,28 +500,6 @@ const propertiesForStatus = computed(() => properties.value.filter((p) => {
 const propertiesForRelation = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_RELATION.includes(p.type);
 }));
-const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
-  switch (implementedTodoAppId.value) {
-    case TodoAppId.NOTION:
-      return [
-        { id: ProjectRule.PARENT_TODO, name: "親レコードがあるレコードをタスク、ないレコードをプロジェクトとみなす。" },
-      ];
-    case TodoAppId.BACKLOG:
-      return [
-        { id: ProjectRule.MILESTONE, name: "マイルストーンをプロジェクトとして、課題はすべてタスクとみなす。" },
-        { id: ProjectRule.PARENT_TODO, name: "親課題がある課題をタスク、ない課題をプロジェクトとみなす。" },
-      ];
-    default:
-      return [];
-  }
-});
-const fetchDisabled = computed(() => !(
-  implementedTodoAppId.value &&
-  boardId.value &&
-  projectRule.value &&
-  configStatus.value.todoApp &&
-  configStatus.value.users
-));
 
 const isDoneTodoAppSetting = computed(() => {
   switch (implementedTodoAppId.value) {
@@ -796,13 +760,6 @@ const fetchConfigs = async () => {
     setConfig(usages, parent.value, PropertyUsageType.PARENT_TODO);
     setConfig(usages, isDone.value, PropertyUsageType.IS_DONE);
     setConfig(usages, isClosed.value, PropertyUsageType.IS_CLOSED);
-  }
-};
-const fetchData = async () => {
-  if (implementedTodoAppId.value && boardId.value && projectRule.value) {
-    fetching.value = true;
-    await fetchDataForBoard(implementedTodoAppId.value);
-    fetching.value = false;
   }
 };
 const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: number) => {
