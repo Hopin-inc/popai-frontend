@@ -145,7 +145,7 @@ const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 const showUpdateColumnModal: Ref<boolean> = ref<boolean>(false);
 
 const prospectTimingForm = ref<VForm>();
-const isInit: Ref<boolean> = ref<boolean>(true);
+const isInit: Ref<boolean> = ref<boolean>(false); // TODO trueに戻す
 const enabled: Ref<boolean> = ref<boolean>(false);
 const channel: Ref<string | null> = ref<string | null>(null);
 const from: Ref<number | null> = ref<number | null>(null);
