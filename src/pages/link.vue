@@ -1005,11 +1005,9 @@ const togglePanel = (step: number) => {
 };
 
 const fetchData = async () => {
-  if (implementedTodoAppId.value && boardId.value && projectRule.value) {
-    startLoading();
-    await fetchDataForBoard(implementedTodoAppId.value);
-    finishLoading();
-  }
+  startLoading();
+  await fetchDataForBoard(implementedTodoAppId.value!);
+  finishLoading();
 };
 
 const nextPage = async () => {

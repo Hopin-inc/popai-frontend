@@ -50,6 +50,8 @@ BtnModalSet(
 <script setup lang="ts">
 import { updateLineworksInstall } from "~/apis/line-works";
 
+const { startLoading, finishLoading } = useLoading();
+
 type Props = {
   modelValue: boolean;
 };
@@ -77,9 +79,11 @@ watch(enableModal, () => {
 });
 
 const completeSetup = async () => {
+  startLoading();
   if (await updateLineworksInstall(botId.value, botSecret.value) === null) {
     alert("LINE WORKSとの連携に失敗しました。");
   }
+  finishLoading();
   enableModal.value = false;
 };
 </script>
