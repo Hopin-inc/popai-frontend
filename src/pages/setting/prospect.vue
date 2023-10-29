@@ -269,7 +269,7 @@ watch(() => [...timings.value], async (next) => {
 const update = async (config: Partial<Omit<ConfigProspect, "type">>) => {
   if (!isInit.value) {
     startLoading();
-    await updateProspectConfig({ ...config, type: AskType.PROJECTS });
+    await updateProspectConfig({ ...config, type: AskType.TODOS });
     finishLoading();
   }
 };
@@ -289,7 +289,7 @@ const init = async () => {
   }
 };
 const fetchConfig = async () => {
-  const config = await getProspectConfig(AskType.PROJECTS);
+  const config = await getProspectConfig(AskType.TODOS);
   if (config) {
     enabled.value = config.enabled;
     channel.value = config.channel;
@@ -306,8 +306,8 @@ const fetchConfig = async () => {
 const addRow = () => {
   timings.value.push({
     time: "09:00:00",
-    type: AskType.PROJECTS,
-    mode: AskMode.UNDEFINED,
+    type: AskType.TODOS,
+    mode: AskMode.BACKWARD,
   });
 };
 const deleteRow = (index: number) => {
