@@ -14,10 +14,10 @@ v-autocomplete(
 )
   template(#selection="{ item, index }")
     v-chip(
-      @click:close.prevent="removeItem($event, index)"
       :key="item"
       closable
       density="comfortable"
+      @click:close.prevent="removeItem($event, index)"
     ) {{ item.title }}
 </template>
 

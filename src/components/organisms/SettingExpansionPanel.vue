@@ -4,7 +4,7 @@ v-row.mb-3.mt-8
     IconicTitle(
       :title="props.data.title"
       :description="props.data.description"
-      :iconSrc="props.data.iconSrc"
+      :icon-src="props.data.iconSrc"
     )
     .d-flex.align-center
       v-icon(
@@ -15,7 +15,7 @@ v-row.mb-3.mt-8
       v-btn(
         size="large"
         variant="text"
-        @click.stop='emits("click-toggle-panel", props.data.step)'
+        @click.stop="emits('click-toggle-panel', props.data.step)"
       )
         v-icon(
           size="large"
@@ -37,13 +37,13 @@ v-row(:class="{'panel-hidden': !isOpen}")
           v-if="props.data.hasNextButton"
           color="primary"
           :disabled="!isDone"
-          @click.stop='emits("click-next", props.data.step)'
+          @click.stop="emits('click-next', props.data.step)"
         ).mt-4 次へ進む
         v-btn(
           v-if="props.data.hasBackButton"
           color="primary"
           variant="text"
-          @click.stop='emits("click-prev", props.data.step)'
+          @click.stop="emits('click-prev', props.data.step)"
         ).mt-4 前に戻る
 </template>
 

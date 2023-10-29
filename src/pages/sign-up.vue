@@ -36,10 +36,10 @@
             :rules="[Validations.required, Validations.password]"
             label="パスワード"
             :append-inner-icon="passAppendIcon"
-            @click:append-inner="showPassword = !showPassword"
             variant="outlined"
             color="primary"
             hide-details="auto"
+            @click:append-inner="showPassword = !showPassword"
           )
         v-col(cols="12" sm="10")
           v-text-field(
@@ -49,10 +49,10 @@
             :rules="[Validations.required, Validations.password]"
             label="パスワードを再入力"
             :append-inner-icon="passAppendIconConfirm"
-            @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
             variant="outlined"
             color="primary"
             hide-details="auto"
+            @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
           )
         v-col(cols="12")
           v-checkbox(v-model="formData.agree" color="primary" hide-details="auto").d-flex.align-center.justify-center

@@ -9,7 +9,7 @@ v-row
       size="large"
       icon="mdi-cog"
       color="grey"
-      @click.stop='navigateTo("/setup");'
+      @click.stop="navigateTo('/setup');"
     )
 
 SettingExpansionPanel(
@@ -22,8 +22,8 @@ SettingExpansionPanel(
     v-btn(
       color="primary"
       variant="outlined"
-      @click.stop="installTodoApp"
       :disabled="implementedTodoAppId !== null"
+      @click.stop="installTodoApp"
     ) {{ implementedTodoAppId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
@@ -185,10 +185,10 @@ SettingExpansionPanel(
 )
   v-card(flat).px-8.py-6
     v-btn(
-      @click.stop="installChatTool"
       color="primary"
       variant="outlined"
       :disabled="implementedChatToolId !== null"
+      @click.stop="installChatTool"
     ) {{ implementedChatToolId ? "連携済み" : "連携する" }}
 
 SettingExpansionPanel(
@@ -211,7 +211,8 @@ SettingExpansionPanel(
         img(:src="setupTodoAppIconSrc" width="32").mr-2
         span.mr-2 {{ setupTodoAppName }}
     v-row(
-      v-for="(memberConfig, index) in memberConfigs" :key="memberConfig"
+      v-for="(memberConfig, index) in memberConfigs"
+:key="memberConfig"
     ).d-flex.align-center
       v-col(cols="5").py-0
         SelectBox(
@@ -225,25 +226,25 @@ SettingExpansionPanel(
         )
       v-col(cols="2").px-0
         v-btn(
-          @click.stop="deleteRow(index)"
           flat
           prepend-icon="mdi-close"
+          @click.stop="deleteRow(index)"
         ) 削除
     v-row
       v-col.py-1
         v-btn(
-          @click.stop="addRow"
           color="primary"
           variant="text"
           prepend-icon="mdi-plus"
+          @click.stop="addRow"
         ) 追加する
 
 v-row.my-1.ml-10
   v-col(cols="12")
     v-btn(
       color="primary"
-      @click="nextPage"
       :disabled="!canGoToNextPage"
+      @click="nextPage"
     ) 機能設定に進む
 
 SetUpBacklogModal(
@@ -259,8 +260,6 @@ InputBotSecretModal(
 </template>
 
 <script setup lang="ts">
-import { ExternalServiceLogos } from "~/consts/images";
-import Validations from "~/utils/validations";
 import {
   NOTION_PROPERTY_TYPES_WITH_LABELS,
   NOTION_PROPERTY_TYPES_FOR_NAME,
@@ -273,14 +272,10 @@ import {
 import {
   ChatToolId,
   TodoAppId,
-  ChatToolName,
-  TodoAppName,
-  ProjectRule,
   PropertyUsageType,
 } from "~/consts/enum";
 import { SetupFeatureId } from "~/consts/setup";
 import {
-  fetchDataForBoard,
   getBoardConfig,
   getTodoAppProperties,
   getTodoAppPropertyUsages,
@@ -296,15 +291,11 @@ import {
   updateUserReportingLines,
 } from "~/apis/users";
 import { updateChatToolUsers } from "~/apis/chat-tool";
-import type { SelectItem } from "~/types/common";
 import type {
   SettingExpansionPanelData,
-  AccountRow,
-  BacklogSpaceId,
   Property,
   PropertyConfig,
   PropertyUsage,
-  PropertyConfigCheckbox,
   MemberConfig,
   ReportingLine,
 } from "~/types/settings";
@@ -312,16 +303,14 @@ import type {
 useHead({
   title: "ツールを連携する",
 });
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const {
-  implementedTodoApp,
   implementedTodoAppId,
   implementedChatToolId,
   todoAppBoards,
   todoAppAccounts,
   chatToolAccounts,
   fetchConfigStatus,
-  configStatus,
 } = useInfo();
 const {
   setupTodoAppId,
@@ -342,10 +331,8 @@ const boardId: Ref<string | null> = ref<string | null>(null);
 
 const memberConfigs: Ref<MemberConfig[]> = ref<MemberConfig[]>([]);
 const reportingLines: Ref<ReportingLine[]> = ref<ReportingLine[]>([]);
-const users = computed(() => reportingLines.value.map(config => config.user));
 
 const isInit: Ref<boolean> = ref<boolean>(true);
-const fetching: Ref<boolean> = ref<boolean>(false);
 let isUpdating: boolean = false;
 const properties: Ref<Property[]> = ref<Property[]>([]);
 const propInitVal: PropertyConfig = { id: null, property: null, requireOptions: false, requireCheckbox: false };
@@ -513,28 +500,6 @@ const propertiesForStatus = computed(() => properties.value.filter((p) => {
 const propertiesForRelation = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_RELATION.includes(p.type);
 }));
-const projectRules: ComputedRef<SelectItem<number>[]> = computed(() => {
-  switch (implementedTodoAppId.value) {
-    case TodoAppId.NOTION:
-      return [
-        { id: ProjectRule.PARENT_TODO, name: "親レコードがあるレコードをタスク、ないレコードをプロジェクトとみなす。" },
-      ];
-    case TodoAppId.BACKLOG:
-      return [
-        { id: ProjectRule.MILESTONE, name: "マイルストーンをプロジェクトとして、課題はすべてタスクとみなす。" },
-        { id: ProjectRule.PARENT_TODO, name: "親課題がある課題をタスク、ない課題をプロジェクトとみなす。" },
-      ];
-    default:
-      return [];
-  }
-});
-const fetchDisabled = computed(() => !(
-  implementedTodoAppId.value &&
-  boardId.value &&
-  projectRule.value &&
-  configStatus.value.todoApp &&
-  configStatus.value.users
-));
 
 const isDoneTodoAppSetting = computed(() => {
   switch (implementedTodoAppId.value) {
@@ -576,7 +541,7 @@ watch(boardId, async (next) => {
     isUpdating = false;
     finishLoading();
   }
-  if (boardId !== null) {
+  if (boardId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 2)!.isDone = true;
   }
 });
@@ -729,6 +694,12 @@ const updatePropertyUsage = async (
 };
 
 onMounted(async () => {
+  if (implementedTodoAppId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
+  }
+  if (implementedChatToolId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 4)!.isDone = true;
+  }
   await init();
 });
 watch(implementedTodoAppId, async () => {
@@ -789,13 +760,6 @@ const fetchConfigs = async () => {
     setConfig(usages, parent.value, PropertyUsageType.PARENT_TODO);
     setConfig(usages, isDone.value, PropertyUsageType.IS_DONE);
     setConfig(usages, isClosed.value, PropertyUsageType.IS_CLOSED);
-  }
-};
-const fetchData = async () => {
-  if (implementedTodoAppId.value && boardId.value && projectRule.value) {
-    fetching.value = true;
-    await fetchDataForBoard(implementedTodoAppId.value);
-    fetching.value = false;
   }
 };
 const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageType: number) => {

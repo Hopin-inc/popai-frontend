@@ -2,18 +2,18 @@
 .d-flex
   v-text-field(
     :model-value="value"
-    @blur.capture="onInput"
     :variant="editable ? 'outlined' : 'plain'"
     :readonly="!editable || readonly"
     density="compact"
     color="primary"
     hide-details
+    @blur.capture="onInput"
   ).editable-field
   .d-flex(v-if="!props.alwaysEditable").align-center.ml-2
-    v-icon(v-if="!editable" @click.stop="onSwitchedOn" size="small") mdi-pencil
+    v-icon(v-if="!editable" size="small" @click.stop="onSwitchedOn") mdi-pencil
     template(v-else)
-      v-icon(@click.stop="onSaved" color="primary" size="small").mr-1 mdi-check-bold
-      v-icon(@click.stop="onCanceled" size="small") mdi-close
+      v-icon(color="primary" size="small" @click.stop="onSaved").mr-1 mdi-check-bold
+      v-icon(size="small" @click.stop="onCanceled") mdi-close
 </template>
 
 <script setup lang="ts">

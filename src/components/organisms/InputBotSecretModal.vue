@@ -15,6 +15,16 @@ BtnModalSet(
           a(href="https://dev.worksmobile.com/jp/console/openapi/v2/app/list/view") LINE WORKS Developer Console
           span 上でアプリ設定を行い、連携に必要な下記の情報を取得してください。
     v-row
+      v-col(cols="12" md="6")
+        FormPart(title="Bot ID")
+          v-text-field(
+            v-model="botId"
+            variant="outlined"
+            density="comfortable"
+            color="primary"
+            hide-details
+          )
+    v-row
       v-col(cols="12" md="8")
         FormPart(title="Bot Secret")
           v-text-field(
@@ -26,14 +36,14 @@ BtnModalSet(
           )
   template(#actions)
     v-btn(
-      @click.stop="completeSetup"
-      :disabled="botSecret === ''"
+      :disabled="botSecret === '' || botId === ''"
       color="primary"
       variant="flat"
+      @click.stop="completeSetup"
     ).px-4 連携を完了する
     v-btn(
-      @click.stop="enableModal = false"
       color="primary"
+      @click.stop="enableModal = false"
     ).px-4 キャンセル
 </template>
 
@@ -59,13 +69,15 @@ const enableModal = computed({
   set: v => emits("update:model-value", v),
 });
 const botSecret = ref("");
+const botId = ref("");
 
 watch(enableModal, () => {
+  botId.value = "";
   botSecret.value = "";
 });
 
-const completeSetup = () => {
-  if (updateLineworksInstall(botSecret.value) === null) {
+const completeSetup = async () => {
+  if (await updateLineworksInstall(botId.value, botSecret.value) === null) {
     alert("LINE WORKSとの連携に失敗しました。");
   }
   enableModal.value = false;

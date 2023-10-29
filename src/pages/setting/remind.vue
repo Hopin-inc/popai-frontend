@@ -9,7 +9,7 @@ v-row
       size="large"
       icon="mdi-cog"
       color="grey"
-      @click.stop='navigateTo("/setup");'
+      @click.stop="navigateTo('/setup')"
     )
 
 SettingExpansionPanel(
@@ -19,12 +19,16 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-row
+    v-col().pb-0
+      p ※チャットツールでデータの更新を促す機能は今後対応予定です。
+  v-row
     v-col(
-      cols="12" sm="6"
       v-for="radioImageCard in radioImageCardData"
+      :key="radioImageCard.title"
+      cols="12"
+      sm="6"
     )
       RadioImageCard(
-        :key="radioImageCard.title"
         :data="radioImageCard"
         @click-card="selectRadioImageCard"
       )
@@ -53,10 +57,10 @@ SettingExpansionPanel(
       v-row
         v-col(cols="2").py-1
           v-btn(
-            @click.stop="addRow"
             prepend-icon="mdi-plus"
             variant="text"
             color="primary"
+            @click.stop="addRow"
           ) 追加する
 
 SettingExpansionPanel(
@@ -103,17 +107,17 @@ BtnModalSet(
         span.text-subtitle-2 TODO ツールチップ
   template(#actions)
     v-btn(
-      @click.stop="showUpdateColumnModal = false"
       color="primary"
       variant="flat"
+      @click.stop="showUpdateColumnModal = false"
     ).px-4 完了
 </template>
 
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
-import { ExternalServiceLogos, CaptureImages } from "~/consts/images";
-import { ChatToolId, TodoAppId, ChatToolName, TodoAppName, AskType, AskMode } from "~/consts/enum";
-import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
+import { CaptureImages } from "~/consts/images";
+import { AskType, AskMode } from "~/consts/enum";
+import { TIME_LIST } from "~/consts";
 import { SetupFeatureId } from "~/consts/setup";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import type {
@@ -128,10 +132,9 @@ useHead({
   title: "機能を設定する (1/2)",
 });
 
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 const {
-  setupTodoAppIconSrc,
   setupChatToolIconSrc,
   setCurrentStep,
   setupFeatures,
@@ -142,7 +145,7 @@ const timings: Ref<ConfigProspectTiming[]> = ref<ConfigProspectTiming[]>([]);
 const showUpdateColumnModal: Ref<boolean> = ref<boolean>(false);
 
 const prospectTimingForm = ref<VForm>();
-const isInit: Ref<boolean> = ref<boolean>(true);
+const isInit: Ref<boolean> = ref<boolean>(false); // TODO trueに戻す
 const enabled: Ref<boolean> = ref<boolean>(false);
 const channel: Ref<string | null> = ref<string | null>(null);
 const from: Ref<number | null> = ref<number | null>(null);
@@ -156,7 +159,7 @@ const radioImageCardData: Ref<RadioImageCardData[]> = ref<RadioImageCardData[]>(
     captionBeforeTitle: "タスク管理ツールでの",
     title: "期日の再設定を促す",
     description: "遅延したタスクだけでなく、他タスクの状況も踏まえた丁寧な検討を経て、期日を再設定できます。",
-    selected: false,
+    selected: true,
     imgSrc: CaptureImages.REMIND_PURPOSE_RECONFIGURE,
   },
   {

@@ -13,13 +13,15 @@ useHead({
   title: "利用を開始",
 });
 
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const {
   setCurrentStep,
 } = useSetup();
 
 onBeforeMount(async () => {
+  startLoading();
   await setCurrentStep(4);
+  finishLoading();
 });
 
 </script>

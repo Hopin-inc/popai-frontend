@@ -1,5 +1,5 @@
 import { type Ref } from "vue";
-import { ISetupFeatureId, ConfigSetup } from "~/types/setup";
+import { ConfigSetup, ISetupFeatureId } from "~/types/setup";
 import { ReadonlyRef } from "~/types/utils";
 import { ChatToolId, ChatToolName, TodoAppId, TodoAppName } from "~/consts/enum";
 import { ExternalServiceLogos } from "~/consts/images";
@@ -7,21 +7,21 @@ import { getSetupConfig, updateSetupConfig } from "~/apis/config";
 
 interface UseSetup {
   currentStep: ReadonlyRef<number | null>;
-  setCurrentStep: (step: number | null) => void;
+  setCurrentStep: (step: number | null) => Promise<void>;
 
   setupTodoAppId: ReadonlyRef<number | null>;
   setupTodoAppName: ComputedRef<string>;
   setupTodoAppIconSrc: ComputedRef<string>;
-  setSetupTodoAppId: (todoAppId: number) => void;
+  setSetupTodoAppId: (todoAppId: number) => Promise<void>;
 
   setupChatToolId: ReadonlyRef<number | null>;
   setupChatToolName: ComputedRef<string>;
   setupChatToolIconSrc: ComputedRef<string>;
-  setSetupChatToolId: (todoAppId: number) => void;
+  setSetupChatToolId: (todoAppId: number) => Promise<void>;
 
   setupFeatures: Ref<ISetupFeatureId[]>;
-  addSetupFeature: (feature: ISetupFeatureId) => void;
-  deleteSetupFeature: (feature: ISetupFeatureId) => void;
+  addSetupFeature: (feature: ISetupFeatureId) => Promise<void>;
+  deleteSetupFeature: (feature: ISetupFeatureId) => Promise<void>;
 
   fetchConfigSetup: () => Promise<void>;
 }
@@ -42,13 +42,8 @@ export const useSetup = (): UseSetup => {
     }
   };
 
-  const updateConfigSetup = async () => {
-    await updateSetupConfig({
-      currentStep: currentStep.value,
-      setupTodoAppId: setupTodoAppId.value,
-      setupChatToolId: setupChatToolId.value,
-      setupFeatures: setupFeatures.value,
-    });
+  const updateConfigSetup = async (configSetup: Partial<ConfigSetup>) => {
+    await updateSetupConfig(configSetup);
   };
 
   const setupTodoAppName = computed(() => {
@@ -97,19 +92,19 @@ export const useSetup = (): UseSetup => {
   const setCurrentStep = async (step: number | null) => {
     if (currentStep.value === step) { return; }
     currentStep.value = step;
-    await updateConfigSetup();
+    await updateConfigSetup({ currentStep: step });
   };
 
   const setSetupTodoAppId = async (todoAppId: number) => {
     if (setupTodoAppId.value === todoAppId) { return; }
     setupTodoAppId.value = todoAppId;
-    await updateConfigSetup();
+    await updateConfigSetup({ setupTodoAppId: todoAppId });
   };
 
   const setSetupChatToolId = async (chatToolId: number) => {
     if (setupChatToolId.value === chatToolId) { return; }
     setupChatToolId.value = chatToolId;
-    await updateConfigSetup();
+    await updateConfigSetup({ setupChatToolId: chatToolId });
   };
 
   const addSetupFeature = async (feature: ISetupFeatureId) => {
@@ -118,14 +113,15 @@ export const useSetup = (): UseSetup => {
     } else {
       return;
     }
-    await updateConfigSetup();
+    await updateConfigSetup({ setupFeatures: setupFeatures.value });
   };
 
-  const deleteSetupFeature = (feature: ISetupFeatureId) => {
+  const deleteSetupFeature = async (feature: ISetupFeatureId) => {
     const index = setupFeatures.value.findIndex(f => f === feature);
     if (index !== -1) {
       setupFeatures.value.splice(index, 1);
     }
+    await updateConfigSetup({ setupFeatures: setupFeatures.value });
   };
 
   return {

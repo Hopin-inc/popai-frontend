@@ -1,4 +1,3 @@
-import { ExternalServiceLogos } from "./images";
 export const NotionPropertyType = {
   TITLE: 1,
   NUMBER: 2,

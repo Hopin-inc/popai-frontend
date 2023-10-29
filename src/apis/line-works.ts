@@ -19,13 +19,14 @@ export const installLineworks = async (
 };
 
 export const updateLineworksInstall = async (
+  botId: string,
   botSecret: string,
 ) => {
   const { data, error } = await useAsyncData<ApiResponse<null>>(
     "updateLineworksInstall",
     fetcher("/line-works/install", {
       method: "PATCH",
-      body: { bot_secret: botSecret },
+      body: { bot_id: botId, bot_secret: botSecret },
     }),
   );
   if (data.value && !error.value) {

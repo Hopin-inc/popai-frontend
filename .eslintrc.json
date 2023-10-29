@@ -9,7 +9,8 @@
     "plugin:vue/vue3-essential",
     "plugin:@typescript-eslint/recommended",
     "@nuxtjs/eslint-config-typescript",
-    "plugin:nuxt/recommended"
+    "plugin:nuxt/recommended",
+    "plugin:vue-pug/vue3-recommended"
   ],
   "overrides": [],
   "parser": "vue-eslint-parser",
@@ -58,7 +59,15 @@
     "no-unexpected-multiline": "error",
     "no-unreachable": "error",
     "no-use-before-define": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn"
+      // {
+      //   "argsIgnorePattern": "^_+.*$",
+      //   "varsIgnorePattern": "^_+.*$",
+      //   "caughtErrorsIgnorePattern": "^_+.*$",
+      //   "destructuredArrayIgnorePattern": "^_+.*$"
+      // }
+    ],
     "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "off",
@@ -90,6 +99,8 @@
         }
       }
     ],
+    // Vue3からは複数のルート要素を許可しているのでoff
+    "vue/no-multiple-template-root": "off",
     "vue/multi-word-component-names": "off"
   }
 }

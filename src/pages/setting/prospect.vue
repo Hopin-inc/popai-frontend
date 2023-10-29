@@ -9,7 +9,7 @@ v-row
       size="large"
       icon="mdi-cog"
       color="grey"
-      @click.stop='navigateTo("/setup");'
+      @click.stop="navigateTo('/setup')"
     )
 
 SettingExpansionPanel(
@@ -19,7 +19,7 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   RadioCard(
-    v-for="(radioCard, index) in radioCardData"
+    v-for="(radioCard) in radioCardData"
     :key="radioCard.title"
     :data="radioCard"
     :days="daysToConfirmProgress"
@@ -50,10 +50,10 @@ SettingExpansionPanel(
       v-row
         v-col(cols="2").py-1
           v-btn(
-            @click.stop="addRow"
             prepend-icon="mdi-plus"
             variant="text"
             color="primary"
+            @click.stop="addRow"
           ) 追加する
 
 SettingExpansionPanel(
@@ -100,17 +100,16 @@ BtnModalSet(
           ).mr-2 {{ day.day }}
   template(#actions)
     v-btn(
-      @click.stop="showSetDaysModal = false"
       color="primary"
       variant="flat"
+      @click.stop="showSetDaysModal = false"
     ).px-4 完了
 </template>
 
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
-import { ExternalServiceLogos } from "~/consts/images";
-import { DAYS_BEFORE, DAYS_OF_WEEK, TIME_LIST } from "~/consts";
-import { ChatToolId, TodoAppId, ChatToolName, TodoAppName, AskType, AskMode } from "~/consts/enum";
+import { TIME_LIST } from "~/consts";
+import { AskType, AskMode } from "~/consts/enum";
 import { getProspectConfig, updateProspectConfig } from "~/apis/config";
 import type {
   SettingExpansionPanelData,
@@ -125,10 +124,9 @@ useHead({
   title: "機能を設定する (2/2)",
 });
 
-const { startLoading, finishLoading, loading } = useLoading();
+const { startLoading, finishLoading } = useLoading();
 const { implementedChatToolId, chatToolChannels } = useInfo();
 const {
-  setupTodoAppIconSrc,
   setupChatToolIconSrc,
   setCurrentStep,
 } = useSetup();

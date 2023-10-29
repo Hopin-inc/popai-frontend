@@ -1,6 +1,5 @@
 import { SetOptional } from "type-fest";
 import { SelectItem } from "~/types/common";
-import { SetupFeatureId } from "~/consts/setup";
 
 export type UserConfig = {
   user: SetOptional<User, "id">;

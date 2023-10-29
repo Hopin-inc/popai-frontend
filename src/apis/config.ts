@@ -142,7 +142,7 @@ export const getSetupConfig = async (): Promise<ConfigSetup | null> => {
   return null;
 };
 
-export const updateSetupConfig = async (config: ConfigSetup): Promise<any> => {
+export const updateSetupConfig = async (config: Partial<ConfigSetup>): Promise<any> => {
   const { data, error } = await useAsyncData<ApiResponse<any>>(
     "updateSetupConfig",
     fetcher("/config/setup", { body: config, method: "PATCH" }),

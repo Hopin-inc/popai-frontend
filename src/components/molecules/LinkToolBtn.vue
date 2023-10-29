@@ -1,10 +1,12 @@
 <template lang="pug">
 v-card(
+  :ripple="!data.selected"
   :class="{'selected': data.selected}"
+  :disabled="props.data.toolName === TodoAppName[TodoAppId.SPREADSHEET]"
   flat
   rounded="s"
-  @click.stop="onClick"
   height="64"
+  @click.stop="onClick"
 ).d-flex.align-center.py-4.px-6
   img(:src="props.data.iconSrc" width="24").mr-2
   span.text-h6 {{ props.data.toolName }}
@@ -12,6 +14,7 @@ v-card(
 
 <script setup lang="ts">
 import type { LinkToolBtnData } from "~/types/settings";
+import { TodoAppName, TodoAppId } from "~~/src/consts/enum";
 
 type Props = {
   data: LinkToolBtnData;
