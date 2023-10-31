@@ -131,6 +131,28 @@ export const updateProspectConfig = async (config: Partial<ConfigProspect>): Pro
   return null;
 };
 
+export const getRemindConfig = async (type: number): Promise<ConfigProspect | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<ConfigProspect | null>>(
+    "getRemindConfig",
+    fetcher(`/config/remind?type=${ type }`, { method: "GET" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return null;
+};
+
+export const updateRemindConfig = async (config: Partial<ConfigProspect>): Promise<ConfigProspect | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<ConfigProspect | null>>(
+    "updateRemindConfig",
+    fetcher("/config/remind", { body: config, method: "PATCH" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return null;
+};
+
 export const getSetupConfig = async (): Promise<ConfigSetup | null> => {
   const { data, error } = await useAsyncData<ApiResponse<ConfigSetup | null>>(
     "getConfigSetup",

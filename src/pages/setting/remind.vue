@@ -119,7 +119,7 @@ import { CaptureImages } from "~/consts/images";
 import { AskType, AskMode } from "~/consts/enum";
 import { TIME_LIST } from "~/consts";
 import { SetupFeatureId } from "~/consts/setup";
-import { getProspectConfig, updateProspectConfig } from "~/apis/config";
+import { getRemindConfig, updateRemindConfig } from "~/apis/config";
 import type {
   SettingExpansionPanelData,
   ConfigProspect,
@@ -256,7 +256,7 @@ watch(() => [...timings.value], async (next) => {
 const update = async (config: Partial<Omit<ConfigProspect, "type">>) => {
   if (!isInit.value) {
     startLoading();
-    await updateProspectConfig({ ...config, type: AskType.TODOS });
+    await updateRemindConfig({ ...config, type: AskType.TODOS });
     finishLoading();
   }
 };
@@ -276,7 +276,7 @@ const init = async () => {
   }
 };
 const fetchConfig = async () => {
-  const config = await getProspectConfig(AskType.TODOS);
+  const config = await getRemindConfig(AskType.TODOS);
   if (config) {
     enabled.value = config.enabled;
     channel.value = config.channel;
