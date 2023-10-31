@@ -68,6 +68,8 @@ BtnModalSet(
 import type { InstallLineworksInfo } from "~/types/settings";
 import { installLineworks } from "~/apis/line-works";
 
+const { startLoading, finishLoading } = useLoading();
+
 type Props = {
   modelValue: boolean;
 };
@@ -110,10 +112,12 @@ const validateForm = computed((): boolean => {
 });
 
 const onClickNext = async () => {
+  startLoading();
   if (await installLineworks(installLineworksInfo) === null) {
     alert("LINE WORKSとの連携に失敗しました。");
     return;
   }
+  finishLoading();
   enableModal.value = false;
   emits("installed");
 };

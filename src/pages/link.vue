@@ -282,6 +282,7 @@ import {
   updateBoardConfig,
   updateTodoAppPropertyUsage,
   updateTodoAppUser,
+  fetchDataForBoard,
 } from "~/apis/todo-app";
 import {
   deleteUser,
@@ -1003,7 +1004,14 @@ const togglePanel = (step: number) => {
   if (currentPanel) { currentPanel.isOpen = !currentPanel.isOpen; }
 };
 
+const fetchData = async () => {
+  startLoading();
+  await fetchDataForBoard(implementedTodoAppId.value!);
+  finishLoading();
+};
+
 const nextPage = async () => {
+  await fetchData();
   if (setupFeatures.value.includes(SetupFeatureId.REMIND)) {
     await navigateTo("/setting/remind");
   } else if (setupFeatures.value.includes(SetupFeatureId.PROSPECT)) {
