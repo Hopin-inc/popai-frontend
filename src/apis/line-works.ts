@@ -1,4 +1,4 @@
-import { ApiResponse, SelectItem } from "~/types/common";
+import { ApiResponse } from "~/types/common";
 import { InstallLineworksInfo } from "~/types/settings";
 import { fetcher } from "~/apis/base-api";
 
