@@ -325,7 +325,7 @@ const nextPage = async () => {
   if (setupFeatures.value.includes(SetupFeatureId.PROSPECT)) {
     await navigateTo("/setting/prospect");
   } else {
-    await navigateTo("/compleaion");
+    await navigateTo("/completion");
   }
 };
 
