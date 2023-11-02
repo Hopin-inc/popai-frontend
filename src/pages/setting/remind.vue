@@ -292,7 +292,6 @@ const addRow = () => {
   timings.value.push({
     time: "09:00:00",
     type: AskType.TODOS,
-    mode: AskMode.BACKWARD,
   });
 };
 const deleteRow = (index: number) => {

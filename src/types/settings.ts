@@ -110,7 +110,7 @@ export type ConfigProspect = {
 export type ConfigProspectTiming = {
   time: string;
   type: number;
-  mode: number;
+  mode?: number;
 };
 
 export type BoardConfig = {
