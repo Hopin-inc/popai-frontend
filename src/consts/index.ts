@@ -43,6 +43,8 @@ export const NOTION_PROPERTY_TYPES_FOR_NAME: number[] = [
 
 export const NOTION_PROPERTY_TYPES_FOR_PEOPLE: number[] = [
   NotionPropertyType.PEOPLE,
+  NotionPropertyType.SELECT,
+  NotionPropertyType.MULTI_SELECT,
 ];
 
 export const NOTION_PROPERTY_TYPES_FOR_DATE: number[] = [
