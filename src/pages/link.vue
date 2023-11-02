@@ -187,7 +187,6 @@ SettingExpansionPanel(
     v-btn(
       color="primary"
       variant="outlined"
-      :disabled="implementedChatToolId !== null"
       @click.stop="installChatTool"
     ) {{ implementedChatToolId ? "連携済み" : "連携する" }}
 
