@@ -70,7 +70,19 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
-    v-row
+    v-row(v-if="implementedChatToolId === ChatToolId.LINEWORKS")
+      v-col(cols="12")
+        p ※LINE WORKSのアプリ上から、チャンネルIDをコピーして貼り付けてください。
+      v-col(cols="6")
+        v-text-field(
+          v-model="channel"
+          label="チャンネルID"
+          variant="outlined"
+          density="comfortable"
+          color="primary"
+          hide-details
+        )
+    v-row(v-else)
       v-col(cols="4")
         SelectBox(
           v-model="channel"
@@ -116,7 +128,7 @@ BtnModalSet(
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
 import { CaptureImages } from "~/consts/images";
-import { AskType } from "~/consts/enum";
+import { AskType, ChatToolId } from "~/consts/enum";
 import { TIME_LIST } from "~/consts";
 import { SetupFeatureId } from "~/consts/setup";
 import { getRemindConfig, updateRemindConfig } from "~/apis/config";
