@@ -211,7 +211,7 @@ SettingExpansionPanel(
         span.mr-2 {{ setupTodoAppName }}
     v-row(
       v-for="(memberConfig, index) in memberConfigs"
-:key="memberConfig"
+      :key="memberConfig"
     ).d-flex.align-center
       v-col(cols="5").py-0
         SelectBox(
@@ -221,7 +221,7 @@ SettingExpansionPanel(
       v-col(cols="5").py-0
         SelectBox(
           v-model="memberConfig.todoAppUserId"
-          :items="todoAppAccounts"
+          :items="todoAppAccountList"
         )
       v-col(cols="2").px-0
         v-btn(
@@ -272,6 +272,7 @@ import {
   ChatToolId,
   TodoAppId,
   PropertyUsageType,
+  NotionPropertyType,
 } from "~/consts/enum";
 import { SetupFeatureId } from "~/consts/setup";
 import {
@@ -522,6 +523,29 @@ const isDoneTodoAppSetting = computed(() => {
       break;
   }
   return false;
+});
+
+const todoAppAccountList = computed(() => {
+  if (implementedTodoAppId.value !== TodoAppId.NOTION) {
+    return todoAppAccounts.value;
+  }
+
+  // Notionの場合は設定した担当者プロパティのタイプによって返す情報を変える
+  const prop = properties.value.find(p => p.id === assignee.value.property);
+  if (prop) {
+    if (prop.type === NotionPropertyType.PEOPLE) {
+      // 担当者プロパティがユーザー選択タイプならNotionアカウント一覧を返す
+      return todoAppAccounts.value;
+    }
+    // それ以外のタイプなら担当者プロパティの選択肢を返す
+    if (prop.availableOptions) {
+      return prop.availableOptions?.map(option => ({
+        id: option.id,
+        name: option.name,
+      }));
+    }
+  }
+  return [];
 });
 
 watch(isDoneTodoAppSetting, () => {

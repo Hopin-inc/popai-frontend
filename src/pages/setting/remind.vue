@@ -116,7 +116,7 @@ BtnModalSet(
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
 import { CaptureImages } from "~/consts/images";
-import { AskType, AskMode } from "~/consts/enum";
+import { AskType } from "~/consts/enum";
 import { TIME_LIST } from "~/consts";
 import { SetupFeatureId } from "~/consts/setup";
 import { getRemindConfig, updateRemindConfig } from "~/apis/config";
