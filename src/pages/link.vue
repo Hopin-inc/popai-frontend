@@ -904,6 +904,10 @@ const onUserNameChanged = async (index: number) => {
 };
 const onChatToolUserIdChanged = async (index: number, next: string | null) => {
   startLoading();
+  const chatToolUser = chatToolAccounts.value.find(a => a.id === next);
+  if (chatToolUser) {
+    memberConfigs.value[index].user.name = chatToolUser.name;
+  }
   if (!memberConfigs.value[index].user.id) {
     await updateUserName(index);
   }
