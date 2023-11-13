@@ -5,6 +5,7 @@ import { ChatToolInfo, ConfigStatus, TodoAppInfo } from "~/types/settings";
 import { SelectItem } from "~/types/common";
 import { ReadonlyArrayRef, ReadonlyRef } from "~/types/utils";
 import { getConfigStatus } from "~/apis/config";
+import { ChatToolId } from "~/consts/enum";
 
 interface UseInfo {
   configStatus: ReadonlyRef<ConfigStatus>;
@@ -94,7 +95,9 @@ export const useInfo = (): UseInfo => {
   const fetchChatToolChannels = (state: Ref<SelectItem<string>[]>) => {
     return async () => {
       if (chatToolId.value) {
-        state.value = await getChatToolChannels(chatToolId.value);
+        state.value = chatTool.value?.chatToolId !== ChatToolId.LINEWORKS
+          ? await getChatToolChannels(chatToolId.value)
+          : [];
       }
     };
   };
