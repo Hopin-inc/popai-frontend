@@ -79,3 +79,9 @@ export const AllowedProjectRules = {
   [TodoAppId.NOTION]: [ProjectRule.PARENT_TODO, ProjectRule.CHILD_TODO, ProjectRule.SELECT],
   [TodoAppId.BACKLOG]: [ProjectRule.PARENT_TODO, ProjectRule.CHILD_TODO, ProjectRule.MILESTONE],
 } as const;
+
+export const TodoStatus = {
+  DONE: "done",
+  CLOSED: "closed",
+  INCOMPLETE: "inclomplete",
+} as const;

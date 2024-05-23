@@ -61,6 +61,7 @@ export const useAuth = (): UseAuth => {
             } else {
               await navigateTo("/");
             }
+            await useSetup().fetchConfigSetup();
             await useInfo().fetchAll();
           } else if (chatToolId && (initial || isRegistered === false)) {
             await navigateTo({ path: "/install", query: { chatToolId } });
@@ -94,6 +95,7 @@ export const useAuth = (): UseAuth => {
             } else {
               await navigateTo("/");
             }
+            await useSetup().fetchConfigSetup();
             await useInfo().fetchAll();
           } else {
             alert("ログインに失敗しました。");

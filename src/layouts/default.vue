@@ -58,7 +58,7 @@ const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
 
 // TODO 可変にする
-const isSetupDone = ref<boolean>(false);
+const isSetupDone = ref<boolean>(true);
 
 const signOut = async () => {
   startLoading();
@@ -101,6 +101,11 @@ const menus = computed(() => [
   },
   { type: "divider" },
   { type: "subheader", title: "設定" },
+  {
+    type: "item",
+    title: "タスク一覧",
+    to: "/todos/list",
+  },
   {
     type: "item",
     title: "利用設定",
