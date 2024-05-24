@@ -205,3 +205,17 @@ export type InstallLineworksInfo = {
   service_account: string;
   secret_key: string;
 };
+
+export interface StatusConfig {
+  level1: string;
+  level2: string;
+  level3: string;
+  level4: string;
+  level5: string;
+}
+
+export interface StatusConfigItem {
+  name: string;
+  value: string;
+  editable: boolean;
+}

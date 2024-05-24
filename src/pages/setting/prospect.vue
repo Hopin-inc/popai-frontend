@@ -83,6 +83,35 @@ SettingExpansionPanel(
           label="チャンネルを選択"
         )
 
+SettingExpansionPanel(
+  :data="settingExpansionPanelData.find((data) => data.step === 4)"
+  @click-next="nextStep"
+  @click-prev="prevStep"
+  @click-toggle-panel="togglePanel"
+)
+  v-card(flat).px-8.py-6
+    v-row(v-if="implementedChatToolId === ChatToolId.LINEWORKS")
+    v-col(cols="12")
+      p(v-if="implementedChatToolId === ChatToolId.LINEWORKS") ※LINE WORKSのアプリ上から、チャンネルIDをコピーして貼り付けてください。
+      v-btn(
+        v-for="item in configStatusList"
+        :key="item.name"
+        variant="text"
+        min-width="200px"
+        ).mr-2.mb-2.button-text.position-relative
+        span(v-if="!item.editable").text-overflow.normal-case {{ item.value }}
+        input(
+          v-else
+          v-model="item.value"
+          variant="outlined"
+          min-width="200px"
+          @keyup.enter="handleInputChange(item)"
+          @blur="handleInputChange(item)").my-text-change
+        v-icon(
+          v-if="!item.editable"
+          size="small"
+          @click.stop="item.editable = !item.editable;"
+        ) mdi-pencil
 v-row.my-1.ml-9
   v-col(cols="12")
     v-btn(
@@ -122,13 +151,15 @@ BtnModalSet(
 import { VForm } from "vuetify/components";
 import { TIME_LIST } from "~/consts";
 import { AskType, AskMode, ChatToolId } from "~/consts/enum";
-import { getProspectConfig, updateProspectConfig } from "~/apis/config";
+import { getProspectConfig, updateProspectConfig, getStatusConfig, updateStatusConfig } from "~/apis/config";
 import type {
   SettingExpansionPanelData,
   RadioCardData,
   ConfigProspect,
   ConfigProspectTiming,
   DayToConfirmProgress,
+  StatusConfig,
+  StatusConfigItem,
 } from "~/types/settings";
 import type { SelectItem } from "~/types/common";
 
@@ -157,8 +188,8 @@ const beginOfWeek: Ref<number | null> = ref<number | null>(1);
 const timingsMessage: Ref<string | null> = ref<string | null>(null);
 const frequency: Ref<number | null> = ref<number | null>(null);
 const frequencyDaysBefore: Ref<number[]> = ref<number[]>([]);
-
 const showSetDaysModal: Ref<boolean> = ref<boolean>(false);
+const configStatusList = ref<StatusConfigItem[]>([]);
 const daysToConfirmProgress: Ref<DayToConfirmProgress[]> = ref<DayToConfirmProgress[]>([
   {
     day: "当日",
@@ -206,6 +237,16 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   {
     step: 3,
     title: "3. 遅延しそうなタスクを共有するグループを選ぶ",
+    description: "簡潔な概要", // TODO
+    iconSrc: setupChatToolIconSrc.value,
+    hasNextButton: true,
+    hasBackButton: true,
+    isOpen: false,
+    isDone: true, // TODO falseに戻す
+  },
+  {
+    step: 4,
+    title: "4. Status",
     description: "簡潔な概要", // TODO
     iconSrc: setupChatToolIconSrc.value,
     hasNextButton: false,
@@ -296,6 +337,7 @@ const init = async () => {
   if (chatToolChannels.value.length) {
     startLoading();
     await fetchConfig();
+    await loadStatusConfig();
     isInit.value = false;
     finishLoading();
   }
@@ -312,6 +354,19 @@ const fetchConfig = async () => {
     frequency.value = config.frequency;
     frequencyDaysBefore.value = config.frequencyDaysBefore ?? [];
     timings.value = config.timings?.map(timing => reactive(timing)) ?? [];
+  }
+};
+
+const loadStatusConfig = async () => {
+  const config = await getStatusConfig();
+  if (config) {
+    configStatusList.value = Object.keys(config)
+      .filter(key => key.startsWith("level"))
+      .map(key => ({
+        name: key,
+        value: config[key as keyof StatusConfig] as string,
+        editable: false,
+      }));
   }
 };
 
@@ -397,4 +452,28 @@ const nextPage = async () => {
   await navigateTo("/completion");
 };
 
+const handleInputChange = async (item: StatusConfigItem) => {
+  startLoading();
+  await updateStatusConfig({ [item.name]: item.value });
+  item.editable = false;
+  finishLoading();
+};
 </script>
+
+<style scoped lang="sass">
+.button-text
+  border: 1px solid #c4c4c4
+.text-overflow
+  width: 170px
+  overflow: hidden
+  white-space: nowrap
+  text-overflow: ellipsis
+.my-text-change
+  position: absolute
+  width: 100%
+  height: 100%
+  padding: 5px 10px
+  text-align: center
+.normal-case
+  text-transform: none
+</style>

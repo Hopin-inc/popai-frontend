@@ -6,6 +6,7 @@ import {
   ConfigNotify,
   ConfigProspect,
   ConfigStatus,
+  StatusConfig,
 } from "~/types/settings";
 import { ConfigSetup } from "~/types/setup";
 import { fetcher } from "~/apis/base-api";
@@ -171,6 +172,28 @@ export const updateSetupConfig = async (config: Partial<ConfigSetup>): Promise<a
   );
   if (data.value && !error.value) {
     return data.value;
+  }
+  return null;
+};
+
+export const getStatusConfig = async (): Promise<StatusConfig | null> => {
+  const { data, error } = await useAsyncData<ApiResponse<StatusConfig | null>>(
+    "getStatusConfig",
+    fetcher("/config/status", { method: "GET" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return null;
+};
+
+export const updateStatusConfig = async (config: Partial<StatusConfig>): Promise<any> => {
+  const { data, error } = await useAsyncData<ApiResponse<StatusConfig | null>>(
+    "updateStatusConfig",
+    fetcher("/config/status", { body: config, method: "PATCH" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
   }
   return null;
 };
