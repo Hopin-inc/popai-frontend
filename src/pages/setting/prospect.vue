@@ -131,7 +131,9 @@ import type {
   DayToConfirmProgress,
 } from "~/types/settings";
 import type { SelectItem } from "~/types/common";
-
+definePageMeta({
+  layout: "setup",
+});
 useHead({
   title: "機能を設定する (2/2)",
 });

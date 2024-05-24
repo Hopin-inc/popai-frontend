@@ -21,7 +21,7 @@ onBeforeMount(async () => {
 onMounted(async () => {
   startLoading();
   const { layout } = route.meta;
-  if (layout === "default" || layout === undefined) {
+  if (layout === "default" || layout === "setup" || layout === undefined) {
     await fetchAuthState();
     await fetchAll();
   }

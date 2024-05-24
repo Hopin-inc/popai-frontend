@@ -48,7 +48,9 @@ import { ChatToolId, TodoAppId, ChatToolName, TodoAppName } from "~/consts/enum"
 import { SetupFeatureId } from "~/consts/setup";
 import type { LinkToolBtnData } from "~/types/settings";
 import type { FeatureCheckBoxData, ISetupFeatureId } from "~/types/setup";
-
+definePageMeta({
+  layout: "setup",
+});
 useHead({
   title: "機能を選ぶ",
 });

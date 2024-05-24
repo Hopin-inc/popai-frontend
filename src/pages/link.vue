@@ -301,6 +301,10 @@ import type {
   ReportingLine,
 } from "~/types/settings";
 
+definePageMeta({
+  layout: "setup",
+});
+
 useHead({
   title: "ツールを連携する",
 });
