@@ -62,7 +62,7 @@ v-data-table-server(
         template(v-else)
           span 未完了
       td.w-30
-        template(v-if="item.props.title.todoUsers.length")
+        template(v-if="listTodoUser(item.props.title.todoUsers).length")
           span {{ listTodoUser(item.props.title.todoUsers) }}
         template(v-else)
           span.text-grey-lighten-1 未設定
@@ -151,7 +151,10 @@ const loadTodos = ({ page, itemsPerPage, sortBy }: DataTableOptions) => {
 };
 
 const listTodoUser = (todoUsers: TodoUser[]) => {
-  return todoUsers.map(todoUser => todoUser.user.name).join(", ");
+  return todoUsers
+    .filter(todoUser => todoUser.user)
+    .map(todoUser => todoUser.user?.name)
+    .join(", ");
 };
 
 const truncatedText = (text: string) => {
