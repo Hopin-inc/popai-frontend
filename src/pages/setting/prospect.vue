@@ -90,28 +90,27 @@ SettingExpansionPanel(
   @click-toggle-panel="togglePanel"
 )
   v-card(flat).px-8.py-6
-    v-row(v-if="implementedChatToolId === ChatToolId.LINEWORKS")
-    v-col(cols="12")
-      p(v-if="implementedChatToolId === ChatToolId.LINEWORKS") ※LINE WORKSのアプリ上から、チャンネルIDをコピーして貼り付けてください。
-      v-btn(
-        v-for="item in configStatusList"
-        :key="item.name"
-        variant="text"
-        min-width="200px"
-        ).mr-2.mb-2.button-text.position-relative
-        span(v-if="!item.editable").text-overflow.normal-case {{ item.value }}
-        input(
-          v-else
-          v-model="item.value"
-          variant="outlined"
+    v-row
+      v-col(cols="12")
+        v-btn(
+          v-for="item in configStatusList"
+          :key="item.name"
+          variant="text"
           min-width="200px"
-          @keyup.enter="handleInputChange(item)"
-          @blur="handleInputChange(item)").my-text-change
-        v-icon(
-          v-if="!item.editable"
-          size="small"
-          @click.stop="item.editable = !item.editable;"
-        ) mdi-pencil
+          ).mr-2.mb-2.button-text.position-relative
+          span(v-if="!item.editable").text-overflow.normal-case {{ item.value }}
+          input(
+            v-else
+            v-model="item.value"
+            variant="outlined"
+            min-width="200px"
+            @keyup.enter="handleInputChange(item)"
+            @blur="handleInputChange(item)").input-text-change
+          v-icon(
+            v-if="!item.editable"
+            size="small"
+            @click.stop="item.editable = !item.editable;"
+          ) mdi-pencil
 v-row.my-1.ml-9
   v-col(cols="12")
     v-btn(
@@ -246,7 +245,7 @@ const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingE
   },
   {
     step: 4,
-    title: "4. Status",
+    title: "4. 進捗ステータスのカスタマイズ",
     description: "簡潔な概要", // TODO
     iconSrc: setupChatToolIconSrc.value,
     hasNextButton: false,
@@ -468,7 +467,7 @@ const handleInputChange = async (item: StatusConfigItem) => {
   overflow: hidden
   white-space: nowrap
   text-overflow: ellipsis
-.my-text-change
+.input-text-change
   position: absolute
   width: 100%
   height: 100%
