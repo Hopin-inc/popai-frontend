@@ -328,6 +328,7 @@ const update = async (config: Partial<Omit<ConfigProspect, "type">>) => {
 
 onMounted(async () => {
   await init();
+  await loadStatusConfig();
 });
 watch(chatToolChannels, async () => {
   await init();
@@ -336,7 +337,6 @@ const init = async () => {
   if (chatToolChannels.value.length) {
     startLoading();
     await fetchConfig();
-    await loadStatusConfig();
     isInit.value = false;
     finishLoading();
   }
