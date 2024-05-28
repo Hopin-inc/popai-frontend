@@ -1,4 +1,4 @@
-import { ApiResponse } from "~/types/common";
+import { ApiResponse, SelectItem } from "~/types/common";
 import { fetcher } from "~/apis/base-api";
 import { User, UserConfig, UserReportingLine } from "~/types/settings";
 import { IdOptional } from "~/types/utils";
@@ -55,4 +55,15 @@ export const updateUserReportingLines = async (
     `updateUserReportingLines-${ subordinateUserId }`,
     fetcher(`/users/reporting-lines/${ subordinateUserId }`, { body: superiorUserIds, method: "PATCH" }),
   );
+};
+
+export const getList = async (): Promise<SelectItem<string>[]> => {
+  const { data, error } = await useAsyncData<ApiResponse<SelectItem<string>[]>>(
+    "getList",
+    fetcher("/users/list", { method: "GET" }),
+  );
+  if (data.value && !error.value) {
+    return data.value.data;
+  }
+  return [];
 };

@@ -11,20 +11,14 @@ v-main
           img(:src="ServiceLogos.POPAI_WITH_NAME" width="144")
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
-
-    SettingStepper(
-      v-if="!isSetupDone"
-      :current-step="currentStep"
-      :data="stepperItems"
-      @click-step="chagePage"
-    )
     v-row
       v-col(v-if="isPc && isSetupDone" cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2
           img(:src="ServiceLogos.POPAI_WITH_NAME" width="160")
         SideMenu(:menus="menus" rounded="lg")
       v-col(cols="12" md="auto").pa-8.flex-fill
-        .content.mx-auto
+        slot(name="sidebar")
+        .content.mx-auto.my-10
           slot
 </template>
 
@@ -47,9 +41,7 @@ const {
   todoAppConfigured,
   usersConfigured,
 } = useInfo();
-const {
-  currentStep,
-} = useSetup();
+
 const { mdAndUp } = useDisplay();
 const { currentRoute } = useRouter();
 
@@ -58,32 +50,13 @@ const menuOpened = ref<boolean>(false);
 const isPc = computed(() => mdAndUp.value);
 
 // TODO 可変にする
-const isSetupDone = ref<boolean>(false);
+const isSetupDone = ref<boolean>(true);
 
 const signOut = async () => {
   startLoading();
   await logout();
   finishLoading();
 };
-
-const stepperItems: Ref<SettingStepperData[]> = ref<SettingStepperData[]>([
-  {
-    step: 1,
-    title: "機能を選ぶ",
-  },
-  {
-    step: 2,
-    title: "ツールを連携する",
-  },
-  {
-    step: 3,
-    title: "機能を設定する",
-  },
-  {
-    step: 4,
-    title: "利用を開始",
-  },
-]);
 
 const menus = computed(() => [
   { type: "subheader", title: "連携" },
@@ -101,6 +74,11 @@ const menus = computed(() => [
   },
   { type: "divider" },
   { type: "subheader", title: "設定" },
+  {
+    type: "item",
+    title: "タスク一覧",
+    to: "/todos/list",
+  },
   {
     type: "item",
     title: "利用設定",
@@ -135,23 +113,6 @@ const menus = computed(() => [
     disabled: false,
   },
 ]);
-
-const chagePage = (step: number) => {
-  switch (step) {
-    case 1:
-      navigateTo("/setup");
-      break;
-    case 2:
-      navigateTo("/link");
-      break;
-    case 3:
-      navigateTo("/setting/remind");
-      break;
-    case 4:
-      navigateTo("/completion");
-      break;
-  }
-};
 
 watch(currentRoute, () => {
   menu.value = [];

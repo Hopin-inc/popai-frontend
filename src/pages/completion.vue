@@ -9,6 +9,10 @@ v-row
 <script setup lang="ts">
 import { Icons } from "~/consts/images";
 
+definePageMeta({
+  layout: "setup",
+});
+
 useHead({
   title: "利用を開始",
 });

@@ -45,3 +45,7 @@ export const getTimingDayBeforeText = (days: number): string => {
 export const getTimingDayText = (daysAfter: number): string => {
   return daysAfter >= 0 ? getTimingDayAfterText(daysAfter) : getTimingDayBeforeText(-daysAfter);
 };
+
+export const formatDateTime = (date: string, format: string = "YYYY-MM-DD") => {
+  return $dayjs(date).format(format);
+};

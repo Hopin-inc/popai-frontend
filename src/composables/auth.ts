@@ -53,15 +53,18 @@ export const useAuth = (): UseAuth => {
           if (isRegistered === true) {
             if (!name) {
               await navigateTo("create-account");
+              return;
             }
             state.value = { isRegistered, name: name ?? "" };
+            await useSetup().fetchConfigSetup();
+            await useInfo().fetchAll();
+
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
               await navigateTo(redirect);
             } else {
               await navigateTo("/");
             }
-            await useInfo().fetchAll();
           } else if (chatToolId && (initial || isRegistered === false)) {
             await navigateTo({ path: "/install", query: { chatToolId } });
           } else {
@@ -88,13 +91,15 @@ export const useAuth = (): UseAuth => {
             if (account) {
               state.value = { isRegistered, name: name ?? "" };
             }
+            await useSetup().fetchConfigSetup();
+            await useInfo().fetchAll();
+
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
               await navigateTo(redirect);
             } else {
               await navigateTo("/");
             }
-            await useInfo().fetchAll();
           } else {
             alert("ログインに失敗しました。");
           }
