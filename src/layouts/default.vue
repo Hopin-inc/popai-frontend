@@ -29,7 +29,7 @@ import { ServiceLogos } from "~/consts/images";
 import type { SettingStepperData } from "~/types/settings";
 
 useHead({
-  titleTemplate: title => title ? `${ title } - POPAI` : "POPAI",
+  titleTemplate: title => title ? `${ title } - Angel` : "Angel",
 });
 
 const { logout } = useAuth();

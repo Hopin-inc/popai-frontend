@@ -5,7 +5,7 @@
     v-form(ref="form" @submit.prevent="submit")
       v-row
         v-col(cols="12")
-          p POPAIをご利用いただくまで、あと少しです！ 🎉
+          p Angelをご利用いただくまで、あと少しです！ 🎉
           p 最後に、会社名/チーム名を教えてください。
         v-col(cols="12")
           v-text-field(
@@ -29,7 +29,7 @@
                   v-icon(size="xs" tag="span") mdi-launch
                 span に同意します。
         v-col(cols="12").text-center
-          v-btn(type="submit" color="primary" flat) POPAIの利用を開始する
+          v-btn(type="submit" color="primary" flat) Angelの利用を開始する
 </template>
 
 <script setup lang="ts">

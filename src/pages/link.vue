@@ -1,7 +1,7 @@
 <template lang="pug">
 v-row
   v-col(cols="12")
-    h2 お使いのツールとPOPAIを連携する
+    h2 お使いのツールとAngelを連携する
 v-row
   v-col(cols="12").d-flex.justify-space-between
     SetupInfo()
@@ -443,7 +443,7 @@ watchEffect(() => {
   settingExpansionPanelData.value = [
     {
       step: 1,
-      title: `1. ${ setupTodoAppName.value }とPOPAIを連携する`,
+      title: `1. ${ setupTodoAppName.value }とAngelを連携する`,
       description: "簡潔な概要", // TODO
       iconSrc: setupTodoAppIconSrc.value,
       hasNextButton: true,
@@ -473,7 +473,7 @@ watchEffect(() => {
     },
     {
       step: 4,
-      title: `4. ${ setupChatToolName.value }とPOPAIを連携する`,
+      title: `4. ${ setupChatToolName.value }とAngelを連携する`,
       description: "簡潔な概要", // TODO
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: true,
@@ -1053,7 +1053,7 @@ const nextPage = async () => {
     await navigateTo("/setting/prospect");
   } else {
     // 本来通りえないケース
-    alert("「機能を選ぶ」画面でPOPAIに依頼したい機能を選択してください。");
+    alert("「機能を選ぶ」画面でAngelに依頼したい機能を選択してください。");
     await navigateTo("/setup");
   }
 };

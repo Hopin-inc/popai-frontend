@@ -5,7 +5,7 @@
     v-row(justify="center")
       v-col(cols="12")
         p アカウント作成が完了しました！ 🎉
-        p 続いて、POPAIを{{ ChatToolName[chatToolId] }}にインストールしましょう 🙌
+        p 続いて、Angelを{{ ChatToolName[chatToolId] }}にインストールしましょう 🙌
       v-col(v-if="chatToolId === ChatToolId.SLACK" cols="12" sm="8")
         a(:href="`${ config.public.apiBaseUrl }/slack/install`").slack-btn
           img(:src="ExternalServiceLogos.SLACK" height="20")

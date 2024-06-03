@@ -1,7 +1,7 @@
 <template lang="pug">
 v-row
   v-col(cols="12").d-flex.justify-center.mt-10
-    h2 POPAIの初期設定が完了しました！
+    h2 Angelの初期設定が完了しました！
   v-col(cols="12").d-flex.justify-center.mt-4
     img(:src="Icons.CRACKER" width="128")
 </template>

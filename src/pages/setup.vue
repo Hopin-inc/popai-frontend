@@ -26,7 +26,7 @@ v-row
 v-row.mt-10
   v-col(cols="12")
     SetupTitle(
-      title="3. POPAIに依頼したいことを選ぶ",
+      title="3. Angelに依頼したいことを選ぶ",
       description="チームの自律性を育むために、、、TODO",
     )
 v-row
@@ -104,14 +104,14 @@ const chatTools: Ref<LinkToolBtnData[]> = ref<LinkToolBtnData[]>([
 const features: Ref<FeatureCheckBoxData[]> = ref<FeatureCheckBoxData[]>([
   {
     title: "遅延したタスクにリマインド",
-    description: "期日を過ぎても完了していないタスクを\nPOPAIがやさしくリマインド。",
+    description: "期日を過ぎても完了していないタスクを\nAngelがやさしくリマインド。",
     checked: false,
     imgSrc: CaptureImages.FEATURE_REMIND,
     feature: SetupFeatureId.REMIND,
   },
   {
     title: "遅延しそうなタスクをシェア",
-    description: "社員は簡単な質問に答えるだけ。\nPOPAIが聞いてきた進捗を紹介します！",
+    description: "社員は簡単な質問に答えるだけ。\nAngelが聞いてきた進捗を紹介します！",
     checked: false,
     imgSrc: CaptureImages.FEATURE_SHARE,
     feature: SetupFeatureId.PROSPECT,
