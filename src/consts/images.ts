@@ -1,7 +1,7 @@
 export namespace ServiceLogos {
   const baseUri = "/images/logos/";
-  export const POPAI = baseUri + "popai.svg";
-  export const POPAI_WITH_NAME = baseUri + "popai_with_name.svg";
+  export const POPAI = baseUri + "service_logo.svg";
+  export const POPAI_WITH_NAME = baseUri + "service_logo_with_name.svg";
 }
 
 export namespace ExternalServiceLogos {
