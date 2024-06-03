@@ -173,7 +173,7 @@ onMounted(async () => {
   finishLoading();
 });
 
-onBeforeMount(() => {
+watchEffect(() => {
   const todo = todoApps.value.find(t => t.id === setupTodoAppId.value);
   if (todo) { todo.selected = true; }
   const chat = chatTools.value.find(t => t.id === setupChatToolId.value);
