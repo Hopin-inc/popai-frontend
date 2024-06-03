@@ -214,48 +214,52 @@ const daysToConfirmProgress: Ref<DayToConfirmProgress[]> = ref<DayToConfirmProgr
   },
 ]);
 
-const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
-  {
-    step: 1,
-    title: "1. 進捗をヒアリングする条件を選ぶ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: false,
-    isOpen: true,
-    isDone: true, // TODO falseに戻す
-  },
-  {
-    step: 2,
-    title: "2. 進捗をヒアリングする時刻を選ぶ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: true, // TODO falseに戻す
-  },
-  {
-    step: 3,
-    title: "3. 遅延しそうなタスクを共有するグループを選ぶ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: true, // TODO falseに戻す
-  },
-  {
-    step: 4,
-    title: "4. 進捗ステータスのカスタマイズ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: false,
-    hasBackButton: false,
-    isOpen: false,
-    isDone: true, // TODO falseに戻す
-  },
-]);
+const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([]);
+
+watchEffect(() => {
+  settingExpansionPanelData.value = [
+    {
+      step: 1,
+      title: "1. 進捗をヒアリングする条件を選ぶ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: false,
+      isOpen: true,
+      isDone: true, // TODO falseに戻す
+    },
+    {
+      step: 2,
+      title: "2. 進捗をヒアリングする時刻を選ぶ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: true, // TODO falseに戻す
+    },
+    {
+      step: 3,
+      title: "3. 遅延しそうなタスクを共有するグループを選ぶ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: true, // TODO falseに戻す
+    },
+    {
+      step: 4,
+      title: "4. 進捗ステータスのカスタマイズ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: false,
+      hasBackButton: false,
+      isOpen: false,
+      isDone: true, // TODO falseに戻す
+    },
+  ];
+});
 
 const radioCardData: Ref<RadioCardData[]> = ref<RadioCardData[]>([
   {

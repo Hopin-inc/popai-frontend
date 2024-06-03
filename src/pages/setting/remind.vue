@@ -185,38 +185,42 @@ const radioImageCardData: Ref<RadioImageCardData[]> = ref<RadioImageCardData[]>(
   },
 ]);
 
-const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
-  {
-    step: 1,
-    title: "1. リマインドする目的を選ぶ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: false,
-    isOpen: true,
-    isDone: true, // TODO falseに戻す
-  },
-  {
-    step: 2,
-    title: "2. リマインドする時刻を設定する",
-    description: "期日を過ぎた翌日の何時にリマインドするかを選んでください。",
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: true, // TODO falseに戻す
-  },
-  {
-    step: 3,
-    title: "3. 遅延タスクを共有するグループを選ぶ",
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: false,
-    hasBackButton: false,
-    isOpen: false,
-    isDone: true, // TODO falseに戻す
-  },
-]);
+const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([]);
+
+watchEffect(() => {
+  settingExpansionPanelData.value = [
+    {
+      step: 1,
+      title: "1. リマインドする目的を選ぶ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: false,
+      isOpen: true,
+      isDone: true, // TODO falseに戻す
+    },
+    {
+      step: 2,
+      title: "2. リマインドする時刻を設定する",
+      description: "期日を過ぎた翌日の何時にリマインドするかを選んでください。",
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: true, // TODO falseに戻す
+    },
+    {
+      step: 3,
+      title: "3. 遅延タスクを共有するグループを選ぶ",
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: false,
+      hasBackButton: false,
+      isOpen: false,
+      isDone: true, // TODO falseに戻す
+    },
+  ];
+});
 
 onBeforeMount(async () => {
   startLoading();

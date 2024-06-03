@@ -437,58 +437,62 @@ const canGoToNextPage = computed(() => {
   return (memberConfigs.value.length > 0);
 });
 
-const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([
-  {
-    step: 1,
-    title: `1. ${ setupTodoAppName.value }とPOPAIを連携する`,
-    description: "簡潔な概要", // TODO
-    iconSrc: setupTodoAppIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: false,
-    isOpen: true,
-    isDone: false,
-  },
-  {
-    step: 2,
-    title: captionStep2.value.title,
-    description: captionStep2.value.description,
-    iconSrc: setupTodoAppIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: false,
-  },
-  {
-    step: 3,
-    title: captionStep3.value.title,
-    description: captionStep3.value.description,
-    iconSrc: setupTodoAppIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: false,
-  },
-  {
-    step: 4,
-    title: `4. ${ setupChatToolName.value }とPOPAIを連携する`,
-    description: "簡潔な概要", // TODO
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: true,
-    hasBackButton: true,
-    isOpen: false,
-    isDone: false,
-  },
-  {
-    step: 5,
-    title: "5. 社員ごとにアカウントを紐付ける",
-    description: "ダイレクトメッセージを送信するために、タスクの担当者とチャットツールのアカウントを紐付けてください。",
-    iconSrc: setupChatToolIconSrc.value,
-    hasNextButton: false,
-    hasBackButton: false,
-    isOpen: false,
-    isDone: false,
-  },
-]);
+const settingExpansionPanelData: Ref<SettingExpansionPanelData[]> = ref<SettingExpansionPanelData[]>([]);
+
+watchEffect(() => {
+  settingExpansionPanelData.value = [
+    {
+      step: 1,
+      title: `1. ${ setupTodoAppName.value }とPOPAIを連携する`,
+      description: "簡潔な概要", // TODO
+      iconSrc: setupTodoAppIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: false,
+      isOpen: true,
+      isDone: false,
+    },
+    {
+      step: 2,
+      title: captionStep2.value.title,
+      description: captionStep2.value.description,
+      iconSrc: setupTodoAppIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: false,
+    },
+    {
+      step: 3,
+      title: captionStep3.value.title,
+      description: captionStep3.value.description,
+      iconSrc: setupTodoAppIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: false,
+    },
+    {
+      step: 4,
+      title: `4. ${ setupChatToolName.value }とPOPAIを連携する`,
+      description: "簡潔な概要", // TODO
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: true,
+      hasBackButton: true,
+      isOpen: false,
+      isDone: false,
+    },
+    {
+      step: 5,
+      title: "5. 社員ごとにアカウントを紐付ける",
+      description: "ダイレクトメッセージを送信するために、タスクの担当者とチャットツールのアカウントを紐付けてください。",
+      iconSrc: setupChatToolIconSrc.value,
+      hasNextButton: false,
+      hasBackButton: false,
+      isOpen: false,
+      isDone: false,
+    },
+  ];
+});
 
 const propertiesForName = computed(() => properties.value.filter((p) => {
   return NOTION_PROPERTY_TYPES_FOR_NAME.includes(p.type);

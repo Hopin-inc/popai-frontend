@@ -51,13 +51,14 @@ export const useAuth = (): UseAuth => {
           const account = await signIn(idToken);
           const { isRegistered, name } = account ?? {};
           if (isRegistered === true) {
+            state.value = { isRegistered, name: name ?? "" };
+            await useSetup().fetchConfigSetup();
+            await useInfo().fetchAll();
+
             if (!name) {
               await navigateTo("create-account");
               return;
             }
-            state.value = { isRegistered, name: name ?? "" };
-            await useSetup().fetchConfigSetup();
-            await useInfo().fetchAll();
 
             const { redirect } = useRoute().query;
             if (redirect && typeof redirect === "string") {
