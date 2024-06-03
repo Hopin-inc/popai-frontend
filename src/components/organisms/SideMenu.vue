@@ -1,5 +1,5 @@
 <template lang="pug">
-v-list(density="compact").pa-0.bg-transparent
+v-list(density="compact").pa-0.bg-transparent.flex-fill.d-flex.flex-column
   template(v-for="item in props.menus")
     template(v-if="item.type === 'item'")
       v-list-item(
@@ -35,6 +35,7 @@ v-list(density="compact").pa-0.bg-transparent
       )
     v-list-subheader(v-else-if="item.type === 'subheader'" :title="item.title" sticky)
     v-divider.my-2(v-else-if="item.type === 'divider'")
+    .flex-fill(v-else-if="item.type === 'filler'")
 </template>
 
 <script setup lang="ts">
