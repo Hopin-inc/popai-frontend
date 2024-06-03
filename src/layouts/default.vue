@@ -12,7 +12,7 @@ v-main.min-h-screen
       template(#append)
         v-app-bar-nav-icon(@click.stop="menuOpened = true")
     v-row.h-100
-      v-col(v-if="isPc && isSetupDone" cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y.d-flex.flex-column
+      v-col(v-if="isPc" cols="12" md="auto").px-4.py-6.select-menu.bg-white.scroll-y.d-flex.flex-column
         NuxtLink(to="/").d-flex.align-center.mb-4.mx-2.px-2.py-2
           img(:src="ServiceLogos.POPAI_WITH_NAME" height="32")
         SideMenu(:menus="menus" rounded="lg").fill-height
