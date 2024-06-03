@@ -1,6 +1,6 @@
 <template lang="pug">
 .d-flex.flex-column.align-center.w-100
-  img(src="/images/logos/popai_with_name.svg" height="48").mb-6.mx-auto
+  img(:src="ServiceLogos.POPAI_WITH_NAME" height="48").mb-6.mx-auto
   v-card(flat).pa-6.w-100.rounded-lg
     SimplePageTitle 新規登録
     v-form(ref="form" @submit.prevent="submit")
@@ -93,8 +93,8 @@ import { getAuth, sendEmailVerification, createUserWithEmailAndPassword } from "
 import Validations from "~/utils/validations";
 import { signUpWithEmail } from "~/apis/auth";
 import { URL_TERMS_OF_USE, URL_PRIVACY_POLICY } from "~/consts/links";
+import { ServiceLogos, ExternalServiceLogos } from "~/consts/images";
 import { DialogMessages } from "~/utils/messages";
-import { ExternalServiceLogos } from "~/consts/images";
 import type { EmailSignUpInfo } from "~/types/common";
 
 type ProviderId = "oidc.slack";
