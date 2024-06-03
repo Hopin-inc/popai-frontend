@@ -221,7 +221,7 @@ watchEffect(() => {
     {
       step: 1,
       title: "1. 進捗をヒアリングする条件を選ぶ",
-      description: "簡潔な概要", // TODO
+      description: "進捗をヒアリングする対象タスクの条件を設定してください。",
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: true,
       hasBackButton: false,
@@ -231,7 +231,7 @@ watchEffect(() => {
     {
       step: 2,
       title: "2. 進捗をヒアリングする時刻を選ぶ",
-      description: "簡潔な概要", // TODO
+      description: "条件に当てはまった場合に何時にヒアリングすべきか設定してください。",
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: true,
       hasBackButton: true,
@@ -241,7 +241,7 @@ watchEffect(() => {
     {
       step: 3,
       title: "3. 遅延しそうなタスクを共有するグループを選ぶ",
-      description: "簡潔な概要", // TODO
+      description: "どのグループにメッセージをシェアするか設定してください。",
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: true,
       hasBackButton: true,
@@ -251,7 +251,7 @@ watchEffect(() => {
     {
       step: 4,
       title: "4. 進捗ステータスのカスタマイズ",
-      description: "簡潔な概要", // TODO
+      description: "進捗を尋ねる際の5種類の選択肢を自由に設定してください。",
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: false,
       hasBackButton: false,

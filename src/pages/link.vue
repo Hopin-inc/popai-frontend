@@ -418,7 +418,7 @@ const captionStep3 = computed((): {
     case TodoAppId.NOTION:
       return {
         title: "3. プロパティを選ぶ",
-        description: `タスクのステータスを取得するために、対応する${ setupTodoAppName.value }のプロパティを選択してください`,
+        description: `タスクのステータスを取得するために、対応する${ setupTodoAppName.value }のプロパティを選択してください。`,
       };
     case TodoAppId.BACKLOG:
       return {
@@ -444,7 +444,7 @@ watchEffect(() => {
     {
       step: 1,
       title: `1. ${ setupTodoAppName.value }とAngelを連携する`,
-      description: "簡潔な概要", // TODO
+      description: `${ setupTodoAppName.value }からタスクの情報を取得するために、${ setupTodoAppName.value }から許可を行ってください。`,
       iconSrc: setupTodoAppIconSrc.value,
       hasNextButton: true,
       hasBackButton: false,
@@ -474,7 +474,7 @@ watchEffect(() => {
     {
       step: 4,
       title: `4. ${ setupChatToolName.value }とAngelを連携する`,
-      description: "簡潔な概要", // TODO
+      description: `${ setupChatToolName.value }へメッセージを送るために、${ setupChatToolName.value }から許可を行ってください。`,
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: true,
       hasBackButton: true,

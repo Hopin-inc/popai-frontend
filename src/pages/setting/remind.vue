@@ -212,7 +212,7 @@ watchEffect(() => {
     {
       step: 3,
       title: "3. 遅延タスクを共有するグループを選ぶ",
-      description: "簡潔な概要", // TODO
+      description: "どのグループにメッセージをシェアするか設定してください。",
       iconSrc: setupChatToolIconSrc.value,
       hasNextButton: false,
       hasBackButton: false,

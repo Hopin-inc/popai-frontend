@@ -27,7 +27,7 @@ v-row.mt-10
   v-col(cols="12")
     SetupTitle(
       title="3. Angelに依頼したいことを選ぶ",
-      description="チームの自律性を育むために、、、TODO",
+      description="チームの自律性を育むために、Angelでは2種類のメッセージを送ることができます。使用するものを選択してください。",
     )
 v-row
   template(v-for="feature in features" :key="feature.title")
