@@ -17,6 +17,8 @@ export type MenuItem = {
 } | {
   type: "divider";
 } | {
+  type: "filler";
+} | {
   type: "subheader";
   title: string;
 };
