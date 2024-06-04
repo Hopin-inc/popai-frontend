@@ -727,10 +727,6 @@ const updatePropertyUsage = async (
 };
 
 onMounted(async () => {
-  await init();
-});
-
-watch([implementedTodoAppId, implementedChatToolId, settingExpansionPanelData], async () => {
   if (implementedTodoAppId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
   }
@@ -739,7 +735,18 @@ watch([implementedTodoAppId, implementedChatToolId, settingExpansionPanelData], 
   }
   await init();
 });
-
+watch([implementedTodoAppId, settingExpansionPanelData], async () => {
+  if (implementedTodoAppId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
+  }
+  await init();
+});
+watch([implementedChatToolId, settingExpansionPanelData], async () => {
+  if (implementedChatToolId.value) {
+    settingExpansionPanelData.value.find(panel => panel.step === 4)!.isDone = true;
+  }
+  await init();
+});
 watch(todoAppBoards, async () => {
   await init();
 }, { deep: true });
