@@ -556,23 +556,24 @@ const todoAppAccountList = computed(() => {
   return [];
 });
 
-watch(isDoneTodoAppSetting, () => {
+watch([isDoneTodoAppSetting, settingExpansionPanelData], () => {
   settingExpansionPanelData.value.find(panel => panel.step === 3)!.isDone = isDoneTodoAppSetting.value;
 });
 
-watch(canGoToNextPage, () => {
+watch([canGoToNextPage, settingExpansionPanelData], () => {
   settingExpansionPanelData.value.find(panel => panel.step === 5)!.isDone = canGoToNextPage.value;
 });
 
-watch(boardId, async (next) => {
-  if (!isUpdating && implementedTodoAppId.value && next) {
+watch([boardId, settingExpansionPanelData], async () => {
+  if (!isUpdating && implementedTodoAppId.value && boardId.value) {
     startLoading();
     isUpdating = true;
-    await updateBoardConfig(implementedTodoAppId.value, next);
+    await updateBoardConfig(implementedTodoAppId.value, boardId.value);
     await init();
     isUpdating = false;
     finishLoading();
   }
+
   if (boardId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 2)!.isDone = true;
   }
@@ -734,20 +735,22 @@ onMounted(async () => {
   }
   await init();
 });
-watch(implementedTodoAppId, async () => {
-  await init();
+watch([implementedTodoAppId, settingExpansionPanelData], async () => {
   if (implementedTodoAppId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 1)!.isDone = true;
   }
+  await init();
 });
-watch(implementedChatToolId, () => {
+watch([implementedChatToolId, settingExpansionPanelData], async () => {
   if (implementedChatToolId.value) {
     settingExpansionPanelData.value.find(panel => panel.step === 4)!.isDone = true;
   }
+  await init();
 });
 watch(todoAppBoards, async () => {
   await init();
 }, { deep: true });
+
 const init = async () => {
   startLoading();
   if (isInit.value && implementedChatToolId.value && implementedTodoAppId.value) {
@@ -826,10 +829,6 @@ const setConfig = (usages: PropertyUsage[], propConfig: PropertyConfig, usageTyp
     propConfig.requireOptions = true;
   }
 };
-
-watch(() => [implementedChatToolId.value, implementedTodoAppId.value], async () => {
-  await init();
-});
 
 const reportingLineInit = async () => {
   reportingLines.value = await getUserReportingLines();
