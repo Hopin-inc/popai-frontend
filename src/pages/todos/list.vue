@@ -142,7 +142,7 @@ onBeforeMount(async () => {
   finishLoading();
 });
 
-watch(() => filters.value, async (next) => {
+watch(() => [setupTodoAppId.value, filters.value], async (next) => {
   await fetchAll();
 }, { deep: true });
 
