@@ -84,6 +84,7 @@ SettingExpansionPanel(
         )
 
 SettingExpansionPanel(
+  v-if="implementedChatToolId === ChatToolId.SLACK"
   :data="settingExpansionPanelData.find((data) => data.step === 4)"
   @click-next="nextStep"
   @click-prev="prevStep"
@@ -95,15 +96,17 @@ SettingExpansionPanel(
         v-btn(
           v-for="item in configStatusList"
           :key="item.name"
-          variant="text"
           min-width="200px"
           ).mr-2.mb-2.button-text.position-relative
           span(v-if="!item.editable").text-overflow.normal-case {{ item.value }}
-          input(
+          v-text-field(
             v-else
             v-model="item.value"
-            variant="outlined"
             min-width="200px"
+            :rules="nameRules"
+            variant="outlined"
+            required
+            density="compact"
             @keyup.enter="handleInputChange(item)"
             @blur="handleInputChange(item)").input-text-change
           v-icon(
@@ -161,6 +164,7 @@ import type {
   StatusConfigItem,
 } from "~/types/settings";
 import type { SelectItem } from "~/types/common";
+import Validations from "~/utils/validations";
 definePageMeta({
   layout: "setup",
 });
@@ -211,6 +215,12 @@ const daysToConfirmProgress: Ref<DayToConfirmProgress[]> = ref<DayToConfirmProgr
   {
     day: "5日前",
     selected: false,
+  },
+]);
+const nameRules = ref([
+  (value: string) => {
+    if (value) { return true; }
+    return "";
   },
 ]);
 
@@ -458,6 +468,9 @@ const nextPage = async () => {
 };
 
 const handleInputChange = async (item: StatusConfigItem) => {
+  if (!item.value) {
+    return;
+  }
   startLoading();
   await updateStatusConfig({ [item.name]: item.value });
   item.editable = false;
@@ -467,7 +480,7 @@ const handleInputChange = async (item: StatusConfigItem) => {
 
 <style scoped lang="sass">
 .button-text
-  border: 1px solid #c4c4c4
+  height: 40px
 .text-overflow
   width: 170px
   overflow: hidden
@@ -476,9 +489,8 @@ const handleInputChange = async (item: StatusConfigItem) => {
 .input-text-change
   position: absolute
   width: 100%
-  height: 100%
-  padding: 5px 10px
   text-align: center
+  top: 0px
 .normal-case
   text-transform: none
 </style>
